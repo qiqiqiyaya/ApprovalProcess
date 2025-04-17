@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ApprovalProcess.Core\ApprovalProcess.Core.csproj" />
+		<ProjectReference Include="..\ApprovalProcess.Repository\ApprovalProcess.Repository.csproj" />
+		<ProjectReference Include="..\ApprovalProcess.Share\ApprovalProcess.Share.csproj" />
+	</ItemGroup>
+
+</Project>
