@@ -63,7 +63,6 @@ namespace ApprovalProcess.Core
             }
 
             allowed.Add(triggerBehaviour);
-            Behaviours.Add(triggerBehaviour);
         }
 
 
