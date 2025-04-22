@@ -1,4 +1,5 @@
 ﻿using ApprovalProcess.Core;
+using ApprovalProcess.Core.ConvertActions;
 using ApprovalProcess.Core.Workflows;
 using ApprovalProcess.Repository;
 using ApprovalProcess.Service;
@@ -28,6 +29,11 @@ namespace ApprovalProcess.Register
             service.AddTransient<IPeService, PeService>();
             service.AddTransient<IWorkflow, PeWorkflow>();
             service.AddTransient<IEmployeeService, EmployeeService>();
+            service.AddTransient<IStateMachineManager, StateMachineManager>();
+
+            Dictionary<string, Type> convertToType = new Dictionary<string, Type>();
+            convertToType.Add(typeof(String).FullName, typeof(StringToTransition));
+            service.AddSingleton(serviceProvider => new ConvertContainer(convertToType, serviceProvider));
         }
     }
 }

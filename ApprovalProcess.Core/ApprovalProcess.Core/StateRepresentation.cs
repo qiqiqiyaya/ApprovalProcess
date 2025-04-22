@@ -14,32 +14,21 @@ namespace ApprovalProcess.Core
             State = state;
         }
 
+        public StateRepresentation(TState state, IEnumerable<Transition<TState, TTrigger>> transitions)
+        {
+            State = state;
+            TriggerBehaviours = transitions
+                .GroupBy(t => t.Trigger)
+                .ToDictionary(g => g.Key, g => (ICollection<Transition<TState, TTrigger>>)g.ToList());
+        }
+
         public TState State { get; set; }
 
-        public ICollection<TransitioningTriggerBehaviour<TState, TTrigger>> Behaviours { get; set; } =
-            new List<TransitioningTriggerBehaviour<TState, TTrigger>>();
-
-        private IDictionary<TTrigger, ICollection<TransitioningTriggerBehaviour<TState, TTrigger>>> _triggerBehaviours;
         /// <summary>
         /// 触发器行为
         /// </summary>
-        public IDictionary<TTrigger, ICollection<TransitioningTriggerBehaviour<TState, TTrigger>>> TriggerBehaviours
-        {
-            get
-            {
-                if (_triggerBehaviours == null)
-                {
-                    _triggerBehaviours = new Dictionary<TTrigger, ICollection<TransitioningTriggerBehaviour<TState, TTrigger>>>();
-                    foreach (var group in Behaviours.GroupBy(s => s.Trigger))
-                    {
-                        _triggerBehaviours.Add(group.Key, group.ToList());
-                    }
-                }
-
-                return _triggerBehaviours;
-            }
-        }
-
+        public IDictionary<TTrigger, ICollection<Transition<TState, TTrigger>>> TriggerBehaviours =
+            new Dictionary<TTrigger, ICollection<Transition<TState, TTrigger>>>();
 
         /// <summary>
         /// Accept the specified trigger and transition to the destination state.
@@ -50,15 +39,15 @@ namespace ApprovalProcess.Core
         public StateRepresentation<TState, TTrigger> Permit(TTrigger trigger, TState destinationState)
         {
             EnforceNotIdentityTransition(destinationState);
-            AddTriggerBehaviour(new TransitioningTriggerBehaviour<TState, TTrigger>(trigger, destinationState));
+            AddTriggerBehaviour(new Transition<TState, TTrigger>(trigger, destinationState));
             return this;
         }
 
-        private void AddTriggerBehaviour(TransitioningTriggerBehaviour<TState, TTrigger> triggerBehaviour)
+        private void AddTriggerBehaviour(Transition<TState, TTrigger> triggerBehaviour)
         {
-            if (!TriggerBehaviours.TryGetValue(triggerBehaviour.Trigger, out ICollection<TransitioningTriggerBehaviour<TState, TTrigger>> allowed))
+            if (!TriggerBehaviours.TryGetValue(triggerBehaviour.Trigger, out ICollection<Transition<TState, TTrigger>> allowed))
             {
-                allowed = new List<TransitioningTriggerBehaviour<TState, TTrigger>>();
+                allowed = new List<Transition<TState, TTrigger>>();
                 TriggerBehaviours.Add(triggerBehaviour.Trigger, allowed);
             }
 
@@ -66,10 +55,10 @@ namespace ApprovalProcess.Core
         }
 
 
-        public bool TryFindBehaviour(TTrigger trigger, out ICollection<TransitioningTriggerBehaviour<TState, TTrigger>> triggerBehaviours)
+        public bool TryFindBehaviour(TTrigger trigger, out ICollection<Transition<TState, TTrigger>> triggerBehaviours)
         {
             // Get list of candidate trigger handlers
-            if (!TriggerBehaviours.TryGetValue(trigger, out ICollection<TransitioningTriggerBehaviour<TState, TTrigger>> possible))
+            if (!TriggerBehaviours.TryGetValue(trigger, out ICollection<Transition<TState, TTrigger>> possible))
             {
                 triggerBehaviours = null;
                 return false;

@@ -5,7 +5,6 @@ namespace ApprovalProcess.Core
 {
     public class StateMachine<TState, TTrigger>
     {
-
         public StateMachine(TState initialState)
         {
             InitialState = initialState;
@@ -55,7 +54,7 @@ namespace ApprovalProcess.Core
             representativeState.TryFindBehaviour(trigger, out var triggerBehaviours);
 
             var behaviour = triggerBehaviours.First();
-            State = behaviour.DestinationState;
+            State = behaviour.DtState;
         }
 
         private StateRepresentation<TState, TTrigger> GetRepresentation(TState state)
