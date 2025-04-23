@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ApprovalProcess.Core.ConvertActions
+namespace ApprovalProcess.Core.Converts
 {
     public class ConvertContainer
     {
@@ -16,7 +16,7 @@ namespace ApprovalProcess.Core.ConvertActions
             _serviceProvider = serviceProvider;
         }
 
-        public IConvertToTransition<TParameter, TState, TTrigger> Get<TParameter, TState, TTrigger>()
+        public IConvertTo<TParameter, TState, TTrigger> Get<TParameter, TState, TTrigger>()
         {
             var stateType = typeof(TState);
             var triggerType = typeof(TTrigger);
@@ -26,7 +26,7 @@ namespace ApprovalProcess.Core.ConvertActions
             if (_converters.TryGetValue(key, out ConvertConfiguration configuration))
             {
                 configuration.Converter ??= _serviceProvider.GetRequiredService(configuration.Type);
-                if (configuration.Converter is IConvertToTransition<TParameter, TState, TTrigger> converter)
+                if (configuration.Converter is IConvertTo<TParameter, TState, TTrigger> converter)
                 {
                     return converter;
                 }

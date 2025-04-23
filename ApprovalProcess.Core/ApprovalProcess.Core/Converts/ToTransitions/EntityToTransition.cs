@@ -1,8 +1,8 @@
 ﻿using ApprovalProcess.Core.Entities;
 
-namespace ApprovalProcess.Core.ConvertActions
+namespace ApprovalProcess.Core.Converts.ToTransitions
 {
-    public class EntityToTransition : IConvertToTransition<TransitionEntity, string, string>
+    public class EntityToTransition : IConvertTo<TransitionEntity, string, string>
     {
         public Transition<string, string> To(TransitionEntity parameter)
         {

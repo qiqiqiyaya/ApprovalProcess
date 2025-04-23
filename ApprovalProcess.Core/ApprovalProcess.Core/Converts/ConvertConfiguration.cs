@@ -1,6 +1,7 @@
-﻿using System;
+﻿#nullable enable
+using System;
 
-namespace ApprovalProcess.Core.ConvertActions
+namespace ApprovalProcess.Core.Converts
 {
 
     public class ConvertConfiguration

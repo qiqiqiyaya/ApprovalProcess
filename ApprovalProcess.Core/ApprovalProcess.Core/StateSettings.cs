@@ -1,4 +1,5 @@
 ﻿using ApprovalProcess.Core.Actions;
+using ApprovalProcess.Core.Converts.ToStateRepresentations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,14 +9,19 @@ namespace ApprovalProcess.Core
     /// <summary>
     /// 状态表示
     /// </summary>
-    public class StateRepresentation<TState, TTrigger>
+    public class StateSettings<TState, TTrigger>
     {
-        public StateRepresentation(TState state)
+
+        internal StateSettings()
+        {
+        }
+
+        public StateSettings(TState state)
         {
             State = state;
         }
 
-        public StateRepresentation(TState state, IEnumerable<Transition<TState, TTrigger>> transitions)
+        public StateSettings(TState state, IEnumerable<Transition<TState, TTrigger>> transitions)
         {
             State = state;
             TriggerBehaviours = transitions
@@ -24,6 +30,20 @@ namespace ApprovalProcess.Core
         }
 
         public TState State { get; set; }
+
+
+        internal StateSettings<TState, TTrigger> SetState(TState state)
+        {
+            State = state;
+            return this;
+        }
+
+        internal void SetTransitions(IEnumerable<Transition<TState, TTrigger>> transitions)
+        {
+            TriggerBehaviours = transitions
+                .GroupBy(t => t.Trigger)
+                .ToDictionary(g => g.Key, g => (ICollection<Transition<TState, TTrigger>>)g.ToList());
+        }
 
         /// <summary>
         /// 触发器行为
@@ -35,13 +55,14 @@ namespace ApprovalProcess.Core
 
         internal Dictionary<string, ISmAction?> ExitActions { get; } = new Dictionary<string, ISmAction?>();
 
+
         /// <summary>
         /// Accept the specified trigger and transition to the destination state.
         /// </summary>
         /// <param name="trigger">The accepted trigger.</param>
         /// <param name="destinationState">The state that the trigger will cause a transition to.</param>
         /// <returns>The receiver.</returns>
-        public StateRepresentation<TState, TTrigger> Permit(TTrigger trigger, TState destinationState)
+        public StateSettings<TState, TTrigger> Permit(TTrigger trigger, TState destinationState)
         {
             EnforceNotIdentityTransition(destinationState);
             AddTriggerBehaviour(new Transition<TState, TTrigger>(trigger, destinationState));

@@ -24,19 +24,19 @@ namespace ApprovalProcess.Core
         /// <summary>
         /// 状态表达集
         /// </summary>
-        public IDictionary<TState, StateRepresentation<TState, TTrigger>> StateConfiguration { get; set; } =
-            new Dictionary<TState, StateRepresentation<TState, TTrigger>>();
+        public IDictionary<TState, StateSettings<TState, TTrigger>> StateConfiguration { get; set; } =
+            new Dictionary<TState, StateSettings<TState, TTrigger>>();
 
         /// <summary>
         /// 配置一个状态内容
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public StateRepresentation<TState, TTrigger> Configure(TState state)
+        public StateSettings<TState, TTrigger> Configure(TState state)
         {
-            if (!StateConfiguration.TryGetValue(state, out StateRepresentation<TState, TTrigger> result))
+            if (!StateConfiguration.TryGetValue(state, out StateSettings<TState, TTrigger> result))
             {
-                result = new StateRepresentation<TState, TTrigger>(state);
+                result = new StateSettings<TState, TTrigger>(state);
                 StateConfiguration.Add(state, result);
             }
 
@@ -57,11 +57,11 @@ namespace ApprovalProcess.Core
             State = behaviour.DtState;
         }
 
-        private StateRepresentation<TState, TTrigger> GetRepresentation(TState state)
+        private StateSettings<TState, TTrigger> GetRepresentation(TState state)
         {
-            if (!StateConfiguration.TryGetValue(state, out StateRepresentation<TState, TTrigger> result))
+            if (!StateConfiguration.TryGetValue(state, out StateSettings<TState, TTrigger> result))
             {
-                result = new StateRepresentation<TState, TTrigger>(state);
+                result = new StateSettings<TState, TTrigger>(state);
                 StateConfiguration.Add(state, result);
             }
 
