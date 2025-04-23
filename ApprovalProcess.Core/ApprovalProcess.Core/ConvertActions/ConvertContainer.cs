@@ -1,47 +1,38 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ApprovalProcess.Core.ConvertActions
 {
     public class ConvertContainer
     {
-        private readonly IDictionary<string, Type> _convertToType;
-        private readonly IDictionary<string, object> _convertToObj;
+        private readonly Dictionary<string, ConvertConfiguration> _converters;
         private readonly IServiceProvider _serviceProvider;
 
-        public ConvertContainer(Dictionary<string, Type> convertToType, IServiceProvider serviceProvider)
+        public ConvertContainer(Dictionary<string, ConvertConfiguration> converters,
+            IServiceProvider serviceProvider)
         {
-            _convertToType = convertToType;
+            _converters = converters;
             _serviceProvider = serviceProvider;
-            _convertToObj = new Dictionary<string, IToTransition>();
         }
 
-        public IToTransition Get<TState, TTrigger>(Type type)
+        public IConvertToTransition<TParameter, TState, TTrigger> Get<TParameter, TState, TTrigger>()
         {
+            var stateType = typeof(TState);
+            var triggerType = typeof(TTrigger);
+            var parameterType = typeof(TParameter);
 
-            string key = type.FullName;
-            //if (_convertToObj.TryGetValue(key, out IToTransition co))
-            //{
-            //    return co;
-            //}
-
-            if (_convertToType.TryGetValue(key, out Type typeObj))
+            string key = stateType.FullName + triggerType.FullName + parameterType.FullName;
+            if (_converters.TryGetValue(key, out ConvertConfiguration configuration))
             {
-                IToTransition toTransition = (IToTransition)Activator.CreateInstance(typeObj, _serviceProvider);
-                _convertToObj.Add(key, toTransition);
-                return toTransition;
+                configuration.Converter ??= _serviceProvider.GetRequiredService(configuration.Type);
+                if (configuration.Converter is IConvertToTransition<TParameter, TState, TTrigger> converter)
+                {
+                    return converter;
+                }
             }
 
-            throw new Exception($"ConvertToSm not found for type {type.FullName}.");
+            throw new Exception($"ConvertToSm not found for type {key}.");
         }
-
-    }
-
-    public class ConvertInfo
-    {
-        public string Key { get; set; }
-
-
     }
 }

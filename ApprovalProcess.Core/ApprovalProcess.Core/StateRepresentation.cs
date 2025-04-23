@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ApprovalProcess.Core.Actions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,6 +30,10 @@ namespace ApprovalProcess.Core
         /// </summary>
         public IDictionary<TTrigger, ICollection<Transition<TState, TTrigger>>> TriggerBehaviours =
             new Dictionary<TTrigger, ICollection<Transition<TState, TTrigger>>>();
+
+        internal Dictionary<string, ISmAction?> EntryActions { get; } = new Dictionary<string, ISmAction?>();
+
+        internal Dictionary<string, ISmAction?> ExitActions { get; } = new Dictionary<string, ISmAction?>();
 
         /// <summary>
         /// Accept the specified trigger and transition to the destination state.
@@ -75,5 +80,21 @@ namespace ApprovalProcess.Core
                 throw new ArgumentException($"目标状态不能等于原状态 {State}");
             }
         }
+
+        public void EntryAction(string actionName)
+        {
+            //if (!EntryActions.Contains(action))
+            //{
+            //    EntryActions.Add(action);
+            //}
+        }
+
+        //public void EntryAction(ISmAction action)
+        //{
+        //    if (!EntryActions.Contains(action))
+        //    {
+        //        EntryActions.Add(action);
+        //    }
+        //}
     }
 }

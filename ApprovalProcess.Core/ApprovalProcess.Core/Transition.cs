@@ -1,7 +1,4 @@
-﻿using ApprovalProcess.Core.ConvertActions;
-using ApprovalProcess.Core.Entities;
-
-namespace ApprovalProcess.Core
+﻿namespace ApprovalProcess.Core
 {
     /// <summary>
     /// 状态转换触发器
@@ -10,7 +7,6 @@ namespace ApprovalProcess.Core
     /// <typeparam name="TTrigger">触发器</typeparam>
     public class Transition<TState, TTrigger>
     {
-
         public Transition(TTrigger trigger, TState dt)
         {
             Trigger = trigger;
