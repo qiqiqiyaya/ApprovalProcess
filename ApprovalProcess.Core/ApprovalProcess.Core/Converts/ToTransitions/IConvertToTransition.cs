@@ -1,9 +1,9 @@
-﻿namespace ApprovalProcess.Core.Converts
+﻿namespace ApprovalProcess.Core.Converts.ToTransitions
 {
     /// <summary>
     /// 状态转换器
     /// </summary>
-    public interface IConvertTo<in TParameter, TState, TTrigger>
+    public interface IConvertToTransition<in TParameter, TState, TTrigger>
     {
         Transition<TState, TTrigger> To(TParameter parameter);
     }

@@ -1,5 +1,5 @@
 ﻿using ApprovalProcess.Core.Actions;
-using ApprovalProcess.Core.Converts.ToStateRepresentations;
+using ApprovalProcess.Core.Actions.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,11 +38,25 @@ namespace ApprovalProcess.Core
             return this;
         }
 
-        internal void SetTransitions(IEnumerable<Transition<TState, TTrigger>> transitions)
+        internal StateSettings<TState, TTrigger> SetTransitions(IEnumerable<Transition<TState, TTrigger>> transitions)
         {
             TriggerBehaviours = transitions
                 .GroupBy(t => t.Trigger)
                 .ToDictionary(g => g.Key, g => (ICollection<Transition<TState, TTrigger>>)g.ToList());
+
+            return this;
+        }
+
+        internal StateSettings<TState, TTrigger> SetEntryActions(IPipeline<EntryActionContext> entryPipeline)
+        {
+            EntryActions = entryPipeline;
+            return this;
+        }
+
+        internal StateSettings<TState, TTrigger> SetExitActions(IPipeline<ExitActionContext> exitPipeline)
+        {
+            ExitActions = exitPipeline;
+            return this;
         }
 
         /// <summary>
@@ -51,9 +65,10 @@ namespace ApprovalProcess.Core
         public IDictionary<TTrigger, ICollection<Transition<TState, TTrigger>>> TriggerBehaviours =
             new Dictionary<TTrigger, ICollection<Transition<TState, TTrigger>>>();
 
-        internal Dictionary<string, ISmAction?> EntryActions { get; } = new Dictionary<string, ISmAction?>();
 
-        internal Dictionary<string, ISmAction?> ExitActions { get; } = new Dictionary<string, ISmAction?>();
+        internal IPipeline<EntryActionContext> EntryActions { get; set; }
+
+        internal IPipeline<ExitActionContext> ExitActions { get; set; }
 
 
         /// <summary>

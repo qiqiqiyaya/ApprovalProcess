@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ApprovalProcess.Core.Actions
 {
-	public interface IPipeline
+	public class ExitActionContext : ActionContext
 	{
 
 	}

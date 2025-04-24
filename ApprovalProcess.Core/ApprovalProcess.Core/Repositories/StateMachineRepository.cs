@@ -4,19 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ApprovalProcess.Core
+namespace ApprovalProcess.Core.Repositories
 {
-    public class StateMachineManager : IStateMachineManager
+    public class StateMachineRepository : IStateMachineRepository
     {
-
         private StateMachineEntity _approvalProcess = new StateMachineEntity()
         {
             Id = "1",
             InitialState = "Edit",
-            State = "Edit",
-            StateRepresentations = new List<StateRepresentationEntity>()
+            CurrentState = "Edit",
+            StateSettings = new List<StateSettingsEntity>()
             {
-                new StateRepresentationEntity()
+                new StateSettingsEntity()
                 {
                     Id = "2",
                     State = "Edit",
@@ -30,7 +29,7 @@ namespace ApprovalProcess.Core
                         }
                     }
                 },
-                new StateRepresentationEntity()
+                new StateSettingsEntity()
                 {
                     Id = "3",
                     State = "Return",
@@ -44,7 +43,7 @@ namespace ApprovalProcess.Core
                         }
                     }
                 },
-                new StateRepresentationEntity()
+                new StateSettingsEntity()
                 {
                     Id = "4",
                     State = "FirstApprove",
@@ -64,7 +63,7 @@ namespace ApprovalProcess.Core
                         }
                     }
                 },
-                new StateRepresentationEntity()
+                new StateSettingsEntity()
                 {
                     Id = "5",
                     State = "SecondApprove",
@@ -86,22 +85,17 @@ namespace ApprovalProcess.Core
             }
         };
 
+        public StateMachineRepository() { }
 
-        public StateMachineManager()
+        public ValueTask<StateMachineEntity> GetStateMachine(string id)
         {
-
-        }
-
-        public ValueTask<StateMachineEntity> GetSm(string id)
-        {
-
             return new ValueTask<StateMachineEntity>(_approvalProcess);
         }
 
-        public ValueTask<StateRepresentationEntity> GetSr(string id)
+        public ValueTask<StateSettingsEntity> GetStateSettings(string id)
         {
-            var sr = _approvalProcess.StateRepresentations.Single(x => x.Id == id);
-            return new ValueTask<StateRepresentationEntity>(sr);
+            var settings = _approvalProcess.StateSettings.Single(x => x.Id == id);
+            return new ValueTask<StateSettingsEntity>(settings);
         }
     }
 }

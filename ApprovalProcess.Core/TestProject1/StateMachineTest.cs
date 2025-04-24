@@ -88,7 +88,7 @@ namespace TestProject1
 
             _machine.Fire(PeStateTrigger.Submitted);
 
-            Assert.Equal(PeState.FirstApprove, _machine.State);
+            Assert.Equal(PeState.FirstApprove, _machine.CurrentState);
         }
     }
 }

@@ -13,8 +13,8 @@ namespace TestProject1
         [Fact]
         public async Task ToTransition()
         {
-            var smManger = GetRequiredService<IStateMachineManager>();
-            var container = GetRequiredService<ConvertContainer>();
+            var smManger = GetRequiredService<IStateMachineLoader>();
+            var container = GetRequiredService<ToTransitionContainer>();
 
 
             var sr = await smManger.GetSr("2");

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ApprovalProcess.Core.Converts.ToStateRepresentations
+﻿namespace ApprovalProcess.Core.Converts.ToStateSettings
 {
     internal class StateSettingsBuilder<TState, TTrigger> : IStateSettingsBuilder<TState, TTrigger>
     {
@@ -17,15 +15,21 @@ namespace ApprovalProcess.Core.Converts.ToStateRepresentations
             return this;
         }
 
-        public IStateSettingsBuilder<TState, TTrigger> SetTransition(Transition<TState, TTrigger> transition)
+        public IStateSettingsBuilder<TState, TTrigger> SetTransitions(params Transition<TState, TTrigger>[] transitions)
         {
-            _configuration.Transitions.Add(transition);
+            _configuration.Transitions.AddRange(transitions);
             return this;
         }
 
-        public IStateSettingsBuilder<TState, TTrigger> SetTransitions(IEnumerable<Transition<TState, TTrigger>> transitions)
+        public IStateSettingsBuilder<TState, TTrigger> SetEntryActions(params string[] actionName)
         {
-            _configuration.Transitions.AddRange(transitions);
+            _configuration.EntryActionNames.AddRange(actionName);
+            return this;
+        }
+
+        public IStateSettingsBuilder<TState, TTrigger> SetExitActions(params string[] actionName)
+        {
+            _configuration.EntryActionNames.AddRange(actionName);
             return this;
         }
 

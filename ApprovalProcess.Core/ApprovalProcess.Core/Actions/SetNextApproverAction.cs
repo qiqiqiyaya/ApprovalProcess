@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ApprovalProcess.Core.Actions
@@ -8,11 +6,15 @@ namespace ApprovalProcess.Core.Actions
     /// <summary>
     /// 设置下一个状态审批人操作
     /// </summary>
-    public class SetNextApproverAction : SmAction
+    public class SetNextApproverAction : IExitAction
     {
-        public override ValueTask InvokeAsync(ActionContext context, Func<ActionContext, ValueTask> next)
+        public string Id { get; set; }
+
+        public string Name { get; set; }
+
+        public ValueTask InvokeAsync(ExitActionContext context, Func<ExitActionContext, ValueTask> next)
         {
-            throw new NotImplementedException();
+            return next(context);
         }
     }
 }

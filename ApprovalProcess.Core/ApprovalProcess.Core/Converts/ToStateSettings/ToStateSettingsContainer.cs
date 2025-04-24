@@ -2,31 +2,31 @@
 using System;
 using System.Collections.Generic;
 
-namespace ApprovalProcess.Core.Converts
+namespace ApprovalProcess.Core.Converts.ToStateSettings
 {
-    public class ConvertContainer
+    public class ToStateSettingsContainer
     {
-        private readonly Dictionary<string, ConvertConfiguration> _converters;
+        private readonly Dictionary<string, ConvertMap> _converters;
         private readonly IServiceProvider _serviceProvider;
 
-        public ConvertContainer(Dictionary<string, ConvertConfiguration> converters,
+        public ToStateSettingsContainer(Dictionary<string, ConvertMap> converters,
             IServiceProvider serviceProvider)
         {
             _converters = converters;
             _serviceProvider = serviceProvider;
         }
 
-        public IConvertTo<TParameter, TState, TTrigger> Get<TParameter, TState, TTrigger>()
+        public IConvertToStateSettings<TParameter, TState, TTrigger> Get<TParameter, TState, TTrigger>()
         {
             var stateType = typeof(TState);
             var triggerType = typeof(TTrigger);
             var parameterType = typeof(TParameter);
 
             string key = stateType.FullName + triggerType.FullName + parameterType.FullName;
-            if (_converters.TryGetValue(key, out ConvertConfiguration configuration))
+            if (_converters.TryGetValue(key, out ConvertMap configuration))
             {
-                configuration.Converter ??= _serviceProvider.GetRequiredService(configuration.Type);
-                if (configuration.Converter is IConvertTo<TParameter, TState, TTrigger> converter)
+                configuration.ConverterCache ??= _serviceProvider.GetRequiredService(configuration.Type);
+                if (configuration.ConverterCache is IConvertToStateSettings<TParameter, TState, TTrigger> converter)
                 {
                     return converter;
                 }

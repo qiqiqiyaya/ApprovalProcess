@@ -8,7 +8,6 @@ namespace ApprovalProcess.Core
         public StateMachine(TState initialState)
         {
             InitialState = initialState;
-            State = initialState;
         }
 
         /// <summary>
@@ -19,7 +18,7 @@ namespace ApprovalProcess.Core
         /// <summary>
         /// 当前状态
         /// </summary>
-        public TState State { get; private set; }
+        public TState CurrentState { get; private set; }
 
         /// <summary>
         /// 状态表达集
@@ -48,13 +47,13 @@ namespace ApprovalProcess.Core
         /// </summary>
         public void Fire(TTrigger trigger)
         {
-            var source = State;
+            var source = CurrentState;
             var representativeState = GetRepresentation(source);
 
             representativeState.TryFindBehaviour(trigger, out var triggerBehaviours);
 
             var behaviour = triggerBehaviours.First();
-            State = behaviour.DtState;
+            CurrentState = behaviour.DtState;
         }
 
         private StateSettings<TState, TTrigger> GetRepresentation(TState state)
@@ -66,6 +65,26 @@ namespace ApprovalProcess.Core
             }
 
             return result;
+        }
+
+        internal StateMachine() { }
+
+        internal StateMachine<TState, TTrigger> SetInitialState(TState state)
+        {
+            CurrentState = state;
+            return this;
+        }
+
+        internal StateMachine<TState, TTrigger> SetCurrentState(TState currentState)
+        {
+            CurrentState = currentState;
+            return this;
+        }
+
+        internal StateMachine<TState, TTrigger> SetStateConfigurations(Dictionary<TState, StateSettings<TState, TTrigger>> configurations)
+        {
+            StateConfiguration = configurations;
+            return this;
         }
     }
 }

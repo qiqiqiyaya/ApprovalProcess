@@ -12,12 +12,12 @@ namespace ApprovalProcess.Core.Entities
         /// <summary>
         /// 当前状态
         /// </summary>
-        public string State { get; set; }
+        public string CurrentState { get; set; }
 
         /// <summary>
         /// 状态表达集
         /// </summary>
-        public ICollection<StateRepresentationEntity> StateRepresentations { get; set; } = new List<StateRepresentationEntity>();
+        public ICollection<StateSettingsEntity> StateSettings { get; set; } = new List<StateSettingsEntity>();
 
     }
 }

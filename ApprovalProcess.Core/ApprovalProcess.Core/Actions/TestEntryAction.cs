@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 
 namespace ApprovalProcess.Core.Actions
 {
-    public class NotificationSendAction : IExitAction
+    public class TestEntryAction : IEntryAction
     {
         public string Id { get; set; }
-
         public string Name { get; }
 
-        public ValueTask InvokeAsync(ExitActionContext context, Func<ExitActionContext, ValueTask> next)
+        public ValueTask InvokeAsync(EntryActionContext context, Func<EntryActionContext, ValueTask> next)
         {
             return next(context);
         }
