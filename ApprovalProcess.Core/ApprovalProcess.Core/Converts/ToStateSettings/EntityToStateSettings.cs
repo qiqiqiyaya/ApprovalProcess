@@ -8,9 +8,9 @@ namespace ApprovalProcess.Core.Converts.ToStateSettings
 {
     public class EntityToStateSettings : IConvertToStateSettings<StateSettingsEntity, string, string>
     {
-        private readonly TransitionConContainer _container;
+        private readonly ToTransitionConContainer _container;
 
-        public EntityToStateSettings(TransitionConContainer container)
+        public EntityToStateSettings(ToTransitionConContainer container)
         {
             _container = container;
         }

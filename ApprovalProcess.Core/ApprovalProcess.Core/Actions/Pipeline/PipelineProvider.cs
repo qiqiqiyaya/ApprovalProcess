@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 namespace ApprovalProcess.Core.Actions.Pipeline
 {
-	internal class PipelineProvider(
+	public class PipelineProvider(
 		IServiceProvider serviceProvider,
 		Dictionary<string, object> pipelineBuilders)
+		: IPipelineProvider
 	{
 		public IPipeline<TContext> GetPipeline<TContext>(string pipeLineName)
 		{

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ApprovalProcess.Core.Actions
 {
-	public class ExitActionContext : ActionContext
+	public class ExitActionContext(IServiceProvider serviceProvider) : ActionContext(serviceProvider)
 	{
 
 	}

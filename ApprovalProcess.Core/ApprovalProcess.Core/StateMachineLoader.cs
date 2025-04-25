@@ -1,41 +1,43 @@
-﻿using ApprovalProcess.Core.Entities;
-using ApprovalProcess.Core.Repositories;
-using Stateless;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ApprovalProcess.Core.Converts.ToStateMachines;
 using ApprovalProcess.Core.Converts.ToStateSettings;
+using ApprovalProcess.Core.Entities;
+using ApprovalProcess.Core.Repositories;
+using System.Threading.Tasks;
 
 namespace ApprovalProcess.Core
 {
-    public class StateMachineLoader : IStateMachineLoader
-    {
-        private readonly IStateMachineRepository _repository;
-        private readonly ToStateSettingsContainer _toStateSettingsContainer;
-        private IStateMachineLoader _stateMachineLoaderImplementation;
+	public class StateMachineLoader : IStateMachineLoader
+	{
+		private readonly IStateMachineRepository _repository;
+		private readonly ToStateSettingsContainer _toStateSettingsContainer;
+		private readonly ToStateMachineContainer _toStateMachineContainer;
 
-        public StateMachineLoader(IStateMachineRepository repository,
-            ToStateSettingsContainer toStateSettingsContainer)
-        {
-            _repository = repository;
-            _toStateSettingsContainer = toStateSettingsContainer;
-        }
+		public StateMachineLoader(IStateMachineRepository repository,
+			ToStateSettingsContainer toStateSettingsContainer,
+			ToStateMachineContainer toStateMachineContainer)
+		{
+			_repository = repository;
+			_toStateSettingsContainer = toStateSettingsContainer;
+			_toStateMachineContainer = toStateMachineContainer;
+		}
 
-        public ValueTask<StateMachine<string, string>> GetStateMachine(string id)
-        {
+		public async ValueTask<StateMachine<string, string>> GetStateMachine(string id)
+		{
+			var entity = await _repository.GetStateMachine(id);
+			var converter = _toStateMachineContainer.Get<StateMachineEntity, string, string>();
 
-            return new ValueTask<StateMachineEntity>(_approvalProcess);
-        }
+			var stateMachine = converter.To(entity);
+			return stateMachine;
+		}
 
-        public async ValueTask<StateSettings<string, string>> GetStateSettings(string id)
-        {
-            var entity = await _repository.GetStateSettings(id);
+		public async ValueTask<StateSettings<string, string>> GetStateSettings(string id)
+		{
+			var entity = await _repository.GetStateSettings(id);
 
-            var converter = _toStateSettingsContainer.Get<StateSettingsEntity, string, string>();
-            var stateSettings = converter.To(entity);
+			var converter = _toStateSettingsContainer.Get<StateSettingsEntity, string, string>();
+			var stateSettings = converter.To(entity);
 
-            return stateSettings;
-        }
-    }
+			return stateSettings;
+		}
+	}
 }

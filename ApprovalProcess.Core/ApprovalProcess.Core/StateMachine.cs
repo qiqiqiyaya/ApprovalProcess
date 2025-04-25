@@ -1,90 +1,112 @@
-﻿using System.Collections.Generic;
+﻿using ApprovalProcess.Core.Actions;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ApprovalProcess.Core
 {
-    public class StateMachine<TState, TTrigger>
-    {
-        public StateMachine(TState initialState)
-        {
-            InitialState = initialState;
-        }
+	public class StateMachine<TState, TTrigger>
+	{
+		public StateMachine(TState initialState)
+		{
+			InitialState = initialState;
+		}
 
-        /// <summary>
-        /// 初始状态
-        /// </summary>
-        public TState InitialState { get; protected set; }
+		/// <summary>
+		/// 初始状态
+		/// </summary>
+		public TState InitialState { get; protected set; }
 
-        /// <summary>
-        /// 当前状态
-        /// </summary>
-        public TState CurrentState { get; private set; }
+		/// <summary>
+		/// 当前状态
+		/// </summary>
+		public TState CurrentState { get; private set; }
 
-        /// <summary>
-        /// 状态表达集
-        /// </summary>
-        public IDictionary<TState, StateSettings<TState, TTrigger>> StateConfiguration { get; set; } =
-            new Dictionary<TState, StateSettings<TState, TTrigger>>();
+		/// <summary>
+		/// 状态表达集
+		/// </summary>
+		public IDictionary<TState, StateSettings<TState, TTrigger>> StateConfiguration { get; set; } =
+			new Dictionary<TState, StateSettings<TState, TTrigger>>();
 
-        /// <summary>
-        /// 配置一个状态内容
-        /// </summary>
-        /// <param name="state"></param>
-        /// <returns></returns>
-        public StateSettings<TState, TTrigger> Configure(TState state)
-        {
-            if (!StateConfiguration.TryGetValue(state, out StateSettings<TState, TTrigger> result))
-            {
-                result = new StateSettings<TState, TTrigger>(state);
-                StateConfiguration.Add(state, result);
-            }
+		/// <summary>
+		/// 配置一个状态内容
+		/// </summary>
+		/// <param name="state"></param>
+		/// <returns></returns>
+		public StateSettings<TState, TTrigger> Configure(TState state)
+		{
+			if (!StateConfiguration.TryGetValue(state, out StateSettings<TState, TTrigger> result))
+			{
+				result = new StateSettings<TState, TTrigger>(state);
+				StateConfiguration.Add(state, result);
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        /// <summary>
-        /// 触发
-        /// </summary>
-        public void Fire(TTrigger trigger)
-        {
-            var source = CurrentState;
-            var representativeState = GetRepresentation(source);
+		/// <summary>
+		/// 触发
+		/// </summary>
+		public async ValueTask Fire(FireContext<TState, TTrigger> context)
+		{
+			var source = CurrentState;
+			var currentSettings = GetRepresentation(source);
+			context.CurrentSettings = currentSettings;
 
-            representativeState.TryFindBehaviour(trigger, out var triggerBehaviours);
+			currentSettings.TryFindBehaviour(context.Trigger, out var triggerBehaviours);
+			var behaviour = triggerBehaviours.First();
 
-            var behaviour = triggerBehaviours.First();
-            CurrentState = behaviour.DtState;
-        }
+			context.NextSettings = GetRepresentation(behaviour.DtState);
 
-        private StateSettings<TState, TTrigger> GetRepresentation(TState state)
-        {
-            if (!StateConfiguration.TryGetValue(state, out StateSettings<TState, TTrigger> result))
-            {
-                result = new StateSettings<TState, TTrigger>(state);
-                StateConfiguration.Add(state, result);
-            }
+			Exit(context);
+			context.DtState = behaviour.DtState;
+			await Entry(context);
+		}
 
-            return result;
-        }
+		private void Exit(FireContext<TState, TTrigger> context)
+		{
+			var settings = context.CurrentSettings;
+			//settings.Exit();
+		}
 
-        internal StateMachine() { }
+		private async ValueTask Entry(FireContext<TState, TTrigger> context)
+		{
+			var settings = context.NextSettings;
+			await settings.Entry(new EntryActionContext<TState, TTrigger>(context.ServiceProvider,
+				context.Trigger,
+				CurrentState,
+				context.DtState));
+		}
 
-        internal StateMachine<TState, TTrigger> SetInitialState(TState state)
-        {
-            CurrentState = state;
-            return this;
-        }
+		private StateSettings<TState, TTrigger> GetRepresentation(TState state)
+		{
+			if (StateConfiguration.TryGetValue(state, out StateSettings<TState, TTrigger> result))
+			{
+				return result;
+			}
 
-        internal StateMachine<TState, TTrigger> SetCurrentState(TState currentState)
-        {
-            CurrentState = currentState;
-            return this;
-        }
+			throw new Exception($"状态机没有配置状态 {state}");
+		}
 
-        internal StateMachine<TState, TTrigger> SetStateConfigurations(Dictionary<TState, StateSettings<TState, TTrigger>> configurations)
-        {
-            StateConfiguration = configurations;
-            return this;
-        }
-    }
+		internal StateMachine() { }
+
+		internal StateMachine<TState, TTrigger> SetInitialState(TState state)
+		{
+			InitialState = state;
+			return this;
+		}
+
+		internal StateMachine<TState, TTrigger> SetCurrentState(TState currentState)
+		{
+			CurrentState = currentState;
+			return this;
+		}
+
+		internal StateMachine<TState, TTrigger> SetStateConfigurations(Dictionary<TState, StateSettings<TState, TTrigger>> configurations)
+		{
+			StateConfiguration = configurations;
+			return this;
+		}
+	}
 }
