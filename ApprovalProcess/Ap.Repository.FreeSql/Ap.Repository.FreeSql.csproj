@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FreeSql" Version="3.5.203" />
+    <PackageReference Include="FreeSql.DbContext" Version="3.5.203" />
+    <PackageReference Include="FreeSql.Provider.Sqlite" Version="3.5.203" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Ap.Core.Share\Ap.Core.Share.csproj" />
+  </ItemGroup>
+
+</Project>

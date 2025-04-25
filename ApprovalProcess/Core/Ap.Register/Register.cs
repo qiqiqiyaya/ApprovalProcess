@@ -33,7 +33,7 @@ namespace Ap.Register
             service.AddTransient<IStateMachineLoader, StateMachineLoader>();
 
             service.AddTransient<IStateMachineActuator, StateMachineActuator>();
-            service.AddTransient<IStateMachineRepository, StateMachineRepository>();
+            service.AddTransient<IApRepository, ApRepository>();
             service.AddTransient<IPipelineProvider>(serviceProvider =>
             new PipelineProvider(serviceProvider, new Dictionary<string, object>()));
 

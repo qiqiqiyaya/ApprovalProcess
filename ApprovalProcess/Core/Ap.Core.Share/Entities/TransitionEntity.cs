@@ -11,5 +11,9 @@
         /// DestinationState 目标状态
         /// </summary>
         public string DtState { get; set; }
+
+        public string StateSettingsId { get; set; }
+
+        public StateSettingsEntity StateSettings { get; set; }
     }
 }

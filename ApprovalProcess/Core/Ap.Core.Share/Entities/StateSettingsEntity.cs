@@ -8,6 +8,14 @@ namespace Ap.Core.Share.Entities
 
         public ICollection<TransitionEntity> Transitions { get; set; } = new List<TransitionEntity>();
 
-        public ICollection<ExecutableActionEntity> ExecutableActions { get; set; } = new List<ExecutableActionEntity>();
+        /// <summary>
+        /// Action <see cref="ExecutableActionEntity"/> id
+        /// </summary>
+        public string ActionListJson { get; set; }
+
+        public string StateMachineId { get; set; }
+
+        public StateMachineEntity StateMachine { get; set; }
+
     }
 }

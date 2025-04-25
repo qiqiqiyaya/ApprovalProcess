@@ -3,7 +3,7 @@ using Ap.Core.Share.Repositories;
 
 namespace Ap.Repository.Repositories
 {
-    public class StateMachineRepository : IStateMachineRepository
+    public class ApRepository : IApRepository
     {
         //private StateMachineEntity _approvalProcess = new StateMachineEntity()
         //{
@@ -130,7 +130,7 @@ namespace Ap.Repository.Repositories
         //    }
         //};
 
-        public StateMachineRepository() { }
+        public ApRepository() { }
 
         public ValueTask<StateMachineEntity> GetStateMachine(string id)
         {

@@ -9,11 +9,11 @@ namespace Ap.Core
 {
     public class StateMachineLoader : IStateMachineLoader
     {
-        private readonly IStateMachineRepository _repository;
+        private readonly IApRepository _repository;
         private readonly ToStateSettingsContainer _toStateSettingsContainer;
         private readonly ToStateMachineContainer _toStateMachineContainer;
 
-        public StateMachineLoader(IStateMachineRepository repository,
+        public StateMachineLoader(IApRepository repository,
             ToStateSettingsContainer toStateSettingsContainer,
             ToStateMachineContainer toStateMachineContainer)
         {

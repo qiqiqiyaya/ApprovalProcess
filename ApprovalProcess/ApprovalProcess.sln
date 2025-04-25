@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject1", "Test\TestPr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWeb", "Test\TestWeb\TestWeb.csproj", "{9CC3C52E-FF80-7297-9940-07CF20232374}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ap.Repository.FreeSql", "Ap.Repository.FreeSql\Ap.Repository.FreeSql.csproj", "{C290EAED-49B9-4D2D-A842-1A21AD355F3E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{9CC3C52E-FF80-7297-9940-07CF20232374}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CC3C52E-FF80-7297-9940-07CF20232374}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CC3C52E-FF80-7297-9940-07CF20232374}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C290EAED-49B9-4D2D-A842-1A21AD355F3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C290EAED-49B9-4D2D-A842-1A21AD355F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C290EAED-49B9-4D2D-A842-1A21AD355F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C290EAED-49B9-4D2D-A842-1A21AD355F3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,6 +97,7 @@ Global
 		{13CA4B94-74BB-7567-C17B-9CA003B6D6AF} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{76B5C402-BFB6-F6DB-F49E-5D9940F415AA} = {4F3DB5DD-C1CD-4456-B7AE-CAFD60313D28}
 		{9CC3C52E-FF80-7297-9940-07CF20232374} = {4F3DB5DD-C1CD-4456-B7AE-CAFD60313D28}
+		{C290EAED-49B9-4D2D-A842-1A21AD355F3E} = {CA610180-85DE-4F5A-999F-265DC27A83F5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D9A20C47-F2B1-4DC9-BC29-8B857C037C1E}
