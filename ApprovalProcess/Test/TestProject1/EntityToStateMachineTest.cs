@@ -1,5 +1,4 @@
 ﻿using Ap.Core;
-using Core;
 
 namespace TestProject1
 {

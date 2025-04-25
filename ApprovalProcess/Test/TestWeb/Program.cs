@@ -1,9 +1,5 @@
-using ApprovalProcess.Core.Workflows;
-using ApprovalProcess.Service;
-using System.Text.Json.Serialization;
-using ApprovalProcess.Core;
-using ApprovalProcess.Repository;
 using Microsoft.EntityFrameworkCore;
+using Test.Repository;
 
 namespace TestWeb;
 
@@ -13,20 +9,18 @@ public class Program
     {
         var builder = WebApplication.CreateSlimBuilder(args);
 
-        builder.Services.AddDbContext<ApprovalProcessDbContext>(options =>
+        builder.Services.AddDbContext<TestDbContext>(options =>
         {
             options.UseInMemoryDatabase("MyDatabase");
             options.UseSeeding((dbContext, a) =>
             {
-                if (dbContext is ApprovalProcessDbContext db)
+                if (dbContext is TestDbContext db)
                 {
                     SeedData.Initialize(db);
                 }
             });
         });
 
-        builder.Services.AddTransient<IPeService, PeService>();
-        builder.Services.AddTransient<IWorkflow, PeWorkflow>();
 
         var app = builder.Build();
 
