@@ -1,7 +1,7 @@
 ﻿using Ap.Core.Share.Entities;
 using FreeSql.Extensions.EfCoreFluentApi;
 
-namespace Ap.Repository.FreeSql
+namespace Ap.Repository.FreeSql.EntityConfigurations
 {
     public class StateMachineEntityConfiguration : IEntityTypeConfiguration<StateMachineEntity>
     {

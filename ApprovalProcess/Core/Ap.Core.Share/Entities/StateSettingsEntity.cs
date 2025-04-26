@@ -11,7 +11,7 @@ namespace Ap.Core.Share.Entities
         /// <summary>
         /// Action <see cref="ExecutableActionEntity"/> id
         /// </summary>
-        public string ActionListJson { get; set; }
+        public ICollection<StateSettingsActionEntity> Actions { get; set; }
 
         public string StateMachineId { get; set; }
 

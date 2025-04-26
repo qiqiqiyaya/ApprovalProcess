@@ -1,7 +1,7 @@
 ﻿using Ap.Core.Share.Entities;
 using FreeSql.Extensions.EfCoreFluentApi;
 
-namespace Ap.Repository.FreeSql
+namespace Ap.Repository.FreeSql.EntityConfigurations
 {
     public class StateSettingsEntityConfiguration : IEntityTypeConfiguration<StateSettingsEntity>
     {
@@ -11,12 +11,12 @@ namespace Ap.Repository.FreeSql
 
             model.Property(s => s.Id).HasColumnType("TEXT").IsRequired();
             model.Property(s => s.State).HasColumnType("TEXT").IsRequired();
-            model.Property(s => s.ActionListJson).HasColumnType("TEXT").IsRequired();
 
             model.Property(s => s.StateMachineId).HasColumnType("TEXT").IsRequired();
             model.HasOne(s => s.StateMachine).HasForeignKey(s => s.StateMachineId);
 
             model.HasMany(s => s.Transitions).HasForeignKey(s => s.StateSettingsId);
+            model.HasMany(s => s.Actions).HasForeignKey(s => s.StateSettingsId);
         }
     }
 }
