@@ -5,15 +5,14 @@ using Test.Common;
 using Test.Common.Actions.Entry;
 using Test.Common.Actions.Exit;
 
-namespace TestProject1
+namespace ConsoleTest
 {
-    public class BaseTest
+    internal class Program
     {
-        protected readonly IServiceProvider ServiceProvider;
-        public BaseTest()
+        static void Main(string[] args)
         {
-
             ServiceCollection service = new ServiceCollection();
+
             service.AddAp(record =>
             {
                 record.EntryActionConfigs.Add(ExecutableActionNames.TestEntryAction,
@@ -24,14 +23,11 @@ namespace TestProject1
                 record.ExitActionConfigs.Add(ExecutableActionNames.SetNextApprover,
                     new ExecutableActionMap(ExecutableActionNames.SetNextApprover, typeof(SetNextApproverAction)));
             });
-            ServiceProvider = service.BuildServiceProvider();
-            //var dbContext = GetRequiredService<ApprovalProcessDbContext>();
-            //dbContext.Database.EnsureCreated();
-        }
 
-        public T GetRequiredService<T>()
-        {
-            return ServiceProvider.GetRequiredService<T>();
+            var serviceProvider = service.BuildServiceProvider();
+
+
+            //serviceProvider.GetRequiredService<>()
         }
     }
 }

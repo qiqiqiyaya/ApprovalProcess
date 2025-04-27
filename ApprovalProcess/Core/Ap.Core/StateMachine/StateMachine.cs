@@ -16,7 +16,7 @@ namespace Ap.Core.StateMachine
         /// <summary>
         /// 初始状态
         /// </summary>
-        public TState InitialState { get; protected set; }
+        public TState InitialState { get; private set; }
 
         /// <summary>
         /// 当前状态
@@ -26,7 +26,7 @@ namespace Ap.Core.StateMachine
         /// <summary>
         /// 状态表达集
         /// </summary>
-        public IDictionary<TState, StateSettings<TState, TTrigger>> StateConfiguration { get; set; } =
+        internal IDictionary<TState, StateSettings<TState, TTrigger>> StateConfiguration { get; set; } =
             new Dictionary<TState, StateSettings<TState, TTrigger>>();
 
         /// <summary>

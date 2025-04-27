@@ -65,9 +65,9 @@ namespace Ap.Core.StateMachine
         public IDictionary<TTrigger, ICollection<Transition<TState, TTrigger>>> TriggerBehaviours =
             new Dictionary<TTrigger, ICollection<Transition<TState, TTrigger>>>();
 
-        private List<string> EntryActions { get; set; } = new List<string>();
+        internal List<string> EntryActions { get; private set; } = new List<string>();
 
-        private List<string> ExitActions { get; set; } = new List<string>();
+        internal List<string> ExitActions { get; private set; } = new List<string>();
 
 
         /// <summary>

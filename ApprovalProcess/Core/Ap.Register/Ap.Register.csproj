@@ -12,8 +12,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Ap.Core\Ap.Core.csproj" />
-	  <ProjectReference Include="..\Ap.Repository\Ap.Repository.csproj" />
+		<ProjectReference Include="..\Ap.Core.Share\Ap.Core.Share.csproj" />
+		<ProjectReference Include="..\Ap.Core\Ap.Core.csproj" />
+		<ProjectReference Include="..\Ap.Repository.FreeSql\Ap.Repository.FreeSql.csproj" />
 	</ItemGroup>
 
 </Project>

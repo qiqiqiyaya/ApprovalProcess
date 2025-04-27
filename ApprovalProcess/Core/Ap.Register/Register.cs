@@ -2,21 +2,21 @@
 using Ap.Core.Actions;
 using Ap.Core.Actions.Pipeline;
 using Ap.Core.Converts;
+using Ap.Core.Converts.ToEntity;
 using Ap.Core.Converts.ToStateMachines;
 using Ap.Core.Converts.ToStateSettings;
 using Ap.Core.Converts.ToTransitions;
 using Ap.Core.Share.Entities;
 using Ap.Core.Share.Repositories;
-using Ap.Repository.Repositories;
+using Ap.Repository.FreeSql.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Ap.Register
 {
     public static class Register
     {
-        public static void AddAp(this IServiceCollection service)
+        public static void AddAp(this IServiceCollection service, Action<ExecutableActionRecord> options)
         {
-
             //service.AddDbContext<ApprovalProcessDbContext>(options =>
             //{
             //    options.UseInMemoryDatabase("MyDatabase");
@@ -29,31 +29,14 @@ namespace Ap.Register
             //    });
 
             //});
-
             service.AddTransient<IStateMachineLoader, StateMachineLoader>();
-
             service.AddTransient<IStateMachineActuator, StateMachineActuator>();
             service.AddTransient<IApRepository, ApRepository>();
             service.AddTransient<IPipelineProvider>(serviceProvider =>
             new PipelineProvider(serviceProvider, new Dictionary<string, object>()));
 
             service.AddConverts();
-            service.AddExecutableActions();
-        }
-
-        private static void AddExecutableActions(this IServiceCollection service)
-        {
-            Dictionary<string, ExecutableActionMap> exitActionConfigs = new Dictionary<string, ExecutableActionMap>();
-            //exitActionConfigs.Add(ExecutableActionNames.SetNextApprover, new ExecutableActionMap(ExecutableActionNames.SetNextApprover, typeof(SetNextApproverAction)));
-            //exitActionConfigs.Add(ExecutableActionNames.NotificationSend, new ExecutableActionMap(ExecutableActionNames.NotificationSend, typeof(NotificationSendAction)));
-
-            Dictionary<string, ExecutableActionMap> entryActionConfigs = new Dictionary<string, ExecutableActionMap>();
-            //entryActionConfigs.Add(ExecutableActionNames.TestEntryAction, new ExecutableActionMap(ExecutableActionNames.TestEntryAction, typeof(TestEntryAction)));
-
-            //service.AddTransient<SetNextApproverAction>();
-            //service.AddTransient<NotificationSendAction>();
-            //service.AddTransient<TestEntryAction>();
-            service.AddSingleton(serviceProvider => new ExecutableActionContainer(entryActionConfigs, exitActionConfigs));
+            service.AddEntryAction(options);
         }
 
         private static void AddConverts(this IServiceCollection service)
@@ -93,7 +76,24 @@ namespace Ap.Register
             service.AddSingleton<EntityToStateMachine>();
             service.AddSingleton(serviceProvider => new ToStateMachineContainer(stateMachineConverters, serviceProvider));
 
+            Dictionary<string, ConvertMap> entityConverters = new Dictionary<string, ConvertMap>();
+            string key3 = typeof(string).FullName + typeof(string).FullName;
+            entityConverters.Add(key3, new ConvertMap
+            {
+                Key = key3,
+                Type = typeof(StringToEntity),
+            });
+            service.AddSingleton<StringToEntity>();
+            service.AddSingleton(serviceProvider => new EntityConvertContainer(entityConverters, serviceProvider));
+        }
 
+        private static void AddEntryAction(this IServiceCollection service, Action<ExecutableActionRecord> options)
+        {
+            var configs = new ExecutableActionRecord(new Dictionary<string, ExecutableActionMap>(),
+                new Dictionary<string, ExecutableActionMap>());
+            options.Invoke(configs);
+
+            service.AddSingleton(new ExecutableActionContainer(configs.EntryActionConfigs, configs.ExitActionConfigs));
         }
     }
 }
