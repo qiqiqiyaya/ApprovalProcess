@@ -34,13 +34,14 @@ namespace Ap.Core.Converts.ToStateSettings
 
             foreach (var action in actions)
             {
-                if (action.Type == ExecutableActionType.Entry)
+                var val = action.Value;
+                if (val.Type == ExecutableActionType.Entry)
                 {
-                    entryActions.Add(action.Name);
+                    entryActions.Add(val.Name);
                 }
                 else
                 {
-                    exitActions.Add(action.Name);
+                    exitActions.Add(val.Name);
                 }
             }
 

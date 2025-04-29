@@ -7,36 +7,27 @@ using Ap.Core.StateMachine;
 
 namespace Ap.Core
 {
-    public class StateMachineLoader : IStateMachineLoader
+    public class StateMachineLoader(
+        IApRepository repository,
+        ToStateSettingsContainer toStateSettingsContainer,
+        ToStateMachineContainer toStateMachineContainer)
+        : IStateMachineLoader
     {
-        private readonly IApRepository _repository;
-        private readonly ToStateSettingsContainer _toStateSettingsContainer;
-        private readonly ToStateMachineContainer _toStateMachineContainer;
-
-        public StateMachineLoader(IApRepository repository,
-            ToStateSettingsContainer toStateSettingsContainer,
-            ToStateMachineContainer toStateMachineContainer)
-        {
-            _repository = repository;
-            _toStateSettingsContainer = toStateSettingsContainer;
-            _toStateMachineContainer = toStateMachineContainer;
-        }
-
         public async ValueTask<StateMachine<string, string>> GetStateMachine(string id)
         {
-            var entity = await _repository.GetStateMachine(id);
-            var converter = _toStateMachineContainer.Get<StateMachineEntity, string, string>();
+            var entity = await repository.GetStateMachine(id);
+            var converter = toStateMachineContainer.Get<StateMachineEntity, string, string>();
 
-            var stateMachine = converter.To(entity);
+            var stateMachine = await converter.To(entity);
             return stateMachine;
         }
 
         public async ValueTask<StateSettings<string, string>> GetStateSettings(string id)
         {
-            var entity = await _repository.GetStateSettings(id);
+            var entity = await repository.GetStateSettings(id);
 
-            var converter = _toStateSettingsContainer.Get<StateSettingsEntity, string, string>();
-            var stateSettings = converter.To(entity);
+            var converter = toStateSettingsContainer.Get<StateSettingsEntity, string, string>();
+            var stateSettings = await converter.To(entity);
 
             return stateSettings;
         }

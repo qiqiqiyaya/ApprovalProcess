@@ -10,10 +10,11 @@
     <PackageReference Include="FreeSql" Version="3.5.203" />
     <PackageReference Include="FreeSql.DbContext" Version="3.5.203" />
     <PackageReference Include="FreeSql.Provider.Sqlite" Version="3.5.203" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Ap.Core.Share\Ap.Core.Share.csproj" />
+    <ProjectReference Include="..\Ap.Core.Share\Ap.Core.Share.csproj" />
   </ItemGroup>
 
 </Project>

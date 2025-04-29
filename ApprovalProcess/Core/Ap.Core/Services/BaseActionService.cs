@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 namespace Ap.Core.Services
 {
     public class BaseActionService(
-        IApRepository apRepository,
-        ILogger<BaseActionService> logger)
+        IApRepository apRepository)
     {
         private static Dictionary<string, ExecutableActionEntity> _nameContainer;
         private static Dictionary<string, ExecutableActionEntity> _idContainer;
@@ -19,9 +18,16 @@ namespace Ap.Core.Services
 
         protected virtual async ValueTask<ActionResult> GetAllAsync()
         {
-            if (_nameContainer == null)
+            await CheckContainer();
+            return new ActionResult(_nameContainer, _idContainer);
+        }
+
+        protected virtual async ValueTask CheckContainer()
+        {
+            if (_nameContainer != null) return;
+            await SingleAsync(async () =>
             {
-                await SingleAsync(async () =>
+                if (_nameContainer == null)
                 {
                     var list = await apRepository.GetExecutableActionAllAsync();
 
@@ -32,10 +38,8 @@ namespace Ap.Core.Services
                         _nameContainer.Add(entity.Name, entity);
                         _idContainer.Add(entity.Id, entity);
                     }
-                });
-            }
-
-            return new ActionResult(_nameContainer, _idContainer);
+                }
+            });
         }
 
         protected virtual async ValueTask SingleAsync(Func<ValueTask> func)
@@ -45,24 +49,20 @@ namespace Ap.Core.Services
                 await SemaphoreSlim.WaitAsync();
                 await func();
             }
-            catch (Exception e)
-            {
-                logger.LogError(e, "ExecutableActionService SingleAsync");
-            }
             finally
             {
                 SemaphoreSlim.Release();
             }
         }
 
-        protected virtual bool Check(string name)
+        protected virtual bool IsExists(string name)
         {
-            return _nameContainer.ContainsKey(name);
+            return _nameContainer!.ContainsKey(name);
         }
 
         protected void AddAction(ExecutableActionEntity entity)
         {
-            _nameContainer.Add(entity.Name, entity);
+            _nameContainer!.Add(entity.Name, entity);
         }
     }
 }

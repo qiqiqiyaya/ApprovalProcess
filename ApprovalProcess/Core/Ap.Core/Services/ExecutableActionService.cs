@@ -1,53 +1,44 @@
 ﻿using Ap.Core.Share.Entities;
 using Ap.Core.Share.Repositories;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Ap.Core.Services
 {
-    internal class ExecutableActionService(
-        IApRepository apRepository,
-        ILogger<ExecutableActionService> logger)
-        : BaseActionService(apRepository, logger), IExecutableActionService
+    public class ExecutableActionService(
+        IApRepository apRepository)
+        : BaseActionService(apRepository), IExecutableActionService
     {
         private readonly IApRepository _apRepository = apRepository;
 
-        public async ValueTask<List<ExecutableActionEntity>> GetListByNameAsync(params string[] actionNames)
+        public async ValueTask<Dictionary<string, ExecutableActionEntity>> GetListByNameAsync(params string[] actionNames)
         {
             var container = await GetAllAsync();
 
-            List<ExecutableActionEntity> actions = new List<ExecutableActionEntity>();
+            var actions = new Dictionary<string, ExecutableActionEntity>();
             foreach (var name in actionNames)
             {
-                var act = container.NameContainer[name];
-                if (act == null)
+                if (container.NameContainer.TryGetValue(name, out var act))
                 {
-                    throw new Exception($"Can't get action {name}");
+                    actions.Add(name, act);
                 }
-
-                actions.Add(act);
             }
 
             return actions;
         }
 
-        public async ValueTask<List<ExecutableActionEntity>> GetListByIdAsync(params string[] ids)
+        public async ValueTask<Dictionary<string, ExecutableActionEntity>> GetListByIdAsync(params string[] ids)
         {
             var container = await GetAllAsync();
 
-            List<ExecutableActionEntity> actions = new List<ExecutableActionEntity>();
+            var actions = new Dictionary<string, ExecutableActionEntity>();
             foreach (var id in ids)
             {
-                var act = container.IdContainer[id];
-                if (act == null)
+                if (container.IdContainer.TryGetValue(id, out var act))
                 {
-                    throw new Exception($"Can't get action {id}");
+                    actions.Add(id, act);
                 }
-
-                actions.Add(act);
             }
 
             return actions;
@@ -55,20 +46,23 @@ namespace Ap.Core.Services
 
         public async ValueTask<ExecutableActionEntity> AddAsync(string name, string description, ExecutableActionType type)
         {
-            if (Check(name))
-            {
-
-            }
+            await CheckContainer();
 
             var entity = new ExecutableActionEntity
             {
                 Name = name,
                 Description = description,
-                Type = type
+                Type = type,
+                Id = Guid.NewGuid().ToString("N")
             };
 
             await SingleAsync(async () =>
             {
+                if (IsExists(name))
+                {
+                    return;
+                }
+
                 entity = await _apRepository.AddActionAsync(entity);
                 AddAction(entity);
             });
