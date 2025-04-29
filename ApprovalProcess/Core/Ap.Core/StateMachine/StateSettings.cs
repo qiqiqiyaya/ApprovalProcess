@@ -123,12 +123,10 @@ namespace Ap.Core.StateMachine
             await pipeline.RunAsync(context);
         }
 
-        public void EntryAction(string actionName)
+        public StateSettings<TState, TTrigger> OnEntry(string actionName)
         {
-            //if (!EntryActions.Contains(action))
-            //{
-            //    EntryActions.Add(action);
-            //}
+            EntryActions.Add(actionName);
+            return this;
         }
 
         //public void EntryAction(ISmAction action)

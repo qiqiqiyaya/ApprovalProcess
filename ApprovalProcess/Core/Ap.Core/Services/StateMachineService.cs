@@ -52,7 +52,7 @@ namespace Ap.Core.Services
                     {
                         Id = Guid.NewGuid().ToString("N"),
                         StateSettingsId = settingEntity.Id,
-                        ExecutableActionId = executableAction.Id,
+                        ExecutableActionId = executableAction.Value.Id,
                     });
                 }
 

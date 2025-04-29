@@ -1,4 +1,5 @@
-﻿using Ap.Core.StateMachine;
+﻿using Ap.Core.Services;
+using Ap.Core.StateMachine;
 
 namespace TestProject1
 {
@@ -53,36 +54,38 @@ namespace TestProject1
         Rewrite,
     }
 
-    public class StateMachineTest
+    public class OnEntryTest : BaseTest
     {
-
         [Fact]
-        public void StateMachine_InitialState_Test()
+        public async Task OnEntryActionNameTest()
         {
-
-            var _machine = new StateMachine<PeState, PeStateTrigger>(PeState.Edit);
+            var machine = new StateMachine<string, string>("Edit");
 
             // 编辑 -> 提交
-            _machine.Configure(PeState.Edit)
-                .Permit(PeStateTrigger.Submitted, PeState.FirstApprove);
+            machine.Configure("Edit")
+                .Permit("Submitted", "FirstApprove");
 
             // 退回后，重写 -> 编辑状态
-            _machine.Configure(PeState.Return)
-                .Permit(PeStateTrigger.Rewrite, PeState.Edit);
+            machine.Configure("Return")
+                .Permit("Rewrite", "Edit");
 
             // 第一级审批
-            _machine.Configure(PeState.FirstApprove)
-                .Permit(PeStateTrigger.FirstApprovedPass, PeState.SecondApprove)
-                .Permit(PeStateTrigger.Reject, PeState.Return);
+            machine.Configure("FirstApprove")
+                .OnEntry("TestEntryAction")
+                .Permit("FirstApprovedPass", "SecondApprove")
+                .Permit("Reject", "Return");
 
             // 第二级审批
-            _machine.Configure(PeState.SecondApprove)
-                .Permit(PeStateTrigger.SecondApprovedPass, PeState.Completed)
-                .Permit(PeStateTrigger.Reject, PeState.Return);
+            machine.Configure("SecondApprove")
+                .OnEntry("TestEntryAction")
+                .Permit("SecondApprovedPass", "Completed")
+                .Permit("Reject", "Return");
 
-            //_machine.Fire(PeStateTrigger.Submitted);
+            //var stateMachineService = GetRequiredService<IStateMachineService>();
+            //await stateMachineService.SaveAsync(machine);
+            await machine.Fire(new FireContext<string, string>(ServiceProvider, "Submitted"));
 
-            Assert.Equal(PeState.FirstApprove, _machine.CurrentState);
+            Assert.Equal("FirstApprove", machine.CurrentState);
         }
     }
 }
