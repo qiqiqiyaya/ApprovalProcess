@@ -4,14 +4,16 @@ using Ap.Core.Share.Entities;
 
 namespace Ap.Core.Share.Repositories
 {
-    public interface IApRepository
-    {
-        ValueTask<StateMachineEntity> GetStateMachine(string id);
+	public interface IApRepository
+	{
+		ValueTask<StateMachineEntity> GetStateMachine(string id);
 
-        ValueTask<StateSettingsEntity> GetStateSettings(string id);
+		ValueTask<StateSettingsEntity> GetStateSettings(string id);
 
-        ValueTask<List<ExecutableActionEntity>> GetExecutableActionAllAsync();
+		ValueTask<List<ExecutableActionEntity>> GetExecutableActionAllAsync();
 
-        ValueTask<ExecutableActionEntity> AddActionAsync(ExecutableActionEntity entity);
-    }
+		ValueTask<ExecutableActionEntity> AddActionAsync(ExecutableActionEntity entity);
+		ValueTask<StateMachineEntity> SaveAsync(StateMachineEntity entity);
+
+	}
 }

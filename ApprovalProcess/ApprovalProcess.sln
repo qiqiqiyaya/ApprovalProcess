@@ -31,6 +31,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ap.Repository.FreeSql", "Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "Test\ConsoleTest\ConsoleTest.csproj", "{2631460B-AF42-4E99-99AF-DDC0A9EEDA7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ap.Repository.EfSqlserver", "Core\Ap.Repository.EfSqlserver\Ap.Repository.EfSqlserver.csproj", "{BA58F9E1-AFA6-4307-909F-370A19C2750D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ap.Repository.Migration", "Core\Ap.Repository.Migration\Ap.Repository.Migration.csproj", "{C4534D27-7B14-4576-86CF-CFEC8B8586F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +85,14 @@ Global
 		{2631460B-AF42-4E99-99AF-DDC0A9EEDA7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2631460B-AF42-4E99-99AF-DDC0A9EEDA7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2631460B-AF42-4E99-99AF-DDC0A9EEDA7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA58F9E1-AFA6-4307-909F-370A19C2750D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA58F9E1-AFA6-4307-909F-370A19C2750D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA58F9E1-AFA6-4307-909F-370A19C2750D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA58F9E1-AFA6-4307-909F-370A19C2750D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4534D27-7B14-4576-86CF-CFEC8B8586F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4534D27-7B14-4576-86CF-CFEC8B8586F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4534D27-7B14-4576-86CF-CFEC8B8586F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4534D27-7B14-4576-86CF-CFEC8B8586F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +110,8 @@ Global
 		{9CC3C52E-FF80-7297-9940-07CF20232374} = {4F3DB5DD-C1CD-4456-B7AE-CAFD60313D28}
 		{55D36012-73B6-35CB-91A0-5574CCEAE06C} = {CA610180-85DE-4F5A-999F-265DC27A83F5}
 		{2631460B-AF42-4E99-99AF-DDC0A9EEDA7C} = {4F3DB5DD-C1CD-4456-B7AE-CAFD60313D28}
+		{BA58F9E1-AFA6-4307-909F-370A19C2750D} = {CA610180-85DE-4F5A-999F-265DC27A83F5}
+		{C4534D27-7B14-4576-86CF-CFEC8B8586F3} = {CA610180-85DE-4F5A-999F-265DC27A83F5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D9A20C47-F2B1-4DC9-BC29-8B857C037C1E}

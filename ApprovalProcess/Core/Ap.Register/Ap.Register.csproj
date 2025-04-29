@@ -9,12 +9,13 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Ap.Core.Share\Ap.Core.Share.csproj" />
 		<ProjectReference Include="..\Ap.Core\Ap.Core.csproj" />
-		<ProjectReference Include="..\Ap.Repository.FreeSql\Ap.Repository.FreeSql.csproj" />
 	</ItemGroup>
 
 </Project>

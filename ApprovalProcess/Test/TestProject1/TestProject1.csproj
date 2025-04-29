@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Ap.Register\Ap.Register.csproj" />
+    <ProjectReference Include="..\..\Core\Ap.Repository.EfSqlserver\Ap.Repository.EfSqlserver.csproj" />
     <ProjectReference Include="..\Test.Common\Test.Common.csproj" />
   </ItemGroup>
 
