@@ -8,7 +8,6 @@ using Ap.Core.Converts.ToStateSettings;
 using Ap.Core.Converts.ToTransitions;
 using Ap.Core.Services;
 using Ap.Core.Share.Entities;
-using Ap.Core.Share.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 
@@ -16,20 +15,11 @@ namespace Ap.Register
 {
 	public static class Register
 	{
-		public static void AddAp(this IServiceCollection service, Action<ExecutableActionRecord>? options = null)
+		public static void AddAp(this IServiceCollection service, Action<ApRegisterOption>? optionAction = null)
 		{
-			//service.AddDbContext<ApprovalProcessDbContext>(options =>
-			//{
-			//    options.UseInMemoryDatabase("MyDatabase");
-			//    options.UseSeeding((dbContext, a) =>
-			//    {
-			//        if (dbContext is ApprovalProcessDbContext db)
-			//        {
-			//            SeedData.Initialize(db);
-			//        }
-			//    });
+			var options = new ApRegisterOption();
+			optionAction?.Invoke(options);
 
-			//});
 			service.AddTransient<IStateMachineLoader, StateMachineLoader>();
 			service.AddTransient<IStateMachineService, StateMachineService>();
 			service.AddTransient<IStateMachineActuator, StateMachineActuator>();
@@ -38,8 +28,8 @@ namespace Ap.Register
 			service.AddTransient<IPipelineProvider>(serviceProvider =>
 			new PipelineProvider(serviceProvider, new Dictionary<string, object>()));
 
+			service.AddSingleton(new ExecutableActionContainer(options.EntryActions, options.ExitActions));
 			service.AddConverts();
-			service.AddEntryAction(options);
 			service.AddLogging();
 		}
 
@@ -88,15 +78,6 @@ namespace Ap.Register
 			});
 			service.AddSingleton<StringToEntity>();
 			service.AddSingleton(serviceProvider => new EntityConvertContainer(entityConverters, serviceProvider));
-		}
-
-		private static void AddEntryAction(this IServiceCollection service, Action<ExecutableActionRecord>? options)
-		{
-			var configs = new ExecutableActionRecord(new Dictionary<string, ExecutableActionMap>(),
-				new Dictionary<string, ExecutableActionMap>());
-			options?.Invoke(configs);
-
-			service.AddSingleton(new ExecutableActionContainer(configs.EntryActionConfigs, configs.ExitActionConfigs));
 		}
 
 	}

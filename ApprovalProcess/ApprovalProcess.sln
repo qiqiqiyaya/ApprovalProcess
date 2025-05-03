@@ -35,6 +35,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ap.Repository.EfSqlserver",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ap.Repository.Migration", "Core\Ap.Repository.Migration\Ap.Repository.Migration.csproj", "{C4534D27-7B14-4576-86CF-CFEC8B8586F3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Flow", "Flow", "{9E8DC532-A936-4A5B-A4D5-E09299954FF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ap.Flow.Share", "Flow\Ap.Flow.Share\Ap.Flow.Share.csproj", "{D0F9A298-2469-43F4-9E3C-4F8ACAA42E2D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +97,10 @@ Global
 		{C4534D27-7B14-4576-86CF-CFEC8B8586F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4534D27-7B14-4576-86CF-CFEC8B8586F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4534D27-7B14-4576-86CF-CFEC8B8586F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0F9A298-2469-43F4-9E3C-4F8ACAA42E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0F9A298-2469-43F4-9E3C-4F8ACAA42E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0F9A298-2469-43F4-9E3C-4F8ACAA42E2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0F9A298-2469-43F4-9E3C-4F8ACAA42E2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,6 +120,7 @@ Global
 		{2631460B-AF42-4E99-99AF-DDC0A9EEDA7C} = {4F3DB5DD-C1CD-4456-B7AE-CAFD60313D28}
 		{BA58F9E1-AFA6-4307-909F-370A19C2750D} = {CA610180-85DE-4F5A-999F-265DC27A83F5}
 		{C4534D27-7B14-4576-86CF-CFEC8B8586F3} = {CA610180-85DE-4F5A-999F-265DC27A83F5}
+		{D0F9A298-2469-43F4-9E3C-4F8ACAA42E2D} = {9E8DC532-A936-4A5B-A4D5-E09299954FF5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D9A20C47-F2B1-4DC9-BC29-8B857C037C1E}
