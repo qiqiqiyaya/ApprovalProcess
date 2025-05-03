@@ -7,5 +7,16 @@
         public StateSettingsEntity StateSettings { get; set; }
 
         public string ExecutableActionId { get; set; }
+
+
+        /// <summary>
+        /// Configuration类型
+        /// </summary>
+        public string ConfigurationType { get; set; }
+
+        /// <summary>
+        /// Action配置Json
+        /// </summary>
+        public string Configuration { get; set; }
     }
 }
