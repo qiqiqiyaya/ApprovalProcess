@@ -31,6 +31,7 @@ namespace Ap.Flow.Share.Actions.Entry.NextApprover
             switch (_configuration.Rule)
             {
                 case ApprovalRule.ApprovedByOrg:
+                    context.GetRequiredService<IApprovedByOrgService>()
                     break;
                 case ApprovalRule.CustomApproval:
                     break;

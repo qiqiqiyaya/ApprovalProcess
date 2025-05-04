@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ap.Core.Actions.Entry;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +18,9 @@ namespace Ap.Flow.Share.Actions.Entry.NextApprover
             // Implementation of some method
         }
 
-        public ValueTask InvokeAsync()
+        public ValueTask InvokeAsync(EntryActionContext<string, string> context)
         {
-            throw new NotImplementedException();
+
         }
     }
 }
