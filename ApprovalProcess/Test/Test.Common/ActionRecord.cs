@@ -1,4 +1,4 @@
-﻿using Ap.Core.Share.Entities;
+﻿using Sm.Share.Entities;
 
 namespace Test.Common
 {

@@ -1,11 +1,7 @@
-﻿using Ap.Core.Actions;
-using Ap.Flow.Share.Actions.Entry.NextApprover;
-using Ap.Register;
-using Ap.Repository.EfSqlserver;
+﻿using Ap.Share.Actions.Entry.NextApprover;
 using Microsoft.Extensions.DependencyInjection;
-using Test.Common;
-using Test.Common.Actions.Entry;
-using Test.Common.Actions.Exit;
+using Sm.Register;
+using Sm.Repository.EfSqlserver;
 
 namespace TestProject1
 {
@@ -19,7 +15,7 @@ namespace TestProject1
             {
                 option.AddEntryAction<NextApproverAction, string, string>();
             });
-            service.AddEfSqlserver();
+            service.AddSmEfSqlserver();
             ServiceProvider = service.BuildServiceProvider();
         }
 

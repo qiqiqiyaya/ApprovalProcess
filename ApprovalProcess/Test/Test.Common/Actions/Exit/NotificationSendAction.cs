@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Ap.Core.Actions.Exit;
+using Sm.Core.Actions.Exit;
 
 namespace Test.Common.Actions.Exit
 {
