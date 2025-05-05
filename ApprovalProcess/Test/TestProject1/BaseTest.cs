@@ -1,6 +1,5 @@
-﻿using Ap.Share.Actions.Entry.NextApprover;
+﻿using Ap.Register;
 using Microsoft.Extensions.DependencyInjection;
-using Sm.Register;
 using Sm.Repository.EfSqlserver;
 
 namespace TestProject1
@@ -11,11 +10,8 @@ namespace TestProject1
         public BaseTest()
         {
             ServiceCollection service = new ServiceCollection();
-            service.AddAp(option =>
-            {
-                option.AddEntryAction<NextApproverAction, string, string>();
-            });
-            service.AddSmEfSqlserver();
+            service.AddAp();
+            service.AddSmSqlserverRepository();
             ServiceProvider = service.BuildServiceProvider();
         }
 

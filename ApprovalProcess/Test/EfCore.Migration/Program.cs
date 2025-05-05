@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Ap.Register;
+using Ap.Repository.EfSqlserver;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Sm.Register;
-using SmRepository.EfSqlserver;
+using Sm.Repository.EfSqlserver;
 
-namespace Sm.Repository.Migration
+namespace EfCore.Migration
 {
     internal class Program
     {
@@ -11,7 +13,7 @@ namespace Sm.Repository.Migration
         {
             ServiceCollection service = new ServiceCollection();
             service.AddAp();
-            service.AddEfSqlserver();
+            service.AddSmSqlserverRepository();
             var serviceProvider = service.BuildServiceProvider();
 
             using (var scope = serviceProvider.CreateScope())
@@ -19,9 +21,19 @@ namespace Sm.Repository.Migration
                 var db = scope.ServiceProvider.GetRequiredService<ApDbContext>();
                 Console.WriteLine("开始迁移");
                 await db.Database.MigrateAsync();
+                SeedData.Initialize(db);
+
                 Console.WriteLine("数据库迁移完成");
             }
 
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<SmDbContext>();
+                Console.WriteLine("开始迁移");
+                await db.Database.MigrateAsync();
+
+                Console.WriteLine("数据库迁移完成");
+            }
         }
     }
 }

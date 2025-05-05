@@ -17,11 +17,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\ApprovalProcess\Ap.Share\Ap.Share.csproj" />
-		<ProjectReference Include="..\..\StateMachine\Sm.Core\Sm.Core.csproj" />
+		<ProjectReference Include="..\..\ApprovalProcess\Ap.Register\Ap.Register.csproj" />
 		<ProjectReference Include="..\..\StateMachine\Sm.Register\Sm.Register.csproj" />
 		<ProjectReference Include="..\..\StateMachine\Sm.Repository.EfSqlserver\Sm.Repository.EfSqlserver.csproj" />
-		<ProjectReference Include="..\Test.Common\Test.Common.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

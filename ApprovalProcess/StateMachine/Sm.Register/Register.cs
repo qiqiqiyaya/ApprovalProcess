@@ -14,7 +14,7 @@ namespace Sm.Register
 {
     public static class Register
     {
-        public static void AddAp(this IServiceCollection service, Action<ApRegisterOption>? optionAction = null)
+        public static void AddSm(this IServiceCollection service, Action<ApRegisterOption>? optionAction = null)
         {
             var options = new ApRegisterOption();
             optionAction?.Invoke(options);

@@ -7,7 +7,7 @@ namespace Sm.Repository.EfSqlserver
 {
     public static class SmRepositoryEfSqlserverRegister
     {
-        public static void AddSmEfSqlserver(this IServiceCollection service)
+        public static void AddSmSqlserverRepository(this IServiceCollection service)
         {
             service.AddTransient<ISmRepository, SmRepository>();
             service.AddDbContext<SmDbContext>((serviceProvider, options) =>
@@ -16,13 +16,6 @@ namespace Sm.Repository.EfSqlserver
                 options.LogTo(msg => logger.LogInformation(msg));
                 options.EnableSensitiveDataLogging();
                 options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=ApDb;User Id=sa;Password=123;");
-                //options.UseSeeding((dbContext, a) =>
-                //{
-                //	if (dbContext is ApprovalProcessDbContext db)
-                //	{
-                //		SeedData.Initialize(db);
-                //	}
-                //});
                 options.EnableDetailedErrors();
             });
         }

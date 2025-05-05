@@ -1,4 +1,4 @@
-﻿using Ap.Share.Actions.Entry.NextApprover;
+﻿using Ap.Core.Actions.Entry.NextApprover;
 using Sm.Core.StateMachine;
 
 namespace TestProject1

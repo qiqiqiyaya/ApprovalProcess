@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Test.Common;
-using Organization = Test.Common.Organization;
-
-namespace TestProject1
+﻿namespace TestProject1
 {
     public class EmployeeApFlowTest : BaseTest
     {
@@ -17,24 +9,24 @@ namespace TestProject1
         {
             var sm = StateMachineTestData.TwoLevelApprovalProcess();
 
-            var org = new Organization()
-            {
-                Name = "测试组织",
-                Code = "1",
-                ParentCode = null
-            };
+            //var org = new Organization()
+            //{
+            //    Name = "测试组织",
+            //    Code = "1",
+            //    ParentCode = null
+            //};
 
-            var emp = new Employee()
-            {
-                Code = "1",
-                //Organization = org
-            };
+            //var emp = new Employee()
+            //{
+            //    Code = "1",
+            //    //Organization = org
+            //};
 
-            var flow = new EmployeeCreateApFlow()
-            {
-                Employee = emp,
-                StateMachine = sm
-            };
+            //var flow = new EmployeeCreateApFlow()
+            //{
+            //    Employee = emp,
+            //    StateMachine = sm
+            //};
 
 
         }

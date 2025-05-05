@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Ap.Share.Services;
 
-namespace Ap.Share.Services
+namespace Ap.Core.Services
 {
     public class ApFlowService : IApFlowService
     {

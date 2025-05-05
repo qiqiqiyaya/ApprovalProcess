@@ -14,7 +14,7 @@ namespace Ap.Share.Models
         /// </summary>
         public string CurrentState { get; set; }
 
-        public TriggeredType TriggeredType { get; set; }
+        //public TriggeredType TriggeredType { get; set; }
 
         /// <summary>
         /// 能操作此状态机的人

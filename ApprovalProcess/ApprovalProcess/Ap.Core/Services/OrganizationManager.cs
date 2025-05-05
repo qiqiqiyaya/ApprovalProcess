@@ -1,21 +1,16 @@
-﻿using System.Threading.Tasks;
-using Ap.Share.ApFlowModels;
-using Ap.Share.Models;
+﻿using Ap.Share.Models;
+using Ap.Share.Services;
+using System.Threading.Tasks;
 
-namespace Ap.Share.Services
+namespace Ap.Core.Services
 {
     public class OrganizationManager : IOrganizationManager
     {
         public OrganizationManager() { }
 
-        public ValueTask<IOrganization> GetPreviousOrg(string parentCode)
+        public ValueTask<Organization> GetPreviousOrg(string parentCode)
         {
-            return new ValueTask<IOrganization>(new OrganizationEntity()
-            {
-                Code = "2",
-                Name = "Next Org",
-                ParentCode = "0"
-            });
+            return new ValueTask<Organization>(new Organization());
         }
     }
 }

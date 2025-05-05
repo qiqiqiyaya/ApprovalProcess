@@ -8,6 +8,6 @@
 
         public string OrganizationId { get; set; }
 
-        public OrganizationEntity OrganizationEntity { get; set; }
+        public OrganizationEntity Organization { get; set; }
     }
 }

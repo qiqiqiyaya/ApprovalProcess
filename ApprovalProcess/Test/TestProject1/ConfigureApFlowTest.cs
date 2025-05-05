@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ap.Share.Actions.Entry.NextApprover;
+﻿using Ap.Share.Actions.Entry.NextApprover;
+using Sm.Core.Services;
 using Sm.Core.StateMachine;
-using Test.Common;
 using ExecutableActionNames = Ap.Share.Actions.ExecutableActionNames;
 
 namespace TestProject1
@@ -27,6 +22,7 @@ namespace TestProject1
 
             // 退回后，重写 -> 编辑状态
             machine.Configure("Return")
+                .OnEntry(ExecutableActionNames.OnEntrySetCleanNextApprover)
                 .Permit("Rewrite", "Edit");
 
             NextApproverConfiguration configuration = new NextApproverConfiguration
@@ -42,11 +38,12 @@ namespace TestProject1
 
             // 第二级审批
             machine.Configure("SecondApprove")
-                .OnEntry("TestEntryAction")
+                .OnEntry(ExecutableActionNames.OnEntrySetNextApprover, configuration)
                 .Permit("SecondApprovedPass", "Completed")
                 .Permit("Reject", "Return");
 
-
+            var service = GetRequiredService<IStateMachineService>();
+            await service.SaveAsync(machine);
         }
     }
 }

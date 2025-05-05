@@ -20,7 +20,7 @@ namespace Sm.Core.Services
             var sm = new StateMachineEntity
             {
                 InitialState = converter.ToState(stateMachine.InitialState),
-                CurrentState = converter.ToState(stateMachine.CurrentState),
+                //CurrentState = converter.ToState(stateMachine.CurrentState),
                 Id = Guid.NewGuid().ToString("N")
             };
 
@@ -45,7 +45,8 @@ namespace Sm.Core.Services
                     });
                 }
 
-                var actionEntities = await actionService.GetListByNameAsync(setting.Value.EntryActions.ToArray());
+                var names = setting.Value.EntryActions.Select(s => s.Name).ToArray();
+                var actionEntities = await actionService.GetListByNameAsync(names);
                 foreach (var executableAction in actionEntities)
                 {
                     settingEntity.Actions.Add(new StateSettingsActionEntity()

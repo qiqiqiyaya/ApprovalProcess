@@ -5,6 +5,16 @@ namespace Ap.Repository.EfSqlserver
 {
     public class ApDbContext : DbContext
     {
+        public ApDbContext()
+        {
+
+        }
+        public ApDbContext(DbContextOptions<ApDbContext> options)
+            : base(options)
+        {
+
+        }
+
         public DbSet<EmployeeEntity> Employees { get; set; }
 
         public DbSet<OrganizationEntity> Organizations { get; set; }
@@ -25,7 +35,7 @@ namespace Ap.Repository.EfSqlserver
                 model.Property(s => s.Id).HasColumnType("varchar(50)").IsRequired();
                 model.Property(s => s.ParentId).HasColumnType("varchar(50)");
 
-                model.HasMany(s => s.Managers).WithOne(s => s.OrganizationEntity).HasForeignKey(s => s.OrganizationId);
+                model.HasMany(s => s.Managers).WithOne(s => s.Organization).HasForeignKey(s => s.OrganizationId);
             });
 
             modelBuilder.Entity<ManagerEntity>(model =>
@@ -35,14 +45,37 @@ namespace Ap.Repository.EfSqlserver
                 model.Property(s => s.EmployeeId).HasColumnType("varchar(50)").IsRequired();
                 model.Property(s => s.OrganizationId).HasColumnType("varchar(50)").IsRequired();
 
-                model.HasOne(s => s.OrganizationEntity).WithMany(s => s.Managers).HasForeignKey(s => s.OrganizationId);
+                model.HasOne(s => s.Organization).WithMany(s => s.Managers).HasForeignKey(s => s.OrganizationId);
+            });
+
+            modelBuilder.Entity<TriggeredRecordEntity>(model =>
+            {
+                model.ToTable("Ap_TriggeredRecord").HasKey(s => s.Id);
+                model.Property(s => s.Id).HasColumnType("varchar(50)").IsRequired();
+                model.Property(s => s.StateMachineId).HasColumnType("varchar(50)").IsRequired();
+                model.Property(s => s.CurrentState).HasColumnType("nvarchar(100)").IsRequired();
+
+                model.HasMany(s => s.NextApproverList).WithOne(s => s.TriggeredRecord)
+                    .HasForeignKey(s => s.TriggeredRecordId);
+            });
+
+            modelBuilder.Entity<NextApproverEntity>(model =>
+            {
+                model.ToTable("Ap_NextApprover").HasKey(s => s.Id);
+                model.Property(s => s.Id).HasColumnType("varchar(50)").IsRequired();
+                model.Property(s => s.ApproverId).HasColumnType("varchar(50)").IsRequired();
+                model.Property(s => s.Definition).HasColumnType("nvarchar(100)").IsRequired();
+                model.Property(s => s.TriggeredRecordId).HasColumnType("varchar(50)").IsRequired();
+
+                model.HasOne(s => s.TriggeredRecord).WithMany(s => s.NextApproverList)
+                    .HasForeignKey(s => s.TriggeredRecordId);
             });
         }
 
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //	optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=ApDb;User Id=sa;Password=123;");
-        //}
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=ApDb;User Id=sa;Password=123;");
+        }
     }
 }

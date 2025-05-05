@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Sm.Core.Actions;
 using Sm.Core.Actions.Entry;
+using Sm.Core.Actions.Models;
 using Sm.Share.Actions;
 
 namespace Sm.Register
@@ -15,24 +16,24 @@ namespace Sm.Register
             where TEntryAction : IEntryAction<TState, TTrigger>
         {
             var map = AddAction<TEntryAction, TState, TTrigger>();
-            if (EntryActions.ContainsKey(map.Action))
+            if (EntryActions.ContainsKey(map.Action.Name))
             {
                 throw new ArgumentException($"Action {map.Action} already registered");
             }
 
-            EntryActions.Add(map.Action, map);
+            EntryActions.Add(map.Action.Name, map);
         }
 
         public void AddExitAction<TEntryAction, TState, TTrigger>()
             where TEntryAction : IEntryAction<TState, TTrigger>
         {
             var map = AddAction<TEntryAction, TState, TTrigger>();
-            if (ExitActions.ContainsKey(map.Action))
+            if (ExitActions.ContainsKey(map.Action.Name))
             {
                 throw new ArgumentException($"Action {map.Action} already registered");
             }
 
-            ExitActions.Add(map.Action, map);
+            ExitActions.Add(map.Action.Name, map);
         }
 
         private ExecutableActionMap AddAction<TEntryAction, TState, TTrigger>()
@@ -45,7 +46,7 @@ namespace Sm.Register
                 throw new ArgumentException($"Action {type.Name} must have ActionNameAttribute");
             }
 
-            var map = new ExecutableActionMap(actionName.Name, type);
+            var map = new ExecutableActionMap(new StateSettingAction(actionName.Name), type);
             return map;
         }
     }

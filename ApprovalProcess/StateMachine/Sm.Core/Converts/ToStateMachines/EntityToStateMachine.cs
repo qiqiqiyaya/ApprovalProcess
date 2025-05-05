@@ -27,8 +27,8 @@ namespace Sm.Core.Converts.ToStateMachines
                 settingsList.Add(await converter.To(setting));
             }
 
-            builder.SetInitialState(parameter.InitialState)
-                .SetCurrentState(parameter.CurrentState);
+            builder.SetInitialState(parameter.InitialState);
+            //.SetCurrentState(parameter.CurrentState);
 
             foreach (var item in settingsList)
             {

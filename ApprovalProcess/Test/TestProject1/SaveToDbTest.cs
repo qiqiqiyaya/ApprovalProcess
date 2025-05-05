@@ -1,8 +1,9 @@
-﻿using Sm.Core;
+﻿using Ap.Share.Actions;
+using Ap.Share.Actions.Models;
+using Sm.Core;
 using Sm.Core.Services;
 using Sm.Core.StateMachine;
 using Sm.Share.Entities;
-using Test.Common;
 
 namespace TestProject1
 {
@@ -52,23 +53,23 @@ namespace TestProject1
         {
             var actionService = GetRequiredService<IExecutableActionService>();
 
-            var existsActions = new List<ActionRecord>()
-            {
-                new ActionRecord(ExecutableActionNames.TestEntryAction,"test action",ExecutableActionType.Entry),
-                new ActionRecord(ExecutableActionNames.NotificationSend,"test action",ExecutableActionType.Exit),
-                new ActionRecord(ExecutableActionNames.SetNextApprover,"test action",ExecutableActionType.Exit)
-            };
+            //var existsActions = new List<ActionRecord>()
+            //{
+            //    new ActionRecord(ExecutableActionNames.TestEntryAction,"test action",ExecutableActionType.Entry),
+            //    new ActionRecord(ExecutableActionNames.NotificationSend,"test action",ExecutableActionType.Exit),
+            //    new ActionRecord(ExecutableActionNames.SetNextApprover,"test action",ExecutableActionType.Exit)
+            //};
 
-            var names = existsActions.Select(s => s.Name).ToArray();
+            //var names = existsActions.Select(s => s.Name).ToArray();
 
-            var dic = await actionService.GetListByNameAsync(names);
-            foreach (var action in existsActions)
-            {
-                if (!dic.ContainsKey(action.Name))
-                {
-                    await actionService.AddAsync(action.Name, "test action", action.Type);
-                }
-            }
+            //var dic = await actionService.GetListByNameAsync(names);
+            //foreach (var action in existsActions)
+            //{
+            //    if (!dic.ContainsKey(action.Name))
+            //    {
+            //        await actionService.AddAsync(action.Name, "test action", action.Type);
+            //    }
+            //}
         }
     }
 }
