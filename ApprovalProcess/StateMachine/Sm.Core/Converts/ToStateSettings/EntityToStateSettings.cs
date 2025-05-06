@@ -1,7 +1,11 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Sm.Core.Actions.Models;
 using Sm.Core.Converts.ToTransitions;
 using Sm.Core.Services;
 using Sm.Core.StateMachine;
@@ -26,27 +30,36 @@ namespace Sm.Core.Converts.ToStateSettings
 
             builder.SetState(parameter.State);
 
-            List<string> entryActions = new List<string>();
-            List<string> exitActions = new List<string>();
-
             var ids = parameter.Actions.Select(s => s.ExecutableActionId).ToArray();
-            var actions = await executableActionService.GetListByIdAsync(ids);
+            var actionDic = await executableActionService.GetListByIdAsync(ids);
 
-            foreach (var action in actions)
+            foreach (var action in parameter.Actions)
             {
-                var val = action.Value;
-                if (val.Type == ExecutableActionType.Entry)
+                var val = actionDic[action.ExecutableActionId];
+
+                ActionConfiguration? configuration = null;
+                if (action.Configuration != null)
                 {
-                    entryActions.Add(val.Name);
+                    var aa = Assembly.Load(action.ConfigurationType);
+                    var aaaa = aa.GetType(action.ConfigurationType, true);
+                    var type = Type.GetType(action.ConfigurationType, true);
+                    if (type == null)
+                    {
+                        throw new ArgumentNullException($"Type {action.ConfigurationType} not found");
+                    }
+
+                    configuration = (ActionConfiguration)JsonSerializer.Deserialize(action.Configuration, type)!;
+                }
+
+                if (val.EventType == ExecutableActionType.Entry)
+                {
+                    builder.SetEntryAction(val.Name, configuration);
                 }
                 else
                 {
-                    exitActions.Add(val.Name);
+                    builder.SetExitAction(val.Name);
                 }
             }
-
-            builder.SetEntryActions(entryActions.ToArray());
-            builder.SetExitActions(exitActions.ToArray());
 
             return builder.Build();
         }

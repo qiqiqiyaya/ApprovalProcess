@@ -1,4 +1,5 @@
-﻿using Sm.Core.StateMachine;
+﻿using Sm.Core.Actions.Models;
+using Sm.Core.StateMachine;
 
 namespace Sm.Core.Converts.ToStateSettings
 {
@@ -23,15 +24,21 @@ namespace Sm.Core.Converts.ToStateSettings
             return this;
         }
 
-        public IStateSettingsBuilder<TState, TTrigger> SetEntryActions(params string[] actionName)
+        public IStateSettingsBuilder<TState, TTrigger> SetEntryAction(string actionName)
         {
-            _configuration.EntryActionNames.AddRange(actionName);
+            _configuration.EntryActionNames.Add(actionName, null);
             return this;
         }
 
-        public IStateSettingsBuilder<TState, TTrigger> SetExitActions(params string[] actionName)
+        public IStateSettingsBuilder<TState, TTrigger> SetEntryAction(string actionName, ActionConfiguration configuration)
         {
-            _configuration.ExitActionNames.AddRange(actionName);
+            _configuration.EntryActionNames.Add(actionName, configuration);
+            return this;
+        }
+
+        public IStateSettingsBuilder<TState, TTrigger> SetExitAction(string actionName)
+        {
+            _configuration.ExitActionNames.Add(actionName, null);
             return this;
         }
 
@@ -39,9 +46,19 @@ namespace Sm.Core.Converts.ToStateSettings
         {
             var stateSettings = new StateSettings<TState, TTrigger>();
             stateSettings.SetState(_configuration.State)
-                .SetTransitions(_configuration.Transitions)
-                .SetEntryActions(_configuration.EntryActionNames)
-                .SetExitActions(_configuration.ExitActionNames);
+                .SetTransitions(_configuration.Transitions);
+
+            foreach (var action in _configuration.EntryActionNames)
+            {
+                if (action.Value != null) stateSettings.SetEntryAction(action.Key, action.Value);
+                else stateSettings.SetEntryAction(action.Key);
+            }
+
+            foreach (var action in _configuration.ExitActionNames)
+            {
+                if (action.Value != null) stateSettings.SetExitAction(action.Key, action.Value);
+                else stateSettings.SetExitAction(action.Key);
+            }
 
             return stateSettings;
         }

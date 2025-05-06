@@ -43,7 +43,10 @@ namespace TestProject1
                 .Permit("Reject", "Return");
 
             var service = GetRequiredService<IStateMachineService>();
-            await service.SaveAsync(machine);
+            var entity = await service.SaveAsync(machine);
+
+            Assert.NotNull(entity);
+            Assert.NotNull(entity.Id);
         }
     }
 }

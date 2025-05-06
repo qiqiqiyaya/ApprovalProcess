@@ -12,8 +12,8 @@ using Sm.Repository.EfSqlserver;
 namespace Sm.Repository.EfSqlserver.Migrations
 {
     [DbContext(typeof(SmDbContext))]
-    [Migration("20250505153029_inital")]
-    partial class inital
+    [Migration("20250506141313_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,11 +30,9 @@ namespace Sm.Repository.EfSqlserver.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("Configuration")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ConfigurationType")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ActionType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("datetime2");
@@ -46,12 +44,12 @@ namespace Sm.Repository.EfSqlserver.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("EventType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -90,7 +88,7 @@ namespace Sm.Repository.EfSqlserver.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConfigurationType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("datetime2");

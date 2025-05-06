@@ -51,21 +51,27 @@ namespace Sm.Core.StateMachine
             return this;
         }
 
-        internal StateSettings<TState, TTrigger> SetEntryActions(List<string> onEntryActions)
+        internal StateSettings<TState, TTrigger> SetEntryAction(string entryActionName)
         {
-            EntryActions = onEntryActions.Select(s => new StateSettingAction(s)).ToList();
+            EntryActions.Add(new StateSettingAction(entryActionName));
             return this;
         }
 
-        internal StateSettings<TState, TTrigger> SetEntryActions(List<StateSettingAction> onEntryActions)
+        internal StateSettings<TState, TTrigger> SetEntryAction(string entryActionName, ActionConfiguration configuration)
         {
-            EntryActions = onEntryActions;
+            EntryActions.Add(new StateSettingAction(entryActionName, configuration));
             return this;
         }
 
-        internal StateSettings<TState, TTrigger> SetExitActions(List<string> onExitActions)
+        internal StateSettings<TState, TTrigger> SetExitAction(string exitActionName)
         {
-            ExitActions = onExitActions;
+            ExitActions.Add(exitActionName);
+            return this;
+        }
+
+        internal StateSettings<TState, TTrigger> SetExitAction(string entryActionName, ActionConfiguration configuration)
+        {
+            //ExitActions.Add(exitActionName);
             return this;
         }
 

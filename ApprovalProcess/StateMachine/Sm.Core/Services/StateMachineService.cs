@@ -1,10 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Sm.Core.Converts.ToEntity;
+﻿using Sm.Core.Converts.ToEntity;
 using Sm.Core.StateMachine;
 using Sm.Share.Entities;
 using Sm.Share.Repositories;
+using System;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Sm.Core.Services
 {
@@ -46,15 +47,26 @@ namespace Sm.Core.Services
                 }
 
                 var names = setting.Value.EntryActions.Select(s => s.Name).ToArray();
-                var actionEntities = await actionService.GetListByNameAsync(names);
-                foreach (var executableAction in actionEntities)
+                var actionDic = await actionService.GetListByNameAsync(names);
+
+                foreach (var entryAction in setting.Value.EntryActions)
                 {
-                    settingEntity.Actions.Add(new StateSettingsActionEntity()
+                    var eaEntity = actionDic[entryAction.Name];
+
+                    var settingsActionEntity = new StateSettingsActionEntity()
                     {
                         Id = Guid.NewGuid().ToString("N"),
                         StateSettingsId = settingEntity.Id,
-                        ExecutableActionId = executableAction.Value.Id,
-                    });
+                        ExecutableActionId = eaEntity.Id,
+                    };
+
+                    if (entryAction.Configuration != null)
+                    {
+                        settingsActionEntity.Configuration = JsonSerializer.Serialize(entryAction.Configuration, entryAction.Configuration.GetType());
+                        settingsActionEntity.ConfigurationType = entryAction.Configuration.GetType().FullName;
+                    }
+
+                    settingEntity.Actions.Add(settingsActionEntity);
                 }
 
                 sm.StateSettings.Add(settingEntity);

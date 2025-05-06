@@ -11,7 +11,7 @@ namespace Sm.Repository.FreeSql.EntityConfigurations
             model.Property(s => s.Id).HasColumnType("TEXT").IsRequired();
             model.Property(s => s.Name).HasColumnType("TEXT").IsRequired();
             model.Property(s => s.Description).HasColumnType("TEXT").IsRequired();
-            model.Property(s => s.Type).HasColumnType("INTEGER").IsRequired();
+            model.Property(s => s.EventType).HasColumnType("INTEGER").IsRequired();
         }
     }
 }

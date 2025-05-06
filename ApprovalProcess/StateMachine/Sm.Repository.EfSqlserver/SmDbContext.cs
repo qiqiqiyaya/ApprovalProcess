@@ -68,6 +68,8 @@ namespace Sm.Repository.EfSqlserver
                 model.Property(s => s.Id).HasColumnType("varchar(50)").IsRequired();
                 model.Property(s => s.StateSettingsId).HasColumnType("varchar(50)").IsRequired();
                 model.Property(s => s.ExecutableActionId).HasColumnType("varchar(50)").IsRequired();
+                model.Property(s => s.Configuration).HasColumnType("nvarchar(max)");
+                model.Property(s => s.ConfigurationType).HasColumnType("nvarchar(200)");
 
                 model.HasOne(s => s.StateSettings).WithMany(s => s.Actions).HasForeignKey(s => s.StateSettingsId);
             });
@@ -78,7 +80,8 @@ namespace Sm.Repository.EfSqlserver
                 model.Property(s => s.Id).HasColumnType("varchar(50)").IsRequired();
                 model.Property(s => s.Name).HasColumnType("nvarchar(100)").IsRequired();
                 model.Property(s => s.Description).HasColumnType("nvarchar(100)").IsRequired();
-                model.Property(s => s.Type).HasColumnType("int").IsRequired();
+                model.Property(s => s.ActionType).HasColumnType("nvarchar(200)").IsRequired();
+                model.Property(s => s.EventType).HasColumnType("int").IsRequired();
             });
 
             base.OnModelCreating(modelBuilder);

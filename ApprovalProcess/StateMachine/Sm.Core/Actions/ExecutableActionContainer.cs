@@ -11,15 +11,15 @@ namespace Sm.Core.Actions
         Dictionary<string, ExecutableActionMap> entryActionContainer,
         Dictionary<string, ExecutableActionMap> exitActionContainer)
     {
-        public List<ExecutableActionMap> GetEntryActions(params StateSettingAction[] settingActions)
+        public List<ExecutableActionMap> GetEntryActions(params string[] entryActions)
         {
             List<ExecutableActionMap> actions = new List<ExecutableActionMap>();
-            foreach (var action in settingActions)
+            foreach (var action in entryActions)
             {
-                var map = entryActionContainer[action.Name];
+                var map = entryActionContainer[action];
                 if (map == null)
                 {
-                    throw new ArgumentNullException($"Entry action {action.Name} not found.");
+                    throw new ArgumentNullException($"Entry action {action} not found.");
                 }
 
                 actions.Add(map);

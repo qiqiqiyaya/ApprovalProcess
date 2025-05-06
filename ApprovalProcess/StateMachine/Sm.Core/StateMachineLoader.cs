@@ -13,7 +13,7 @@ namespace Sm.Core
         ToStateMachineContainer toStateMachineContainer)
         : IStateMachineLoader
     {
-        public async ValueTask<StateMachine<string, string>> GetStateMachine(string id)
+        public async ValueTask<StateMachine<string, string>> GetStateMachineAsync(string id)
         {
             var entity = await repository.GetStateMachine(id);
             var converter = toStateMachineContainer.Get<StateMachineEntity, string, string>();

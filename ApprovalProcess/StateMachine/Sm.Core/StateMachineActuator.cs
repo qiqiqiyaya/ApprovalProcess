@@ -11,7 +11,7 @@ namespace Sm.Core
     {
         public async ValueTask<StateMachine<string, string>> Fire(string id, string trigger)
         {
-            var stateMachine = await machineLoader.GetStateMachine(id);
+            var stateMachine = await machineLoader.GetStateMachineAsync(id);
             await stateMachine.Fire(new FireContext<string, string>(serviceProvider, trigger));
             return stateMachine;
         }

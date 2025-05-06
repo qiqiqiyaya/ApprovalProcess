@@ -10,15 +10,11 @@ namespace Sm.Share.Entities
 
         public string ExecutableActionId { get; set; }
 
-
         /// <summary>
-        /// Configuration类型
-        /// </summary>
-        public string ConfigurationType { get; set; }
-
-        /// <summary>
-        /// Action配置Json
+        /// Action配置 -> Json
         /// </summary>
         public string Configuration { get; set; }
+
+        public string ConfigurationType { get; set; }
     }
 }

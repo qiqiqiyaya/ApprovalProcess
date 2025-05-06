@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Sm.Core.Actions;
 using Sm.Share.Entities;
 using Sm.Share.Repositories;
 
 namespace Sm.Core.Services
 {
     public class ExecutableActionService(
-        ISmRepository smRepository)
+        ISmRepository smRepository,
+        ExecutableActionContainer actionContainer)
         : BaseActionService(smRepository), IExecutableActionService
     {
         private readonly ISmRepository _smRepository = smRepository;
@@ -15,6 +17,8 @@ namespace Sm.Core.Services
         public async ValueTask<Dictionary<string, ExecutableActionEntity>> GetListByNameAsync(params string[] actionNames)
         {
             var container = await GetAllAsync();
+
+            //actionContainer.GetEntryActions()
 
             var actions = new Dictionary<string, ExecutableActionEntity>();
             foreach (var name in actionNames)
@@ -44,16 +48,20 @@ namespace Sm.Core.Services
             return actions;
         }
 
-        public async ValueTask<ExecutableActionEntity> AddAsync(string name, string description, ExecutableActionType type)
+        public async ValueTask<ExecutableActionEntity> AddAsync(string name, string description, ExecutableActionType type, Type actionType)
         {
             await CheckContainer();
+
+            var assembly = actionType.Assembly.FullName;
+            var aaa = actionType.FullName;
 
             var entity = new ExecutableActionEntity
             {
                 Name = name,
                 Description = description,
-                Type = type,
-                Id = Guid.NewGuid().ToString("N")
+                EventType = type,
+                Id = Guid.NewGuid().ToString("N"),
+                ActionType = actionType.FullName
             };
 
             await SingleAsync(async () =>

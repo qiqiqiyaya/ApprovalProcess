@@ -5,7 +5,7 @@ namespace Sm.Core
 {
     public interface IStateMachineLoader
     {
-        ValueTask<StateMachine<string, string>> GetStateMachine(string id);
+        ValueTask<StateMachine<string, string>> GetStateMachineAsync(string id);
 
         ValueTask<StateSettings<string, string>> GetStateSettings(string id);
     }

@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using Sm.Core.Actions.Models;
-using Sm.Share.Actions;
+using System.Collections.Generic;
 
 namespace Ap.Share.Actions.Entry.NextApprover
 {
     /// <summary>
     /// 设置下级审批人配置
     /// </summary>
+    [Serializable]
     public class NextApproverConfiguration : ActionConfiguration
     {
         public ApprovalRule Rule { get; set; }

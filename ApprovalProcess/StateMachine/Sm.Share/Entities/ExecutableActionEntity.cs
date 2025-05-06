@@ -8,17 +8,12 @@ namespace Sm.Share.Entities
 
         public string Description { get; set; }
 
-        public ExecutableActionType Type { get; set; }
+        public ExecutableActionType EventType { get; set; }
 
         /// <summary>
         /// Configuration类型
         /// </summary>
-        public string ConfigurationType { get; set; }
-
-        /// <summary>
-        /// Action配置Json
-        /// </summary>
-        public string Configuration { get; set; }
+        public string ActionType { get; set; }
     }
 
     public enum ExecutableActionType

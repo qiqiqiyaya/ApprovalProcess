@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
+using Sm.Core.Actions.Models;
 using Sm.Core.StateMachine;
 
 namespace Sm.Core.Converts.ToStateSettings
@@ -9,8 +11,8 @@ namespace Sm.Core.Converts.ToStateSettings
 
         public List<Transition<TState, TTrigger>> Transitions { get; set; } = new List<Transition<TState, TTrigger>>();
 
-        public List<string> EntryActionNames { get; set; } = new List<string>();
+        public Dictionary<string, ActionConfiguration?> EntryActionNames { get; set; } = new Dictionary<string, ActionConfiguration?>();
 
-        public List<string> ExitActionNames { get; set; } = new List<string>();
+        public Dictionary<string, ActionConfiguration?> ExitActionNames { get; set; } = new Dictionary<string, ActionConfiguration?>();
     }
 }

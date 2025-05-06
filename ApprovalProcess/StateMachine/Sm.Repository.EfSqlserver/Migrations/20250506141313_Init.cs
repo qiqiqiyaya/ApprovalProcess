@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Sm.Repository.EfSqlserver.Migrations
 {
     /// <inheritdoc />
-    public partial class inital : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,9 +18,8 @@ namespace Sm.Repository.EfSqlserver.Migrations
                     Id = table.Column<string>(type: "varchar(50)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    ConfigurationType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Configuration = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EventType = table.Column<int>(type: "int", nullable: false),
+                    ActionType = table.Column<string>(type: "nvarchar(200)", nullable: false),
                     CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Creator = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -72,8 +71,8 @@ namespace Sm.Repository.EfSqlserver.Migrations
                     Id = table.Column<string>(type: "varchar(50)", nullable: false),
                     StateSettingsId = table.Column<string>(type: "varchar(50)", nullable: false),
                     ExecutableActionId = table.Column<string>(type: "varchar(50)", nullable: false),
-                    ConfigurationType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Configuration = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConfigurationType = table.Column<string>(type: "nvarchar(200)", nullable: true),
                     CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Creator = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
