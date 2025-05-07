@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Sm.Core.Actions.Entry;
 using Sm.Core.Actions.Models;
 using Sm.Core.Actions.Pipeline;
@@ -11,8 +12,15 @@ namespace Sm.Core.Actions
         {
             if (entryActions.Count == 0) return null;
 
-            var container = context.GetRequiredService<ExecutableActionContainer>();
-            var maps = container.GetEntryActions(entryActions.ToArray());
+            var container = context.LazyGetRequiredService<ExecutableActionContainer>();
+            var maps = container.GetEntryActions(entryActions.Select(s => s.Name).ToArray());
+
+            maps.ForEach(s =>
+            {
+                var action = entryActions.First(x => x.Name == s.Action.Name);
+                s.Action = action;
+            });
+
             return context.GetPipeline<EntryActionContext<TState, TTrigger>>(maps);
         }
 

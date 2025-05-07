@@ -26,7 +26,8 @@ namespace Ap.Core.Actions.Entry.NextApprover
             switch (_configuration.Rule)
             {
                 case ApprovalRule.ApprovedByOrg:
-                    context.GetRequiredService<IApprovedByOrgService>();
+                    var aa = context.GetRequiredService<IApprovedByOrgService>();
+                    aa.InvokeAsync(context);
                     break;
                 case ApprovalRule.CustomApproval:
                     break;

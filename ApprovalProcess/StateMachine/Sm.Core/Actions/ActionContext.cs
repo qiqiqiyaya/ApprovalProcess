@@ -23,19 +23,19 @@ namespace Sm.Core.Actions
         /// <summary>
         /// Object Pool
         /// </summary>
-        private Dictionary<string, object> ObjectPool { get; set; }
+        public Dictionary<string, object> ObjectPool { get; set; }
 
         /// <summary>
         /// get object
         /// </summary>
         /// <returns></returns>
-        protected T GetObject<T>(string key)
+        public T GetObject<T>(string key)
         {
             if (ObjectPool.TryGetValue(key, out var value)) return (T)value;
             return default(T);
         }
 
-        protected void AddObject<T>(string key, T value)
+        public void AddObject<T>(string key, T value)
         {
             ObjectPool.Add(key, value);
         }

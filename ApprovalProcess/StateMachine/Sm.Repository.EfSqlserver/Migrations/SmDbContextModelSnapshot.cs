@@ -64,8 +64,9 @@ namespace Sm.Repository.EfSqlserver.Migrations
                     b.Property<string>("Creator")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Firer")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("CurrentState")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("InitialState")
                         .IsRequired()

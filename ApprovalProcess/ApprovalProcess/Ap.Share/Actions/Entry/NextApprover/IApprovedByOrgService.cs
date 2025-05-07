@@ -8,6 +8,6 @@ namespace Ap.Share.Actions.Entry.NextApprover
     /// </summary>
     public interface IApprovedByOrgService
     {
-        ValueTask InvokeAsync(ApEntryActionContext<string, string> context);
+        ValueTask InvokeAsync(EntryActionContext<string, string> context);
     }
 }

@@ -18,6 +18,7 @@ namespace Sm.Core
             var entity = await repository.GetStateMachine(id);
             var converter = toStateMachineContainer.Get<StateMachineEntity, string, string>();
 
+
             var stateMachine = await converter.To(entity);
             return stateMachine;
         }

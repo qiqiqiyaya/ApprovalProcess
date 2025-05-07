@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Sm.Core.Actions.Entry;
+using Sm.Core.Actions.Models;
 
 namespace Sm.Core.StateMachine
 {
@@ -52,33 +53,43 @@ namespace Sm.Core.StateMachine
         /// </summary>
         public async ValueTask Fire(FireContext<TState, TTrigger> context)
         {
-            var source = CurrentState;
-            var currentSettings = GetRepresentation(source);
-            context.CurrentSettings = currentSettings;
+            BeforeFireContext<TState, TTrigger> before = new BeforeFireContext<TState, TTrigger>(context);
+            var currentSettings = GetRepresentation(CurrentState);
+            before.CurrentSettings = currentSettings;
 
             currentSettings.TryFindBehaviour(context.Trigger, out var triggerBehaviours);
             var behaviour = triggerBehaviours.First();
 
-            context.NextSettings = GetRepresentation(behaviour.DtState);
+            before.NextSettings = GetRepresentation(behaviour.DtState);
+            before.DtState = behaviour.DtState;
 
-            Exit(context);
-            context.DtState = behaviour.DtState;
-            await Entry(context);
+            TransitionDescription<TState, TTrigger> td = new TransitionDescription<TState, TTrigger>(CurrentState,
+                before.DtState,
+                context.Trigger);
+            before.TransitionDescription = td;
+
+            Exit(before);
+            CurrentState = before.DtState;
+
+            AfterFireContext<TState, TTrigger> after = new AfterFireContext<TState, TTrigger>(context);
+            after.CurrentSettings = GetRepresentation(CurrentState);
+            after.PreviousSettings = currentSettings;
+            after.BeforeFire = before;
+            after.TransitionDescription = td;
+
+            await Entry(after);
         }
 
-        private void Exit(FireContext<TState, TTrigger> context)
+        private void Exit(BeforeFireContext<TState, TTrigger> context)
         {
             var settings = context.CurrentSettings;
             //settings.Exit();
         }
 
-        private async ValueTask Entry(FireContext<TState, TTrigger> context)
+        private async ValueTask Entry(AfterFireContext<TState, TTrigger> context)
         {
-            var settings = context.NextSettings;
-            await settings.Entry(new EntryActionContext<TState, TTrigger>(context.ServiceProvider,
-                context.Trigger,
-                CurrentState,
-                context.DtState));
+            var settings = context.CurrentSettings;
+            await settings.Entry(new EntryActionContext<TState, TTrigger>(context.ServiceProvider, context));
         }
 
         private StateSettings<TState, TTrigger> GetRepresentation(TState state)

@@ -52,16 +52,14 @@ namespace Sm.Core.Services
         {
             await CheckContainer();
 
-            var assembly = actionType.Assembly.FullName;
-            var aaa = actionType.FullName;
-
+            string typeString = actionType.FullName + "," + actionType.Assembly.FullName;
             var entity = new ExecutableActionEntity
             {
                 Name = name,
                 Description = description,
                 EventType = type,
                 Id = Guid.NewGuid().ToString("N"),
-                ActionType = actionType.FullName
+                ActionType = typeString
             };
 
             await SingleAsync(async () =>

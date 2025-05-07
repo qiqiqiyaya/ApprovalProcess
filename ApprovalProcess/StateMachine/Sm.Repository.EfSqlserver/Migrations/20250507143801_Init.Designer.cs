@@ -12,7 +12,7 @@ using Sm.Repository.EfSqlserver;
 namespace Sm.Repository.EfSqlserver.Migrations
 {
     [DbContext(typeof(SmDbContext))]
-    [Migration("20250506141313_Init")]
+    [Migration("20250507143801_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -67,8 +67,9 @@ namespace Sm.Repository.EfSqlserver.Migrations
                     b.Property<string>("Creator")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Firer")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("CurrentState")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("InitialState")
                         .IsRequired()

@@ -40,8 +40,10 @@ namespace Sm.Core.Converts.ToStateSettings
                 ActionConfiguration? configuration = null;
                 if (action.Configuration != null)
                 {
-                    var aa = Assembly.Load(action.ConfigurationType);
-                    var aaaa = aa.GetType(action.ConfigurationType, true);
+
+                    //var aa = Assembly.Load("Ap.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+
+                    //var aaaa = aa.GetType("Ap.Core.Actions.Entry.CleanNextApprover", true);
                     var type = Type.GetType(action.ConfigurationType, true);
                     if (type == null)
                     {

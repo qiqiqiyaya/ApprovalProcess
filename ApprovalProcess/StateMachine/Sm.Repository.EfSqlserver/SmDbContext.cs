@@ -32,7 +32,7 @@ namespace Sm.Repository.EfSqlserver
                 model.ToTable("Sm_StateMachine").HasKey(s => s.Id);
                 model.Property(s => s.Id).HasColumnType("varchar(50)").IsRequired();
                 model.Property(s => s.InitialState).HasColumnType("nvarchar(100)").IsRequired();
-                //model.Property(s => s.CurrentState).HasColumnType("nvarchar(100)").IsRequired();
+                model.Property(s => s.CurrentState).HasColumnType("nvarchar(100)").IsRequired();
 
                 model.HasMany(s => s.StateSettings).WithOne(s => s.StateMachine).HasForeignKey(s => s.StateMachineId);
             });

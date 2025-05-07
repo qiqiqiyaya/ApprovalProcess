@@ -21,7 +21,7 @@ namespace Sm.Core.Services
             var sm = new StateMachineEntity
             {
                 InitialState = converter.ToState(stateMachine.InitialState),
-                //CurrentState = converter.ToState(stateMachine.CurrentState),
+                CurrentState = converter.ToState(stateMachine.CurrentState),
                 Id = Guid.NewGuid().ToString("N")
             };
 
@@ -62,8 +62,10 @@ namespace Sm.Core.Services
 
                     if (entryAction.Configuration != null)
                     {
-                        settingsActionEntity.Configuration = JsonSerializer.Serialize(entryAction.Configuration, entryAction.Configuration.GetType());
-                        settingsActionEntity.ConfigurationType = entryAction.Configuration.GetType().FullName;
+                        Type type = entryAction.Configuration.GetType();
+                        settingsActionEntity.Configuration = JsonSerializer.Serialize(entryAction.Configuration, type);
+                        string typeString = type.FullName + "," + type.Assembly.FullName;
+                        settingsActionEntity.ConfigurationType = typeString;
                     }
 
                     settingEntity.Actions.Add(settingsActionEntity);
