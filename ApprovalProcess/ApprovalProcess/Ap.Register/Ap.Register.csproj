@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\StateMachine\Sm.Register\Sm.Register.csproj" />
+    <ProjectReference Include="..\Ap.Core\Ap.Core.csproj" />
+    <ProjectReference Include="..\Ap.Repository.EfSqlserver\Ap.Repository.EfSqlserver.csproj" />
+    <ProjectReference Include="..\Ap.Share\Ap.Share.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,40 +1,21 @@
-﻿using Ap.Core.StateMachine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Test.Common;
+﻿using Sm.Core;
+using Sm.Core.StateMachine;
 
 namespace TestProject1
 {
-	public class EmployeeApFlowTest : BaseTest
-	{
-		[Fact]
-		public async Task CreateApFlowTest()
-		{
-			var sm = StateMachineTestData.TwoLevelApprovalProcess();
+    public class EmployeeApFlowTest : BaseTest
+    {
+        [Fact]
+        public async Task CreateApFlowTest()
+        {
+            var loader = GetRequiredService<IStateMachineLoader>();
+            var sm = await loader.GetStateMachineAsync("e3e3bab8d75d4989b14cad34575f20b2");
 
-			var org = new Organization()
-			{
-				Name = "测试组织",
-				Code = "1",
-				ParentCode = null
-			};
+            await sm.Fire(new FireContext<string, string>(ServiceProvider, "Submitted"));
 
-			var emp = new Employee()
-			{
-				Code = "1",
-				Organization = org
-			};
-
-			var flow = new EmployeeCreateApFlow()
-			{
-				Employee = emp,
-				StateMachine = sm
-			};
-
-
-		}
-	}
+            Assert.NotNull(sm);
+            Assert.NotNull(sm.CurrentState);
+            Assert.NotNull(sm.InitialState);
+        }
+    }
 }

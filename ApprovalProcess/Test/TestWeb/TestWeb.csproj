@@ -8,9 +8,4 @@
     <PublishAot>true</PublishAot>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Test.Service\Test.Service.csproj" />
-    <ProjectReference Include="..\Test.Share\Test.Share.csproj" />
-  </ItemGroup>
-
 </Project>
