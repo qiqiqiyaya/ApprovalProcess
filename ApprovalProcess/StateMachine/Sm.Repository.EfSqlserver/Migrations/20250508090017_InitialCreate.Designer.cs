@@ -12,8 +12,8 @@ using Sm.Repository.EfSqlserver;
 namespace Sm.Repository.EfSqlserver.Migrations
 {
     [DbContext(typeof(SmDbContext))]
-    [Migration("20250507143801_Init")]
-    partial class Init
+    [Migration("20250508090017_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,10 +66,6 @@ namespace Sm.Repository.EfSqlserver.Migrations
 
                     b.Property<string>("Creator")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CurrentState")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("InitialState")
                         .IsRequired()

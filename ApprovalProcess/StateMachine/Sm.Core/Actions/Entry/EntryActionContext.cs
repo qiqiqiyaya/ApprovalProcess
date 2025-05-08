@@ -2,31 +2,33 @@
 using Sm.Core.StateMachine;
 using Sm.Share.Entities.bases;
 using System;
-using System.Threading.Tasks;
 
 namespace Sm.Core.Actions.Entry
 {
-    public class EntryActionContext<TState, TTrigger>(
-        IServiceProvider serviceProvider,
-        AfterFireContext<TState, TTrigger> afterFire)
-        : ActionContext(serviceProvider)
-    {
-        public AfterFireContext<TState, TTrigger> AfterFire { get; set; } = afterFire;
+	public class EntryActionContext<TState, TTrigger>(
+		string stateMachineId,
+		IServiceProvider serviceProvider,
+		AfterFireContext<TState, TTrigger> afterFire)
+		: ActionContext(serviceProvider)
+	{
+		public string StateMachineId => stateMachineId;
 
-        public TTrigger Trigger => AfterFire.Trigger;
+		public AfterFireContext<TState, TTrigger> AfterFire { get; set; } = afterFire;
 
-        public TState CurrentState => AfterFire.CurrentSettings.State;
+		public TTrigger Trigger => AfterFire.Trigger;
 
-        public TransitionDescription<TState, TTrigger> TransitionDescription => AfterFire.TransitionDescription;
+		public TState CurrentState => AfterFire.CurrentSettings.State;
 
-        /// <summary>
-        /// 创建者
-        /// </summary>
-        public CreatorEntity Creator { get; set; }
+		public TransitionDescription<TState, TTrigger> TransitionDescription => AfterFire.TransitionDescription;
 
-        /// <summary>
-        /// 触发者
-        /// </summary>
-        public string Firer { get; set; }
-    }
+		/// <summary>
+		/// 创建者
+		/// </summary>
+		public CreatorEntity Creator { get; set; }
+
+		/// <summary>
+		/// 触发者
+		/// </summary>
+		public string Firer { get; set; }
+	}
 }

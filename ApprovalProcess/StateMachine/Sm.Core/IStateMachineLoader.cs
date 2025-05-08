@@ -3,10 +3,12 @@ using Sm.Core.StateMachine;
 
 namespace Sm.Core
 {
-    public interface IStateMachineLoader
-    {
-        ValueTask<StateMachine<string, string>> GetStateMachineAsync(string id);
+	public interface IStateMachineLoader
+	{
+		ValueTask<StateMachine<string, string>> GetStateMachineAsync(string id);
 
-        ValueTask<StateSettings<string, string>> GetStateSettings(string id);
-    }
+		ValueTask<StateMachine<string, string>> GetStateMachineAsync(string id, string currentState);
+
+		ValueTask<StateSettings<string, string>> GetStateSettings(string id);
+	}
 }

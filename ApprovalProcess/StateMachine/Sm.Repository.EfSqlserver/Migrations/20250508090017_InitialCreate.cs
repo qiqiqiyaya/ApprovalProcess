@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Sm.Repository.EfSqlserver.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,6 @@ namespace Sm.Repository.EfSqlserver.Migrations
                 {
                     Id = table.Column<string>(type: "varchar(50)", nullable: false),
                     InitialState = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    CurrentState = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Creator = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },

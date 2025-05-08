@@ -2,14 +2,16 @@
 
 namespace Sm.Core.Converts.ToStateMachines
 {
-    public interface IStateMachineBuilder<TState, TTrigger>
-    {
-        IStateMachineBuilder<TState, TTrigger> SetInitialState(TState state);
+	public interface IStateMachineBuilder<TState, TTrigger>
+	{
+		IStateMachineBuilder<TState, TTrigger> SetId(string id);
 
-        IStateMachineBuilder<TState, TTrigger> SetCurrentState(TState state);
+		IStateMachineBuilder<TState, TTrigger> SetInitialState(TState state);
 
-        IStateMachineBuilder<TState, TTrigger> SetStateConfiguration(StateSettings<TState, TTrigger> settings);
+		IStateMachineBuilder<TState, TTrigger> SetCurrentState(TState state);
 
-        StateMachine<TState, TTrigger> Build();
-    }
+		IStateMachineBuilder<TState, TTrigger> SetStateConfiguration(StateSettings<TState, TTrigger> settings);
+
+		StateMachine<TState, TTrigger> Build();
+	}
 }

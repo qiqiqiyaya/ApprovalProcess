@@ -12,30 +12,31 @@ using Sm.Register;
 
 namespace Ap.Register
 {
-    public static class Register
-    {
-        public static void AddAp(this IServiceCollection service)
-        {
-            service.AddTransient<IApprovedByOrgService, ApprovedByOrgService>();
-            service.AddTransient<IApFlowService, ApFlowService>();
-            service.AddTransient<IEmployeeService, EmployeeService>();
-            service.AddTransient<IOrganizationManager, OrganizationManager>();
-            service.AddTransient<IApRepository, ApRepository>();
+	public static class Register
+	{
+		public static void AddAp(this IServiceCollection service)
+		{
+			service.AddTransient<IApprovedByOrgService, ApprovedByOrgService>();
+			service.AddTransient<IApFlowService, ApFlowService>();
+			service.AddTransient<IEmployeeService, EmployeeService>();
+			service.AddTransient<IOrganizationManager, OrganizationManager>();
+			service.AddTransient<IApRepository, ApRepository>();
 
-            service.AddDbContext<ApDbContext>((serviceProvider, options) =>
-            {
-                var logger = serviceProvider.GetRequiredService<ILogger<ApDbContext>>();
-                options.LogTo(msg => logger.LogInformation(msg));
-                options.EnableSensitiveDataLogging();
-                options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=ApDb;User Id=sa;Password=123;");
-                options.EnableDetailedErrors();
-            });
+			service.AddDbContext<ApDbContext>((serviceProvider, options) =>
+			{
+				var logger = serviceProvider.GetRequiredService<ILogger<ApDbContext>>();
+				options.LogTo(msg => logger.LogInformation(msg));
+				options.EnableSensitiveDataLogging();
+				options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=ApDb;User Id=sa;Password=123;");
+				options.EnableDetailedErrors();
+			});
 
-            service.AddSm(option =>
-            {
-                option.AddEntryAction<NextApproverAction, string, string>();
-                option.AddEntryAction<CleanNextApprover, string, string>();
-            });
-        }
-    }
+			service.AddSm(option =>
+			{
+				option.AddEntryAction<NextApproverAction, string, string>();
+				option.AddEntryAction<CleanNextApprover, string, string>();
+				option.AddEntryAction<TriggerRecording, string, string>();
+			});
+		}
+	}
 }
