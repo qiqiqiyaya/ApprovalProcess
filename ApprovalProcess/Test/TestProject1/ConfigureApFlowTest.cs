@@ -5,52 +5,52 @@ using ExecutableActionNames = Ap.Share.Actions.ExecutableActionNames;
 
 namespace TestProject1
 {
-	public class ConfigureApFlowTest : BaseTest
-	{
-		/// <summary>
-		/// 配置一个两级审批流程
-		/// </summary>
-		/// <returns></returns>
-		[Fact]
-		public async Task ConfigureTwoLevelAp()
-		{
-			var machine = new StateMachine<string, string>("Edit");
+    public class ConfigureApFlowTest : BaseTest
+    {
+        /// <summary>
+        /// 配置一个两级审批流程
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task ConfigureTwoLevelAp()
+        {
+            var machine = new StateMachine<string, string>("Edit");
 
-			// 编辑 -> 提交
-			machine.Configure("Edit")
-				.OnEntry(ExecutableActionNames.OnEntryTriggerRecording)
-				.Permit("Submitted", "FirstApprove");
+            NextApproverConfiguration configuration = new NextApproverConfiguration
+            {
+                Rule = ApprovalRule.ApprovedByOrg
+            };
 
-			// 退回后，重写 -> 编辑状态
-			machine.Configure("Return")
-				.OnEntry(ExecutableActionNames.OnEntrySetCleanNextApprover)
-				.OnEntry(ExecutableActionNames.OnEntryTriggerRecording)
-				.Permit("Rewrite", "Edit");
+            // 编辑 -> 提交
+            machine.Configure("Edit")
+                .OnEntry(ExecutableActionNames.OnEntryTriggerRecording)
+                .Permit("Submitted", "FirstApprove");
 
-			NextApproverConfiguration configuration = new NextApproverConfiguration
-			{
-				Rule = ApprovalRule.ApprovedByOrg
-			};
+            // 退回后，重写 -> 编辑状态
+            machine.Configure("Return")
+                .OnEntry(ExecutableActionNames.OnEntryTriggerRecording)
+                .OnEntry(ExecutableActionNames.OnEntrySetCleanNextApprover)
+                .Permit("Rewrite", "Edit");
 
-			// 第一级审批
-			machine.Configure("FirstApprove")
-				.OnEntry(ExecutableActionNames.OnEntrySetNextApprover, configuration)
-				.OnEntry(ExecutableActionNames.OnEntryTriggerRecording)
-				.Permit("FirstApprovedPass", "SecondApprove")
-				.Permit("Reject", "Return");
+            // 第一级审批
+            machine.Configure("FirstApprove")
+                .OnEntry(ExecutableActionNames.OnEntryTriggerRecording)
+                .OnEntry(ExecutableActionNames.OnEntrySetNextApprover, configuration)
+                .Permit("FirstApprovedPass", "SecondApprove")
+                .Permit("Reject", "Return");
 
-			// 第二级审批
-			machine.Configure("SecondApprove")
-				.OnEntry(ExecutableActionNames.OnEntrySetNextApprover, configuration)
-				.OnEntry(ExecutableActionNames.OnEntryTriggerRecording)
-				.Permit("SecondApprovedPass", "Completed")
-				.Permit("Reject", "Return");
+            // 第二级审批
+            machine.Configure("SecondApprove")
+                .OnEntry(ExecutableActionNames.OnEntryTriggerRecording)
+                .OnEntry(ExecutableActionNames.OnEntrySetNextApprover, configuration)
+                .Permit("SecondApprovedPass", "Completed")
+                .Permit("Reject", "Return");
 
-			var service = GetRequiredService<IStateMachineService>();
-			var entity = await service.SaveAsync(machine);
+            var service = GetRequiredService<IStateMachineService>();
+            var entity = await service.SaveAsync(machine);
 
-			Assert.NotNull(entity);
-			Assert.NotNull(entity.Id);
-		}
-	}
+            Assert.NotNull(entity);
+            Assert.NotNull(entity.Id);
+        }
+    }
 }

@@ -9,6 +9,7 @@ namespace Ap.Share.Actions.Entry
     public static class EntryActionContextExtensions
     {
         public const string FirerInfoKey = nameof(FirerInfoKey);
+        public const string TriggeredRecord = nameof(TriggeredRecord);
 
         public static async ValueTask<Employee> GetEmployeeCacheAsync<TState, TTrigger>(
             this EntryActionContext<TState, TTrigger> context,
