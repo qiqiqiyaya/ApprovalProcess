@@ -22,22 +22,6 @@ namespace Ap.Repository.EfSqlserver.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Ap.Share.Entities.EmployeeEntity", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OrganizationId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Ap_Employee", (string)null);
-                });
-
             modelBuilder.Entity("Ap.Share.Entities.ManagerEntity", b =>
                 {
                     b.Property<string>("Id")
@@ -127,6 +111,23 @@ namespace Ap.Repository.EfSqlserver.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Ap_TriggeredRecord", (string)null);
+                });
+
+            modelBuilder.Entity("Ap.Share.Entities.UserEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("OrganizationId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ap_User", (string)null);
                 });
 
             modelBuilder.Entity("Ap.Share.Entities.ManagerEntity", b =>

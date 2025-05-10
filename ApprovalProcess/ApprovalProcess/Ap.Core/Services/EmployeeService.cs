@@ -14,7 +14,7 @@ namespace Ap.Core.Services
             _repository = repository;
         }
 
-        public async ValueTask<Employee> GetAsync(string id)
+        public async ValueTask<User> GetAsync(string id)
         {
             var employee = await _repository.GetEmployeeAsync(id);
             return employee;

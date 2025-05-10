@@ -19,7 +19,7 @@ namespace Ap.Share.Models
         /// <summary>
         /// 能操作此状态机的人
         /// </summary>
-        public List<Employee> Firer { get; set; }
+        public List<User> Firer { get; set; }
 
         /// <summary>
         /// 能操作此状态机的组织

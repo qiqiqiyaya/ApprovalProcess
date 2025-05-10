@@ -11,12 +11,12 @@ namespace Ap.Share.Actions.Entry
         public const string FirerInfoKey = nameof(FirerInfoKey);
         public const string TriggeredRecord = nameof(TriggeredRecord);
 
-        public static async ValueTask<Employee> GetEmployeeCacheAsync<TState, TTrigger>(
+        public static async ValueTask<User> GetEmployeeCacheAsync<TState, TTrigger>(
             this EntryActionContext<TState, TTrigger> context,
             string employeeId,
             string cacheKey)
         {
-            var value = context.GetObject<Employee>(cacheKey);
+            var value = context.GetObject<User>(cacheKey);
             if (value == null)
             {
                 value = await context.GetEmployeeAsync(employeeId);
@@ -26,7 +26,7 @@ namespace Ap.Share.Actions.Entry
             return value;
         }
 
-        public static async ValueTask<Employee> GetEmployeeAsync<TState, TTrigger>(this EntryActionContext<TState, TTrigger> context,
+        public static async ValueTask<User> GetEmployeeAsync<TState, TTrigger>(this EntryActionContext<TState, TTrigger> context,
             string id)
         {
             var service = context.LazyGetRequiredService<IEmployeeService>();

@@ -5,6 +5,6 @@ namespace Ap.Share.Services
 {
     public interface IEmployeeService
     {
-        ValueTask<Employee> GetAsync(string id);
+        ValueTask<User> GetAsync(string id);
     }
 }

@@ -12,19 +12,6 @@ namespace Ap.Repository.EfSqlserver.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Ap_Employee",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "varchar(50)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ap_Employee", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Ap_NextApprover",
                 columns: table => new
                 {
@@ -69,6 +56,19 @@ namespace Ap.Repository.EfSqlserver.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Ap_User",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(50)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", nullable: false),
+                    OrganizationId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ap_User", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Ap_Manager",
                 columns: table => new
                 {
@@ -97,9 +97,6 @@ namespace Ap.Repository.EfSqlserver.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Ap_Employee");
-
-            migrationBuilder.DropTable(
                 name: "Ap_Manager");
 
             migrationBuilder.DropTable(
@@ -107,6 +104,9 @@ namespace Ap.Repository.EfSqlserver.Migrations
 
             migrationBuilder.DropTable(
                 name: "Ap_TriggeredRecord");
+
+            migrationBuilder.DropTable(
+                name: "Ap_User");
 
             migrationBuilder.DropTable(
                 name: "Ap_Organization");

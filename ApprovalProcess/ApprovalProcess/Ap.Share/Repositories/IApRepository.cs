@@ -7,7 +7,7 @@ namespace Ap.Share.Repositories
 {
     public interface IApRepository
     {
-        ValueTask<Employee> GetEmployeeAsync(string id);
+        ValueTask<User> GetEmployeeAsync(string id);
 
         ValueTask<TriggeredRecordEntity> SaveTriggeredRecordAsync(TriggeredRecordEntity entity);
 

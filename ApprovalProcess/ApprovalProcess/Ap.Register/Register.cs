@@ -22,6 +22,10 @@ namespace Ap.Register
 			service.AddTransient<IOrganizationManager, OrganizationManager>();
 			service.AddTransient<IApRepository, ApRepository>();
 
+			service.AddSingleton<UserAccessor>();
+			service.AddSingleton<ICurrentUser>(serviceProvider => serviceProvider.GetRequiredService<UserAccessor>());
+			service.AddSingleton<IChangeCurrentUser>(serviceProvider => serviceProvider.GetRequiredService<UserAccessor>());
+
 			service.AddDbContext<ApDbContext>((serviceProvider, options) =>
 			{
 				var logger = serviceProvider.GetRequiredService<ILogger<ApDbContext>>();

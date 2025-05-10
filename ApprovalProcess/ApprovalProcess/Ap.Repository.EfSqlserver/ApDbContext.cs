@@ -15,7 +15,7 @@ namespace Ap.Repository.EfSqlserver
 
 		}
 
-		public DbSet<EmployeeEntity> Employees { get; set; }
+		public DbSet<UserEntity> Users { get; set; }
 
 		public DbSet<OrganizationEntity> Organizations { get; set; }
 
@@ -27,10 +27,11 @@ namespace Ap.Repository.EfSqlserver
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<EmployeeEntity>(model =>
+			modelBuilder.Entity<UserEntity>(model =>
 			{
-				model.ToTable("Ap_Employee").HasKey(s => s.Id);
+				model.ToTable("Ap_User").HasKey(s => s.Id);
 				model.Property(s => s.Id).HasColumnType("varchar(50)").IsRequired();
+				model.Property(s => s.Name).HasColumnType("nvarchar(200)").IsRequired();
 			});
 
 			modelBuilder.Entity<OrganizationEntity>(model =>
