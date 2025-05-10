@@ -14,9 +14,9 @@ namespace Ap.Repository.EfSqlserver
             _context = context;
         }
 
-        public async ValueTask<Employee> GetEmployeeAsync(string id)
+        public async ValueTask<User> GetEmployeeAsync(string id)
         {
-            var employee = await _context.Employees.SingleAsync(s => s.Id == id);
+            var employee = await _context.Users.SingleAsync(s => s.Id == id);
 
             var organization = await _context.Organizations
                 .Include(s => s.Managers)
@@ -25,11 +25,11 @@ namespace Ap.Repository.EfSqlserver
             return Convert(employee, organization);
         }
 
-        protected Employee Convert(EmployeeEntity employee, OrganizationEntity organization)
+        protected User Convert(UserEntity user, OrganizationEntity organization)
         {
-            return new Employee()
+            return new User()
             {
-                Id = employee.Id,
+                Id = user.Id,
                 Organization = new Organization()
                 {
                     Id = organization.Id,
@@ -41,6 +41,27 @@ namespace Ap.Repository.EfSqlserver
                     }).ToList()
                 }
             };
+        }
+
+        public async ValueTask<TriggeredRecordEntity> SaveTriggeredRecordAsync(TriggeredRecordEntity entity)
+        {
+            await _context.TriggeredRecords.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity;
+        }
+
+        public async ValueTask<TriggeredRecordEntity?> GetLastTriggeredRecordAsync(string stateMachineId)
+        {
+            return await _context.TriggeredRecords
+                .Where(x => x.StateMachineId == stateMachineId)
+                .OrderByDescending(s => s.CreateTime)
+                .FirstOrDefaultAsync();
+        }
+
+        public async ValueTask SaveNextApproversAsync(IEnumerable<NextApproverEntity> entities)
+        {
+            await _context.NextApprovers.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
         }
     }
 }

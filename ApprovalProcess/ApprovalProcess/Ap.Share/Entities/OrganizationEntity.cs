@@ -2,14 +2,14 @@
 
 namespace Ap.Share.Entities
 {
-    public class OrganizationEntity
-    {
-        public string Id { get; set; }
+	public class OrganizationEntity
+	{
+		public string Id { get; set; }
 
-        public string Name { get; set; }
+		public string Name { get; set; }
 
-        public string ParentId { get; set; }
+		public string ParentId { get; set; }
 
-        public ICollection<ManagerEntity> Managers { get; set; } = new List<ManagerEntity>();
-    }
+		public ICollection<ManagerEntity> Managers { get; set; } = new List<ManagerEntity>();
+	}
 }

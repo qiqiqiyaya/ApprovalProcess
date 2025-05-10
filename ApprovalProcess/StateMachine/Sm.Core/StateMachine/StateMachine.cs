@@ -16,6 +16,8 @@ namespace Sm.Core.StateMachine
 
         }
 
+        public string Id { get; }
+
         /// <summary>
         /// 初始状态
         /// </summary>
@@ -89,7 +91,7 @@ namespace Sm.Core.StateMachine
         private async ValueTask Entry(AfterFireContext<TState, TTrigger> context)
         {
             var settings = context.CurrentSettings;
-            await settings.Entry(new EntryActionContext<TState, TTrigger>(context.ServiceProvider, context));
+            await settings.Entry(new EntryActionContext<TState, TTrigger>(Id, context.ServiceProvider, context));
         }
 
         private StateSettings<TState, TTrigger> GetRepresentation(TState state)
@@ -102,7 +104,10 @@ namespace Sm.Core.StateMachine
             throw new Exception($"状态机没有配置状态 {state}");
         }
 
-        internal StateMachine() { }
+        internal StateMachine(string id)
+        {
+            Id = id;
+        }
 
         internal StateMachine<TState, TTrigger> SetInitialState(TState state)
         {

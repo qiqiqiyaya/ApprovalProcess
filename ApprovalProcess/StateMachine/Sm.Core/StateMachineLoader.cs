@@ -7,30 +7,36 @@ using Sm.Share.Repositories;
 
 namespace Sm.Core
 {
-    public class StateMachineLoader(
-        ISmRepository repository,
-        ToStateSettingsContainer toStateSettingsContainer,
-        ToStateMachineContainer toStateMachineContainer)
-        : IStateMachineLoader
-    {
-        public async ValueTask<StateMachine<string, string>> GetStateMachineAsync(string id)
-        {
-            var entity = await repository.GetStateMachine(id);
-            var converter = toStateMachineContainer.Get<StateMachineEntity, string, string>();
+	public class StateMachineLoader(
+		ISmRepository repository,
+		ToStateSettingsContainer toStateSettingsContainer,
+		ToStateMachineContainer toStateMachineContainer)
+		: IStateMachineLoader
+	{
+		public async ValueTask<StateMachine<string, string>> GetStateMachineAsync(string id)
+		{
+			var entity = await repository.GetStateMachine(id);
+			var converter = toStateMachineContainer.Get<StateMachineEntity, string, string>();
+			var stateMachine = await converter.To(entity, entity.InitialState);
+			return stateMachine;
+		}
 
+		public async ValueTask<StateMachine<string, string>> GetStateMachineAsync(string id, string currentState)
+		{
+			var entity = await repository.GetStateMachine(id);
+			var converter = toStateMachineContainer.Get<StateMachineEntity, string, string>();
+			var stateMachine = await converter.To(entity, currentState);
+			return stateMachine;
+		}
 
-            var stateMachine = await converter.To(entity);
-            return stateMachine;
-        }
+		public async ValueTask<StateSettings<string, string>> GetStateSettings(string id)
+		{
+			var entity = await repository.GetStateSettings(id);
 
-        public async ValueTask<StateSettings<string, string>> GetStateSettings(string id)
-        {
-            var entity = await repository.GetStateSettings(id);
+			var converter = toStateSettingsContainer.Get<StateSettingsEntity, string, string>();
+			var stateSettings = await converter.To(entity);
 
-            var converter = toStateSettingsContainer.Get<StateSettingsEntity, string, string>();
-            var stateSettings = await converter.To(entity);
-
-            return stateSettings;
-        }
-    }
+			return stateSettings;
+		}
+	}
 }

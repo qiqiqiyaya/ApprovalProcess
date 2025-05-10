@@ -1,4 +1,5 @@
-﻿using Sm.Core;
+﻿using Ap.Share.Repositories;
+using Sm.Core;
 using Sm.Core.StateMachine;
 
 namespace TestProject1
@@ -9,7 +10,20 @@ namespace TestProject1
         public async Task CreateApFlowTest()
         {
             var loader = GetRequiredService<IStateMachineLoader>();
-            var sm = await loader.GetStateMachineAsync("e3e3bab8d75d4989b14cad34575f20b2");
+            var apRepository = GetRequiredService<IApRepository>();
+
+            string id = "95d090c1a57d4fafaf0c5e96d715c560";
+            var record = await apRepository.GetLastTriggeredRecordAsync(id);
+            StateMachine<string, string> sm;
+
+            if (record != null)
+            {
+                sm = await loader.GetStateMachineAsync(id, record.CurrentState);
+            }
+            else
+            {
+                sm = await loader.GetStateMachineAsync(id);
+            }
 
             await sm.Fire(new FireContext<string, string>(ServiceProvider, "Submitted"));
 

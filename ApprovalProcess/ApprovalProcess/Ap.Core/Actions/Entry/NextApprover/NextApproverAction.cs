@@ -21,19 +21,19 @@ namespace Ap.Core.Actions.Entry.NextApprover
             _configuration = configuration;
         }
 
-        public ValueTask InvokeAsync(EntryActionContext<string, string> context, Func<EntryActionContext<string, string>, ValueTask> next)
+        public async ValueTask InvokeAsync(EntryActionContext<string, string> context, Func<EntryActionContext<string, string>, ValueTask> next)
         {
             switch (_configuration.Rule)
             {
                 case ApprovalRule.ApprovedByOrg:
                     var aa = context.GetRequiredService<IApprovedByOrgService>();
-                    aa.InvokeAsync(context);
+                    await aa.InvokeAsync(context);
                     break;
                 case ApprovalRule.CustomApproval:
                     break;
             }
 
-            return next(context);
+            await next(context);
         }
     }
 }

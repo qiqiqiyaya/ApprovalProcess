@@ -6,35 +6,37 @@ using Sm.Share.Entities;
 
 namespace Sm.Core.Converts.ToStateMachines
 {
-    public class EntityToStateMachine : IConvertToStateMachine<StateMachineEntity, string, string>
-    {
-        private readonly ToStateSettingsContainer _container;
+	public class EntityToStateMachine : IConvertToStateMachine<StateMachineEntity, string, string>
+	{
+		private readonly ToStateSettingsContainer _container;
 
-        public EntityToStateMachine(ToStateSettingsContainer container)
-        {
-            _container = container;
-        }
+		public EntityToStateMachine(ToStateSettingsContainer container)
+		{
+			_container = container;
+		}
 
-        public async ValueTask<StateMachine<string, string>> To(StateMachineEntity parameter)
-        {
-            IStateMachineBuilder<string, string> builder = new StateMachineBuilder<string, string>();
+		public async ValueTask<StateMachine<string, string>> To(StateMachineEntity parameter, string currentState)
+		{
+			IStateMachineBuilder<string, string> builder = new StateMachineBuilder<string, string>();
 
-            var converter = _container.Get<StateSettingsEntity, string, string>();
+			var converter = _container.Get<StateSettingsEntity, string, string>();
 
-            var settingsList = new List<StateSettings<string, string>>();
-            foreach (var setting in parameter.StateSettings)
-            {
-                settingsList.Add(await converter.To(setting));
-            }
+			var settingsList = new List<StateSettings<string, string>>();
+			foreach (var setting in parameter.StateSettings)
+			{
+				settingsList.Add(await converter.To(setting));
+			}
 
-            builder.SetInitialState(parameter.InitialState).SetCurrentState(parameter.CurrentState);
+			builder.SetId(parameter.Id)
+				.SetInitialState(parameter.InitialState)
+				.SetCurrentState(currentState);
 
-            foreach (var item in settingsList)
-            {
-                builder.SetStateConfiguration(item);
-            }
+			foreach (var item in settingsList)
+			{
+				builder.SetStateConfiguration(item);
+			}
 
-            return builder.Build();
-        }
-    }
+			return builder.Build();
+		}
+	}
 }
