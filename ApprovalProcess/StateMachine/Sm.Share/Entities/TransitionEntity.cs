@@ -10,9 +10,9 @@ namespace Sm.Share.Entities
         public string Trigger { get; set; }
 
         /// <summary>
-        /// DestinationState 目标状态
+        /// Destination State 目标状态
         /// </summary>
-        public string DtState { get; set; }
+        public string Destination { get; set; }
 
         public string StateSettingsId { get; set; }
 

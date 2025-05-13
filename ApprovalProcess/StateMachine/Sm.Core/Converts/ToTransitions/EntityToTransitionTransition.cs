@@ -7,7 +7,7 @@ namespace Sm.Core.Converts.ToTransitions
     {
         public Transition<string, string> To(TransitionEntity parameter)
         {
-            return new Transition<string, string>(parameter.Trigger, parameter.DtState);
+            return new Transition<string, string>(parameter.Trigger, parameter.Destination);
         }
     }
 }

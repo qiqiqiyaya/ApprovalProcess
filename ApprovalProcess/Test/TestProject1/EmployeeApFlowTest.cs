@@ -27,6 +27,8 @@ namespace TestProject1
 
             await sm.Fire(new FireContext<string, string>(ServiceProvider, "Submitted"));
 
+            await sm.Fire(new FireContext<string, string>(ServiceProvider, "Submitted"));
+
             Assert.NotNull(sm);
             Assert.NotNull(sm.CurrentState);
             Assert.NotNull(sm.InitialState);

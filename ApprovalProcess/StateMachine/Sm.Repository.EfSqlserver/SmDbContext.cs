@@ -55,7 +55,7 @@ namespace Sm.Repository.EfSqlserver
 
 				model.Property(s => s.Id).HasColumnType("varchar(50)").IsRequired();
 				model.Property(s => s.Trigger).HasColumnType("nvarchar(100)").IsRequired();
-				model.Property(s => s.DtState).HasColumnType("nvarchar(100)").IsRequired();
+				model.Property(s => s.Destination).HasColumnType("nvarchar(100)").IsRequired();
 				model.Property(s => s.StateSettingsId).HasColumnType("varchar(50)").IsRequired();
 
 				model.HasOne(s => s.StateSettings).WithMany(s => s.Transitions).HasForeignKey(s => s.StateSettingsId);

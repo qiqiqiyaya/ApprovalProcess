@@ -11,7 +11,7 @@ namespace Sm.Repository.FreeSql.EntityConfigurations
 
             model.Property(s => s.Id).HasColumnType("TEXT").IsRequired();
             model.Property(s => s.Trigger).HasColumnType("TEXT").IsRequired();
-            model.Property(s => s.DtState).HasColumnType("TEXT").IsRequired();
+            model.Property(s => s.Destination).HasColumnType("TEXT").IsRequired();
             model.Property(s => s.StateSettingsId).HasColumnType("TEXT").IsRequired();
 
             model.HasOne(s => s.StateSettings).HasForeignKey(s => s.StateSettingsId);

@@ -41,7 +41,7 @@ namespace Sm.Core.Services
                     {
                         Id = Guid.NewGuid().ToString("N"),
                         Trigger = converter.ToTrigger(transition.Trigger),
-                        DtState = converter.ToState(transition.DtState),
+                        Destination = converter.ToState(transition.DtState),
                         StateSettingsId = settingEntity.Id,
                     });
                 }
