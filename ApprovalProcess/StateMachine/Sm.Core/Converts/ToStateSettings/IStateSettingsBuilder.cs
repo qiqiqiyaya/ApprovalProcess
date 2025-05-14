@@ -7,7 +7,7 @@ namespace Sm.Core.Converts.ToStateSettings
     {
         IStateSettingsBuilder<TState, TTrigger> SetState(TState state);
 
-        IStateSettingsBuilder<TState, TTrigger> SetTransitions(params Transition<TState, TTrigger>[] transitions);
+        IStateSettingsBuilder<TState, TTrigger> SetTransitions(params TriggerBehaviour<TState, TTrigger>[] transitions);
 
         IStateSettingsBuilder<TState, TTrigger> SetEntryAction(string actionName);
 
@@ -15,6 +15,6 @@ namespace Sm.Core.Converts.ToStateSettings
 
         IStateSettingsBuilder<TState, TTrigger> SetExitAction(string actionName);
 
-        StateSettings<TState, TTrigger> Build();
+        StateRepresentation<TState, TTrigger> Build();
     }
 }

@@ -11,8 +11,8 @@ namespace Sm.Core.Converts.ToStateMachines
 
 		public TState CurrentState { get; set; }
 
-		public Dictionary<TState, StateSettings<TState, TTrigger>> StateConfigurations { get; set; } =
-			new Dictionary<TState, StateSettings<TState, TTrigger>>();
+		public Dictionary<TState, StateRepresentation<TState, TTrigger>> StateConfigurations { get; set; } =
+			new Dictionary<TState, StateRepresentation<TState, TTrigger>>();
 
 	}
 }

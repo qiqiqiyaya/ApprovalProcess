@@ -7,6 +7,6 @@ namespace Sm.Core.Converts.ToTransitions
     /// </summary>
     public interface IConvertToTransition<in TParameter, TState, TTrigger>
     {
-        Transition<TState, TTrigger> To(TParameter parameter);
+        TriggerBehaviour<TState, TTrigger> To(TParameter parameter);
     }
 }

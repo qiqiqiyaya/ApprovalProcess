@@ -191,25 +191,39 @@ namespace Sm.Core.StateMachine
         //    }
         //}
 
-        private readonly StateSettingsList<TState, TTrigger> _children = new StateSettingsList<TState, TTrigger>();
+        private StateSettingsList<TState, TTrigger> _children;
 
-        public StateSettings<TState, TTrigger> Children(TState completion, ParallelRelationship relationship, Action<StateSettingsBuilder<TState, TTrigger>> buildChildren)
+        public StateSettings<TState, TTrigger> ParallelOr(TState completion, Action<StateSettingsBuilder<TState, TTrigger>> buildChildren)
         {
+            if (_children != null) throw new ArgumentException("ParallelOr or ParallelAnd can only be called once");
             var builder = new StateSettingsBuilder<TState, TTrigger>();
             buildChildren(builder);
 
+            _children = new StateSettingsList<TState, TTrigger>(ParallelRelationship.Or);
+            _children.AddRange(builder.Build());
+            return this;
+        }
+
+        public StateSettings<TState, TTrigger> ParallelAnd(TState completion, Action<StateSettingsBuilder<TState, TTrigger>> buildChildren)
+        {
+            if (_children != null) throw new ArgumentException("ParallelOr or ParallelAnd can only be called once");
+            var builder = new StateSettingsBuilder<TState, TTrigger>();
+            buildChildren(builder);
+
+            _children = new StateSettingsList<TState, TTrigger>(ParallelRelationship.Or);
             _children.AddRange(builder.Build());
             return this;
         }
     }
 
-    public class StateSettingsList<TState, TTrigger> : List<StateSettings<TState, TTrigger>>
+    public class StateSettingsList<TState, TTrigger>(ParallelRelationship relationship) : List<StateSettings<TState, TTrigger>>
     {
-        public ParallelRelationship Relationship { get; set; }
+        public ParallelRelationship Relationship { get; } = relationship;
     }
 
     public class StateSettingsBuilder<TState, TTrigger>
     {
+
         private readonly List<StateSettings<TState, TTrigger>> _stateSettings = new List<StateSettings<TState, TTrigger>>();
 
         public StateSettings<TState, TTrigger> New(TState state)

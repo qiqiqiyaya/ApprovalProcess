@@ -18,7 +18,7 @@ namespace Sm.Core.Converts.ToStateSettings
             return this;
         }
 
-        public IStateSettingsBuilder<TState, TTrigger> SetTransitions(params Transition<TState, TTrigger>[] transitions)
+        public IStateSettingsBuilder<TState, TTrigger> SetTransitions(params TriggerBehaviour<TState, TTrigger>[] transitions)
         {
             _configuration.Transitions.AddRange(transitions);
             return this;
@@ -42,9 +42,9 @@ namespace Sm.Core.Converts.ToStateSettings
             return this;
         }
 
-        public StateSettings<TState, TTrigger> Build()
+        public StateRepresentation<TState, TTrigger> Build()
         {
-            var stateSettings = new StateSettings<TState, TTrigger>();
+            var stateSettings = new StateRepresentation<TState, TTrigger>();
             stateSettings.SetState(_configuration.State)
                 .SetTransitions(_configuration.Transitions);
 

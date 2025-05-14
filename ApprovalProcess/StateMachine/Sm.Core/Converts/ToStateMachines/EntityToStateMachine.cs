@@ -21,7 +21,7 @@ namespace Sm.Core.Converts.ToStateMachines
 
 			var converter = _container.Get<StateSettingsEntity, string, string>();
 
-			var settingsList = new List<StateSettings<string, string>>();
+			var settingsList = new List<StateRepresentation<string, string>>();
 			foreach (var setting in parameter.StateSettings)
 			{
 				settingsList.Add(await converter.To(setting));

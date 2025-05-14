@@ -17,7 +17,7 @@ namespace Sm.Core.Actions.Entry
 
 		public TTrigger Trigger => AfterFire.Trigger;
 
-		public TState CurrentState => AfterFire.CurrentSettings.State;
+		public TState CurrentState => AfterFire.CurrentRepresentation.State;
 
 		public TransitionDescription<TState, TTrigger> TransitionDescription => AfterFire.TransitionDescription;
 

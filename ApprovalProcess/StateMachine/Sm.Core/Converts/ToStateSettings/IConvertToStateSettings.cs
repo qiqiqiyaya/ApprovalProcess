@@ -5,6 +5,6 @@ namespace Sm.Core.Converts.ToStateSettings
 {
     public interface IConvertToStateSettings<in TParameter, TState, TTrigger>
     {
-        ValueTask<StateSettings<TState, TTrigger>> To(TParameter parameter);
+        ValueTask<StateRepresentation<TState, TTrigger>> To(TParameter parameter);
     }
 }

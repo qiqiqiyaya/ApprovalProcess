@@ -17,7 +17,7 @@ namespace Sm.Core.Converts.ToStateSettings
         IExecutableActionService executableActionService)
         : IConvertToStateSettings<StateSettingsEntity, string, string>
     {
-        public async ValueTask<StateSettings<string, string>> To(StateSettingsEntity parameter)
+        public async ValueTask<StateRepresentation<string, string>> To(StateSettingsEntity parameter)
         {
             IStateSettingsBuilder<string, string> builder = new StateSettingsBuilder<string, string>();
 

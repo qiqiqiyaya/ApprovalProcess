@@ -1,23 +1,36 @@
 ﻿namespace Sm.Core.StateMachine
 {
     /// <summary>
-    /// 状态转换触发器
+    /// Describes a state transition.
     /// </summary>
-    /// <typeparam name="TState">状态</typeparam>
-    /// <typeparam name="TTrigger">触发器</typeparam>
     public class Transition<TState, TTrigger>
     {
-        public Transition(TTrigger trigger, TState dt)
+        /// <summary>
+        /// Construct a transition.
+        /// </summary>
+        /// <param name="source">The state transitioned from.</param>
+        /// <param name="destination">The state transitioned to.</param>
+        /// <param name="trigger">The trigger that caused the transition.</param>
+        public Transition(TState source, TState destination, TTrigger trigger)
         {
+            Source = source;
+            Destination = destination;
             Trigger = trigger;
-            DtState = dt;
         }
 
-        public TTrigger Trigger { get; set; }
+        /// <summary>
+        /// The state transitioned from.
+        /// </summary>
+        public TState Source { get; }
 
         /// <summary>
-        /// DestinationState
+        /// The state transitioned to.
         /// </summary>
-        public TState DtState { get; set; }
+        public TState Destination { get; }
+
+        /// <summary>
+        /// The trigger that caused the transition.
+        /// </summary>
+        public TTrigger Trigger { get; }
     }
 }

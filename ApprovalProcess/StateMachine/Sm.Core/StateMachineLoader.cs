@@ -29,7 +29,7 @@ namespace Sm.Core
 			return stateMachine;
 		}
 
-		public async ValueTask<StateSettings<string, string>> GetStateSettings(string id)
+		public async ValueTask<StateRepresentation<string, string>> GetStateSettings(string id)
 		{
 			var entity = await repository.GetStateSettings(id);
 
