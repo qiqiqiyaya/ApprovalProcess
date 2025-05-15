@@ -16,7 +16,7 @@ namespace Ap.TestCase
             // 编辑 -> 提交
             machine.Configure("Edit")
                 .PermitReentry("Edited")
-                .Permit("Submitted", "FirstApprove");
+                .ForkOr("Submitted",);
 
             // 退回后，重写 -> 编辑状态
             machine.Configure("Return")
