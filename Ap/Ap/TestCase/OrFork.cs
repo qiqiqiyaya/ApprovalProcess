@@ -1,53 +1,24 @@
 ﻿using Ap.Flow;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ap.TestCase
 {
-    public static class OrFork
-    {
-        public static void OrForkTest()
-        {
-            var machine = new StateMachine<string, string>("Edit");
+	public static class OrFork
+	{
+		public static void OrForkTest()
+		{
+			var machine = new StateMachine();
 
-            // 编辑 -> 提交
-            machine.Configure("Edit")
-                .PermitReentry("Edited")
-                .ForkOr("Submitted",);
+			// 编辑 -> 提交
+			machine.Start("Edit")
+				.Then("FirstApprove")
+				.Then("SecondApprove")
+				.Then("ThirdApprove")
+				.Complete("Completed");
 
-            // 退回后，重写 -> 编辑状态
-            machine.Configure("Return")
-                .Permit("Rewrite", "Edit");
+			machine.Trigger("Submit");
 
-            // 第一级审批
-            machine.ParallelAnd("FirstApprove", builder =>
-            {
-                builder.Configure("FirstApprove_1")
-                    .JumpOut("Reject", "Return")
-                    .JumpOut("ApproveCompleted", "SecondApprove")
-                    .Permit("FirstApprove_1Pass", "SecondApprove_1")
-                    .Finish("FirstApprove_1Pass");
-
-                builder.Configure("FirstApprove_2")
-                    .Permit("Reject", "Return")
-                    .Permit("FirstApprove_2Pass", "SecondApprove_2")
-                    .Finish("SecondApprove_2Pass");
-            });
-
-            // 第二级审批
-            machine.Configure("SecondApprove")
-                .Permit("SecondApprovedPass", "Completed")
-                .Permit("Reject", "Return");
-
-            machine.Id = "1";
-
-            machine.Fire("Submitted");
-            machine.Fire("FirstApprove_2Pass");
-            Console.WriteLine("state: " + machine.CurrentState);
-            Console.Read();
-        }
-    }
+			Console.WriteLine("state: " + machine.CurrentState);
+			Console.Read();
+		}
+	}
 }

@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Flow\branch\" />
+    <Compile Remove="Flow\branch\**" />
+    <EmbeddedResource Remove="Flow\branch\**" />
+    <None Remove="Flow\branch\**" />
   </ItemGroup>
 
 </Project>

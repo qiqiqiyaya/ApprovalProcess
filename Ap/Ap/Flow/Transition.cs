@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Describes a state transition.
 	/// </summary>
-	public class Transition<TState, TTrigger>
+	public class Transition
 	{
 		/// <summary>
 		/// Construct a transition.
@@ -11,7 +11,7 @@
 		/// <param name="source">The state transitioned from.</param>
 		/// <param name="destination">The state transitioned to.</param>
 		/// <param name="trigger">The trigger that caused the transition.</param>
-		public Transition(TState source, TState destination, TTrigger trigger)
+		public Transition(string source, string destination, string trigger)
 		{
 			Source = source;
 			Destination = destination;
@@ -21,16 +21,16 @@
 		/// <summary>
 		/// The state transitioned from.
 		/// </summary>
-		public TState Source { get; }
+		public string Source { get; }
 
 		/// <summary>
 		/// The state transitioned to.
 		/// </summary>
-		public TState Destination { get; }
+		public string Destination { get; }
 
 		/// <summary>
 		/// The trigger that caused the transition.
 		/// </summary>
-		public TTrigger Trigger { get; }
+		public string Trigger { get; }
 	}
 }

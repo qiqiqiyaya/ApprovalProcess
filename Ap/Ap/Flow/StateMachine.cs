@@ -1,153 +1,107 @@
 ﻿using Ap.Flow.Behaviours;
+using Ap.Flow.StateRepresentations;
 
 namespace Ap.Flow
 {
-    public class StateMachine<TState, TTrigger>
-    {
-        public StateMachine(TState initialState)
-        {
-            InitialState = initialState;
-            CurrentState = initialState;
+	public class StateMachine
+	{
+		public string Id { get; set; }
 
-        }
+		public string CurrentState { get; private set; }
 
-        public string Id { get; set; }
+		private Action<string>? _lastStateAction;
 
-        /// <summary>
-        /// 初始状态
-        /// </summary>
-        public TState InitialState { get; private set; }
+		internal IDictionary<string, StateRepresentation> StateConfiguration { get; set; } =
+			new Dictionary<string, StateRepresentation>();
 
-        /// <summary>
-        /// 当前状态
-        /// </summary>
-        public TState CurrentState { get; private set; }
+		internal LinkedList<StateRepresentation> Linked = new LinkedList<StateRepresentation>();
 
-        /// <summary>
-        /// 状态表达集
-        /// </summary>
-        internal IDictionary<TState, StateRepresentation<TState, TTrigger>> StateConfiguration { get; set; } =
-            new Dictionary<TState, StateRepresentation<TState, TTrigger>>();
+		public virtual StateMachine Start(string initialState)
+		{
+			if (!StateConfiguration.TryGetValue(initialState, out StateRepresentation? result))
+			{
+				result = new StateRepresentation(initialState, this);
 
-        /// <summary>
-        /// 配置一个状态内容
-        /// </summary>
-        /// <param name="state"></param>
-        /// <returns></returns>
-        public virtual StateRepresentation<TState, TTrigger> Configure(TState state)
-        {
-            if (!StateConfiguration.TryGetValue(state, out StateRepresentation<TState, TTrigger>? result))
-            {
-                result = new StateRepresentation<TState, TTrigger>(state);
-                StateConfiguration.Add(state, result);
-            }
+				_lastStateAction = destination =>
+				{
+					result.AddTransition(new Submit(destination));
+				};
+				StateConfiguration.Add(initialState, result);
+			}
 
-            return result;
-        }
+			CurrentState = initialState;
+			Linked.AddFirst(result);
+			return this;
+		}
 
-        public void ParallelOr(TState state, Action<SubStateMachine<TState, TTrigger>> builderAction)
-        {
-            if (!StateConfiguration.TryGetValue(state, out StateRepresentation<TState, TTrigger>? result))
-            {
-                result = new StateRepresentation<TState, TTrigger>(state);
-                StateConfiguration.Add(state, result);
-            }
-
-            SubStateMachine<TState, TTrigger> children = new SubStateMachine<TState, TTrigger>(state, this);
-            builderAction(children);
-            result.AddChildren(children);
-        }
-
-        public void ParallelAnd(TState state, Action<SubStateMachine<TState, TTrigger>> builderAction)
-        {
-            if (!StateConfiguration.TryGetValue(state, out StateRepresentation<TState, TTrigger>? result))
-            {
-                result = new StateRepresentation<TState, TTrigger>(state);
-                StateConfiguration.Add(state, result);
-            }
-
-            SubStateMachine<TState, TTrigger> children = new SubStateMachine<TState, TTrigger>(state, this);
-            builderAction(children);
-            result.AddChildren(children);
-        }
-
-        public void Fire(TTrigger trigger)
-        {
-            var currentRepresentation = GetRepresentation(CurrentState);
-            if (currentRepresentation.HasChildren())
-            {
-                ChildrenFire(currentRepresentation, trigger);
-                return;
-            }
-
-            HandleBehaviour(currentRepresentation, trigger);
-        }
-
-        private void HandleBehaviour(StateRepresentation<TState, TTrigger> representation, TTrigger trigger)
-        {
-            var behaviour = representation.FindTriggerBehaviour(trigger);
-            switch (behaviour)
-            {
-                case ReentryTriggerBehaviour<TState, TTrigger> reentry:
-                    {
-                        // Handle transition, and set new state
-                        var transition = new Transition<TState, TTrigger>(CurrentState, behaviour.Destination, trigger);
-                        HandleReentryTrigger(representation, transition);
-                        break;
-                    }
-                case TransitionTriggerBehaviour<TState, TTrigger> transitionTrigger:
-                    {
-                        var transition = new Transition<TState, TTrigger>(CurrentState, behaviour.Destination, trigger);
-                        HandleTransitioningTrigger(representation, transition);
-                        break;
-                    }
-                case JumpOutTriggerBehaviour<TState, TTrigger> jumpOut:
-                    {
-                        var transition = new Transition<TState, TTrigger>(CurrentState, behaviour.Destination, trigger);
-                        HandleJumpOutTrigger(representation, transition);
-                        break;
-                    }
-            }
-        }
-
-        private void ChildrenFire(StateRepresentation<TState, TTrigger> representation, TTrigger trigger)
-        {
-            representation.Children?.Fire(trigger);
-        }
-
-        private void HandleJumpOutTrigger(StateRepresentation<TState, TTrigger> representativeState, Transition<TState, TTrigger> transition)
-        {
-            representativeState.Exit(transition);
-            //var newRepresentation = GetRepresentation(transition.Destination);
+		protected virtual void Handle(string state)
+		{
+			var node = Linked.Last;
+			if (node == null) return;
 
 
-        }
+		}
 
-        private void HandleReentryTrigger(StateRepresentation<TState, TTrigger> representativeState, Transition<TState, TTrigger> transition)
-        {
-            representativeState.Exit(transition);
-            var newRepresentation = GetRepresentation(transition.Destination);
-            CurrentState = newRepresentation.State;
-            //representation = await EnterStateAsync(newRepresentation, transition, args);
-        }
+		public virtual StateMachine Then(string state)
+		{
+			if (!StateConfiguration.TryGetValue(state, out StateRepresentation? result))
+			{
+				result = new StateRepresentation(state, this);
+				_lastStateAction?.Invoke(state);
 
-        private void HandleTransitioningTrigger(StateRepresentation<TState, TTrigger> representativeState, Transition<TState, TTrigger> transition)
-        {
-            representativeState.Exit(transition);
-            CurrentState = transition.Destination;
-            var newRepresentation = GetRepresentation(transition.Destination);
-            //await Entry()
-        }
+				_lastStateAction = destination =>
+				{
+					result.AddTransition(new Approve(destination));
+					result.AddTransition(new ReturnToStart(destination));
+				};
+				StateConfiguration.Add(state, result);
+			}
 
-        private StateRepresentation<TState, TTrigger> GetRepresentation(TState state)
-        {
-            if (StateConfiguration.TryGetValue(state, out StateRepresentation<TState, TTrigger>? result))
-            {
-                return result;
-            }
+			Linked.AddLast(result);
+			return this;
+		}
 
-            throw new Exception($"状态机没有配置状态 {state}");
-        }
+		public virtual StateMachine Complete(string state)
+		{
+			if (!StateConfiguration.TryGetValue(state, out StateRepresentation? result))
+			{
+				result = new StateRepresentation(state, this);
+				_lastStateAction?.Invoke(state);
+				StateConfiguration.Add(state, result);
+			}
 
-    }
+			Linked.AddLast(result);
+			return this;
+		}
+
+		public void Trigger(string trigger)
+		{
+			var currentRepresentation = GetRepresentation(CurrentState);
+			HandleBehaviour(currentRepresentation, trigger);
+		}
+
+		private void HandleBehaviour(StateRepresentation representation, string trigger)
+		{
+			var behaviour = representation.FindTriggerBehaviour(trigger);
+			var transition = new Transition(CurrentState, behaviour.Destination, trigger);
+
+			var next = GetRepresentation(behaviour.Destination);
+			next.Entry();
+
+			behaviour.InvokeAsync(new BehaviourContext(transition));
+			CurrentState = behaviour.Destination;
+			representation.Exit(transition);
+		}
+
+		private StateRepresentation GetRepresentation(string state)
+		{
+			if (StateConfiguration.TryGetValue(state, out StateRepresentation? result))
+			{
+				return result;
+			}
+
+			throw new Exception($"状态机没有配置状态 {state}");
+		}
+
+	}
 }
