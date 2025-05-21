@@ -1,107 +1,145 @@
 ﻿using Ap.Flow.Behaviours;
-using Ap.Flow.StateRepresentations;
+using Ap.Flow.State;
 
 namespace Ap.Flow
 {
-	public class StateMachine
-	{
-		public string Id { get; set; }
+    public class StateMachine : IStateContainer
+    {
+        public string Id { get; set; }
 
-		public string CurrentState { get; private set; }
+        public string CurrentState { get; private set; }
 
-		private Action<string>? _lastStateAction;
+        public IDictionary<string, IState> StateConfiguration { get; set; } =
+            new Dictionary<string, IState>();
 
-		internal IDictionary<string, StateRepresentation> StateConfiguration { get; set; } =
-			new Dictionary<string, StateRepresentation>();
+        internal LinkedList<IState> Linked = new LinkedList<IState>();
 
-		internal LinkedList<StateRepresentation> Linked = new LinkedList<StateRepresentation>();
+        public List<string> GetTriggers()
+        {
+            var state = GetRepresentation(CurrentState);
+            return state.Transitions.Select(s => s.Key).ToList();
+        }
 
-		public virtual StateMachine Start(string initialState)
-		{
-			if (!StateConfiguration.TryGetValue(initialState, out StateRepresentation? result))
-			{
-				result = new StateRepresentation(initialState, this);
+        public virtual StateMachine Start(string state)
+        {
+            if (!StateConfiguration.TryGetValue(state, out IState? result))
+            {
+                result = new StateBase(state, this);
+                StateHandle(state, destination => result.AddTransition(new Submit(destination)));
+                StateConfiguration.Add(state, result);
+            }
 
-				_lastStateAction = destination =>
-				{
-					result.AddTransition(new Submit(destination));
-				};
-				StateConfiguration.Add(initialState, result);
-			}
+            CurrentState = state;
+            Linked.AddFirst(result);
+            return this;
+        }
 
-			CurrentState = initialState;
-			Linked.AddFirst(result);
-			return this;
-		}
+        public virtual StateMachine Then(string state)
+        {
+            if (!StateConfiguration.TryGetValue(state, out IState? result))
+            {
+                result = new StateBase(state, this);
+                StateHandle(state, destination =>
+                {
+                    result.AddTransition(new Approve(destination));
+                    result.AddTransition(new ReturnToStart(destination));
+                });
+                StateConfiguration.Add(state, result);
+            }
 
-		protected virtual void Handle(string state)
-		{
-			var node = Linked.Last;
-			if (node == null) return;
+            Linked.AddLast(result);
+            return this;
+        }
 
+        public virtual StateMachine Then(string state, Action<IState> configure)
+        {
+            if (!StateConfiguration.TryGetValue(state, out IState? result))
+            {
+                result = new StateBase(state, this);
+                StateHandle(state, destination =>
+                {
+                    result.AddTransition(new Approve(destination));
+                    result.AddTransition(new ReturnToStart(destination));
+                });
+                configure.Invoke(result);
+                StateConfiguration.Add(state, result);
+            }
 
-		}
+            Linked.AddLast(result);
+            return this;
+        }
 
-		public virtual StateMachine Then(string state)
-		{
-			if (!StateConfiguration.TryGetValue(state, out StateRepresentation? result))
-			{
-				result = new StateRepresentation(state, this);
-				_lastStateAction?.Invoke(state);
+        public virtual StateMachine Complete(string state)
+        {
+            if (!StateConfiguration.TryGetValue(state, out IState? result))
+            {
+                result = new StateBase(state, this);
+                StateHandle(state);
+                StateConfiguration.Add(state, result);
+            }
 
-				_lastStateAction = destination =>
-				{
-					result.AddTransition(new Approve(destination));
-					result.AddTransition(new ReturnToStart(destination));
-				};
-				StateConfiguration.Add(state, result);
-			}
+            Linked.AddLast(result);
+            return this;
+        }
 
-			Linked.AddLast(result);
-			return this;
-		}
+        public virtual BranchAnd BranchAnd(Action<BranchAnd> branchAction)
+        {
+            var and = new BranchAnd(this);
+            branchAction.Invoke(and);
+            return and;
+        }
 
-		public virtual StateMachine Complete(string state)
-		{
-			if (!StateConfiguration.TryGetValue(state, out StateRepresentation? result))
-			{
-				result = new StateRepresentation(state, this);
-				_lastStateAction?.Invoke(state);
-				StateConfiguration.Add(state, result);
-			}
+        public void Trigger(string trigger)
+        {
+            var currentRepresentation = GetRepresentation(CurrentState);
+            HandleBehaviour(currentRepresentation, trigger);
+        }
 
-			Linked.AddLast(result);
-			return this;
-		}
+        private void HandleBehaviour(IState representation, string trigger)
+        {
+            var behaviour = representation.FindTriggerBehaviour(trigger);
+            var transition = new Transition(CurrentState, behaviour.Destination, trigger);
 
-		public void Trigger(string trigger)
-		{
-			var currentRepresentation = GetRepresentation(CurrentState);
-			HandleBehaviour(currentRepresentation, trigger);
-		}
+            var next = GetRepresentation(behaviour.Destination);
+            next.Entry();
 
-		private void HandleBehaviour(StateRepresentation representation, string trigger)
-		{
-			var behaviour = representation.FindTriggerBehaviour(trigger);
-			var transition = new Transition(CurrentState, behaviour.Destination, trigger);
+            behaviour.InvokeAsync(new BehaviourContext(transition));
+            CurrentState = behaviour.Destination;
+            representation.Exit(transition);
+        }
 
-			var next = GetRepresentation(behaviour.Destination);
-			next.Entry();
+        private IState GetRepresentation(string state)
+        {
+            if (StateConfiguration.TryGetValue(state, out IState? result))
+            {
+                return result;
+            }
 
-			behaviour.InvokeAsync(new BehaviourContext(transition));
-			CurrentState = behaviour.Destination;
-			representation.Exit(transition);
-		}
+            throw new Exception($"状态机没有配置状态 {state}");
+        }
 
-		private StateRepresentation GetRepresentation(string state)
-		{
-			if (StateConfiguration.TryGetValue(state, out StateRepresentation? result))
-			{
-				return result;
-			}
+        private readonly StateHandleCache _cache = new StateHandleCache();
+        public virtual void StateHandle(string state, Action<string>? destinationAction = null)
+        {
+            _cache.Last = _cache.Current;
+            _cache.Last?.Invoke(state);
 
-			throw new Exception($"状态机没有配置状态 {state}");
-		}
+            if (destinationAction != null) _cache.Current = destinationAction;
+        }
 
-	}
+        public virtual void StateHandleWithEmpty(string state, Action<string>? destinationAction = null)
+        {
+            _cache.Last = null;
+            _cache.Current = null;
+
+            if (destinationAction != null) _cache.Current = destinationAction;
+        }
+    }
+
+    public class StateHandleCache
+    {
+        public Action<string>? Last { get; set; }
+
+        public Action<string>? Current { get; set; }
+    }
 }

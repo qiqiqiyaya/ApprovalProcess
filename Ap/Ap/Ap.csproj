@@ -13,4 +13,9 @@
     <None Remove="Flow\branch\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Flow\State\StateBase.cs" />
+    <None Include="Flow\State\StateContainer.cs" />
+  </ItemGroup>
+
 </Project>
