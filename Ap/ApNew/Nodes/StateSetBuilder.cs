@@ -1,30 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ap.Nodes.Transitions;
+﻿using ApNew.Nodes.Transitions;
 
-namespace Ap.Nodes
+namespace ApNew.Nodes
 {
-    public sealed class LineBuilder
+    public sealed class StateSetBuilder
     {
-        public IDictionary<string, INode> Nodes { get; } = new Dictionary<string, INode>();
+        public IDictionary<string, IState> Nodes { get; } = new Dictionary<string, IState>();
 
-        public LinkedList<INode> LinkedList { get; } = new LinkedList<INode>();
+        public LinkedList<IState> LinkedList { get; } = new LinkedList<IState>();
 
         private Action<string> _addTransition = destination => { };
 
-        public LineBuilder(string state)
+        public StateSetBuilder(string state)
         {
             Start(state);
         }
 
         private void Start(string state)
         {
-            if (!Nodes.TryGetValue(state, out INode? result))
+            if (!Nodes.TryGetValue(state, out IState? result))
             {
-                result = new NodeBase(state);
+                result = new StateBase(state);
 
                 _addTransition = destination =>
                 {
@@ -35,11 +30,11 @@ namespace Ap.Nodes
             LinkedList.AddFirst(result);
         }
 
-        public LineBuilder Then(string state)
+        public StateSetBuilder Then(string state)
         {
-            if (!Nodes.TryGetValue(state, out INode? result))
+            if (!Nodes.TryGetValue(state, out IState? result))
             {
-                result = new NodeBase(state);
+                result = new StateBase(state);
                 Nodes.Add(state, result);
             }
             LinkedList.AddLast(result);
@@ -52,11 +47,11 @@ namespace Ap.Nodes
             return this;
         }
 
-        public LineBuilder Branch(string state)
+        public StateSetBuilder Branch(string state)
         {
-            if (!Nodes.TryGetValue(state, out INode? result))
+            if (!Nodes.TryGetValue(state, out IState? result))
             {
-                result = new NodeBase(state);
+                result = new StateBase(state);
                 Nodes.Add(state, result);
             }
             LinkedList.AddLast(result);

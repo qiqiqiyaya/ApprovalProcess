@@ -1,4 +1,4 @@
-﻿namespace Ap.Nodes.Transitions
+﻿namespace ApNew.Nodes.Transitions
 {
     public interface INodeTransition
     {
