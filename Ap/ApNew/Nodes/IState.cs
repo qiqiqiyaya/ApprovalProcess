@@ -1,4 +1,4 @@
-﻿using ApNew.Nodes.Transitions;
+﻿using ApNew.Nodes.Behaviours;
 
 namespace ApNew.Nodes
 {
@@ -7,11 +7,17 @@ namespace ApNew.Nodes
     /// </summary>
     public interface IState : INode
     {
+        public string State { get; }
+
         /// <summary>
         /// Transition to
         /// </summary>
-        IDictionary<string, INodeTransition> NodeTransitions { get; }
+        IDictionary<string, INodeBehaviour> NodeTransitions { get; }
 
-        ValueTask AddTransition(INodeTransition transition);
+        void AddTransition(INodeBehaviour behaviour);
+
+        void Entry();
+
+        void Exit();
     }
 }

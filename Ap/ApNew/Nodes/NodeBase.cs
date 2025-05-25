@@ -4,8 +4,6 @@
     {
         public string Id { get; }
 
-        public string Name { get; set; }
-
         public virtual ValueTask ExecuteAsync()
         {
             return new ValueTask();

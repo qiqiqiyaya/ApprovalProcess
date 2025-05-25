@@ -1,11 +1,9 @@
-﻿namespace ApNew.Nodes.Transitions
+﻿namespace ApNew.Nodes.Behaviours
 {
-    public interface INodeTransition
+    public interface INodeBehaviour
     {
         string Trigger { get; }
 
         public string Destination { get; }
-
-
     }
 }

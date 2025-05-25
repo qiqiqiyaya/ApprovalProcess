@@ -3,8 +3,15 @@
     /// <summary>
     /// State set
     /// </summary>
-    public interface IStateSet : INode
+    public interface IStateSet : INode, IStateTrigger
     {
+        /// <summary>
+        /// Initial state
+        /// </summary>
+        string InitialState { get; }
+
+        string CurrentState { get; }
+
         /// <summary>
         /// Dictionary
         /// </summary>
@@ -14,6 +21,8 @@
         /// line
         /// </summary>
         LinkedList<IState> LinkedList { get; }
+
+        IState GetState(string state);
 
         void Configure(IState state);
     }

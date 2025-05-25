@@ -1,23 +1,38 @@
-﻿using ApNew.Nodes.Transitions;
+﻿using ApNew.Nodes.Behaviours;
 
 namespace ApNew.Nodes
 {
     public class StateBase : NodeBase, IState
     {
-        public StateBase(string name)
+        public StateBase(string state)
         {
-            Name = name;
+            State = state;
         }
 
-        public IDictionary<string, INodeTransition> NodeTransitions { get; } =
-            new Dictionary<string, INodeTransition>();
+        public string State { get; }
 
-        public ValueTask AddTransition(INodeTransition transition)
+        public IDictionary<string, INodeBehaviour> NodeTransitions { get; } =
+            new Dictionary<string, INodeBehaviour>();
+
+        public void Entry()
         {
-            Check(transition.Trigger);
 
-            NodeTransitions.Add(transition.Trigger, transition);
-            return new ValueTask();
+        }
+
+        public void Exit()
+        {
+            //var behaviour = NodeTransitions[trigger];
+
+            //return behaviour.Destination;
+        }
+
+
+
+        public void AddTransition(INodeBehaviour behaviour)
+        {
+            Check(behaviour.Trigger);
+
+            NodeTransitions.Add(behaviour.Trigger, behaviour);
         }
 
         protected virtual void Check(string trigger)

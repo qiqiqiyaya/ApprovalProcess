@@ -11,5 +11,10 @@
         {
             return new StateSetBuilder(state);
         }
+
+        public StateSetBuilder Create(string state, string id)
+        {
+            return new StateSetBuilder(state, id);
+        }
     }
 }

@@ -4,8 +4,6 @@
     {
         string Id { get; }
 
-        string Name { get; }
-
         ValueTask ExecuteAsync();
     }
 }
