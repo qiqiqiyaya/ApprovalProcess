@@ -37,21 +37,22 @@ namespace ApNew.Nodes
         {
             if (Relationship == LogicalRelationship.And)
             {
-                foreach (var item in StateSets)
-                {
-                    var set = item.Value;
-                    var state = set.GetState(set.CurrentState);
-                    if (!(state is EndState)) return false;
-                }
+                //foreach (var item in StateSets)
+                //{
+                //    if (!item.Value.IsEnd) return false;
+                //}
+                //StateSets.Values.All(s => s.IsEnd); // Ensure all sets are in end state
+                return StateSets.Values.All(s => s.IsEnd);// Ensure all sets are in end state
             }
             else if (Relationship == LogicalRelationship.Or)
             {
-                foreach (var item in StateSets)
-                {
-                    var set = item.Value;
-                    var state = set.GetState(set.CurrentState);
-                    if (state is EndState) return true;
-                }
+                //foreach (var item in StateSets)
+                //{
+                //    var set = item.Value;
+                //    var state = set.GetState(set.CurrentState);
+                //    if (state is EndState) return true;
+                //}
+                return StateSets.Values.Any(s => s.IsEnd);// Ensure all sets are in end state
             }
 
             return false;

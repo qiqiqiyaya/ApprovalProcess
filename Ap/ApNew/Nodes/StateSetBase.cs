@@ -1,4 +1,6 @@
-﻿using ApNew.States;
+﻿using ApNew.Nodes.Behaviours;
+using ApNew.States;
+using System.Reflection.Emit;
 
 namespace ApNew.Nodes
 {
@@ -11,6 +13,8 @@ namespace ApNew.Nodes
         public IDictionary<string, IState> Nodes { get; } = new Dictionary<string, IState>();
 
         public LinkedList<IState> LinkedList { get; } = new LinkedList<IState>();
+
+        public bool IsEnd => GetState(CurrentState) is EndState;
 
         public StateSetBase(IState state)
         {
@@ -36,13 +40,13 @@ namespace ApNew.Nodes
             throw new InvalidOperationException($"State {state} not found in the state set.");
         }
 
-        public void ExecuteTrigger(string trigger)
+        public virtual void ExecuteTrigger(string trigger)
         {
-            var state = GetState(CurrentState);
+            IState state = GetState(CurrentState);
             ExitAndEntry(state, new TriggerParameter() { Trigger = trigger });
         }
 
-        public void ExecuteTrigger(TriggerParameter trigger)
+        public virtual void ExecuteTrigger(TriggerParameter trigger)
         {
             var state = GetState(CurrentState);
 
@@ -63,8 +67,15 @@ namespace ApNew.Nodes
 
         protected virtual void ExitAndEntry(IState state, TriggerParameter trigger)
         {
-            var behaviour = state.NodeTransitions[trigger.Trigger];
+            var res = StartStateHandle(state);
 
+            var behaviour = res.NodeTransitions[trigger.Trigger];
+            ExitAndEntry(res, behaviour);
+            EndStateHandle();
+        }
+
+        protected virtual void ExitAndEntry(IState state, INodeBehaviour behaviour)
+        {
             state.Exit();
             behaviour.ExecuteAsync(this);
             var nextState = GetState(CurrentState);
@@ -74,6 +85,27 @@ namespace ApNew.Nodes
         protected virtual void SetContainerHandle(IStateSetContainer container, TriggerParameter trigger)
         {
             container.ExecuteTrigger(trigger);
+        }
+
+        protected virtual IState StartStateHandle(IState state)
+        {
+            if (state is StartState startState)
+            {
+                var behaviour = startState.FindNext();
+                ExitAndEntry(state, behaviour);
+                return GetState(CurrentState); ;
+            }
+
+            return state;
+        }
+
+        protected virtual void EndStateHandle()
+        {
+            var current = GetState(CurrentState);
+            if (current is EndState endState)
+            {
+                endState.Exit();
+            }
         }
     }
 }

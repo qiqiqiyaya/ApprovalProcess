@@ -28,7 +28,6 @@ namespace ApNew.Test
             stateSet.ExecuteTrigger(TransitionConst.Approve);
             stateSet.ExecuteTrigger(TransitionConst.Approve);
 
-
             stateSet.ExecuteTrigger(new TriggerParameter() { StateSetId = "1", Trigger = TransitionConst.Approve });
 
         }

@@ -1,4 +1,5 @@
 ﻿using ApNew.Nodes;
+using ApNew.Nodes.Behaviours;
 
 namespace ApNew.States
 {
@@ -9,6 +10,17 @@ namespace ApNew.States
         public StartState(string builderId) : base(StartStateName + builderId)
         {
 
+        }
+
+        public INodeBehaviour FindNext()
+        {
+            var direct = NodeTransitions.Values.FirstOrDefault(x => x.GetType() == typeof(Direct));
+            if (direct == null)
+            {
+                throw new InvalidOperationException($"No direct transition found in {State} state.");
+            }
+
+            return direct;
         }
     }
 }

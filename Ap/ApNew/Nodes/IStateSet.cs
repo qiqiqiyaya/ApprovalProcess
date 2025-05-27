@@ -22,6 +22,8 @@
         /// </summary>
         LinkedList<IState> LinkedList { get; }
 
+        bool IsEnd { get; }
+
         IState GetState(string state);
 
         void Configure(IState state);
