@@ -11,18 +11,25 @@ namespace ApNew.Nodes
 
         public string State { get; }
 
-        public BranchBuilder(string state, LogicalRelationship relationship)
+        private readonly StateSetBuilder _parentBuilder;
+
+        public BranchBuilder(string state, LogicalRelationship relationship, StateSetBuilder parentBuilder)
         {
             Relationship = relationship;
             State = state;
+            _parentBuilder = parentBuilder;
         }
 
         public StateSetBuilder New(string state, string id)
         {
             var provider = new StateSetBuilderProvider();
-            var setBuilder = provider.Create("start", id);
+            var setBuilder = provider.Create(state, id, (result, destination) =>
+            {
+                var first = _parentBuilder.LinkedList.First!.Value;
+                result.AddTransition(new Approve(TransitionConst.Approve, destination));
+                result.AddTransition(new Reject(TransitionConst.Reject, first.State));
+            });
 
-            setBuilder.Then(state);
             StateSetBuilders.Add(setBuilder.Id, setBuilder);
             return setBuilder;
         }
@@ -41,15 +48,12 @@ namespace ApNew.Nodes
         {
             IStateSetContainer container = new BranchContainer(State, Relationship, parent);
 
-            var result = new EndState("WaitForComplete");
-            result.AddTransition(new WaitForComplete(TransitionConst.Approve, ""));
-
             foreach (var builder in StateSetBuilders)
             {
                 var linked = builder.Value.LinkedList;
                 if (!(linked.Last?.Value is EndState))
                 {
-                    builder.Value.Complete(result);
+                    builder.Value.Complete();
                 }
 
                 var set = builder.Value.Build();

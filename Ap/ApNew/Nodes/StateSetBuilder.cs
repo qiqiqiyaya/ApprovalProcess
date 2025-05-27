@@ -5,7 +5,7 @@ namespace ApNew.Nodes
 {
     public class StateSetBuilder
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString("N");
+        public string Id { get; set; }
 
         public IDictionary<string, IState> Nodes { get; } = new Dictionary<string, IState>();
 
@@ -15,31 +15,57 @@ namespace ApNew.Nodes
 
         private readonly IStateSet _sm;
 
-        public StateSetBuilder(string state)
+        public StateSetBuilder(string state) : this(state, Guid.NewGuid().ToString())
         {
-            Start(state);
+        }
+
+        public StateSetBuilder(string state, string id) : this(state, id, null)
+        {
+        }
+
+        public StateSetBuilder(string state, string id, Action<IState, string>? action = null)
+        {
+            Id = id;
+            Start().Start(state, action);
             var value = Nodes.First().Value;
             _sm = new StateMachine(value);
         }
 
-        public StateSetBuilder(string state, string id) : this(state)
+        private StateSetBuilder Start()
         {
-            Id = id;
+            var result = new StartState(Id);
+            AddTransition = destination =>
+            {
+                result.AddTransition(new Direct(destination));
+            };
+
+            Nodes.Add(result.State, result);
+            LinkedList.AddFirst(result);
+            return this;
         }
 
-        private void Start(string state)
+        private StateSetBuilder Start(string state, Action<IState, string>? action = null)
         {
             if (!Nodes.TryGetValue(state, out IState? result))
             {
                 result = new StateBase(state);
 
+                AddTransition(state);
                 AddTransition = destination =>
                 {
-                    result.AddTransition(new Submit(TransitionConst.Submit, destination));
+                    if (action == null)
+                    {
+                        result.AddTransition(new Submit(TransitionConst.Submit, destination));
+                    }
+                    else
+                    {
+                        action?.Invoke(result, destination);
+                    }
                 };
                 Nodes.Add(state, result);
             }
-            LinkedList.AddFirst(result);
+            LinkedList.AddLast(result);
+            return this;
         }
 
         public StateSetBuilder Then(string state)
@@ -53,8 +79,10 @@ namespace ApNew.Nodes
             AddTransition(state);
             AddTransition = destination =>
             {
+                var first = LinkedList.First!.Value;
+
                 result.AddTransition(new Approve(TransitionConst.Approve, destination));
-                result.AddTransition(new Reject(TransitionConst.Reject, destination));
+                result.AddTransition(new Reject(TransitionConst.Reject, first.State));
             };
             return this;
         }
@@ -62,7 +90,7 @@ namespace ApNew.Nodes
         public BranchJoinBuilder Branch(Action<BranchBuilder> branchAction)
         {
             string state = "Branch";
-            BranchBuilder branchBuilder = new BranchBuilder(state, LogicalRelationship.And);
+            BranchBuilder branchBuilder = new BranchBuilder(state, LogicalRelationship.And, this);
 
             branchAction.Invoke(branchBuilder);
 
@@ -71,7 +99,7 @@ namespace ApNew.Nodes
 
             AddTransition = destination =>
             {
-                result.AddTransition(new Direct("Direct", destination));
+                result.AddTransition(new Direct(destination));
             };
 
             Nodes.Add(state, result);
@@ -82,23 +110,41 @@ namespace ApNew.Nodes
 
         public CompleteBuilder Complete(string state)
         {
+            return Then(state).Complete();
+        }
+
+        public CompleteBuilder Complete()
+        {
             CompleteBuilder branchBuilder = new CompleteBuilder(this);
 
-            if (!Nodes.TryGetValue(state, out IState? result))
-            {
-                result = new EndState(state);
-                Nodes.Add(state, result);
-            }
+            var result = new EndState(Id);
+            Nodes.Add(result.State, result);
             LinkedList.AddLast(result);
-            AddTransition(state);
-            result.AddTransition(new Complete(TransitionConst.Approve, ""));
+            AddTransition(result.State);
+
             return branchBuilder;
         }
 
-        public void Complete(EndState state)
+        protected void HandleTransition(string state)
         {
-            Nodes.Add(state.State, state);
-            LinkedList.AddLast(state);
+
+        }
+
+        protected void AddToLast(string currentState, Func<INodeBehaviour> creator)
+        {
+            var node = LinkedList.Last;
+            if (node == null)
+            {
+                throw new InvalidOperationException("LinkedList is empty, cannot add to last.");
+            }
+
+            var nodeState = node.Value;
+            var behaviour = creator();
+
+        }
+        protected void AddToCurrent(string state)
+        {
+
         }
 
         internal IStateSet Build()

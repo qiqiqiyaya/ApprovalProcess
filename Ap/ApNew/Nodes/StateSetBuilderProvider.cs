@@ -16,5 +16,10 @@
         {
             return new StateSetBuilder(state, id);
         }
+
+        public StateSetBuilder Create(string state, string id, Action<IState, string> action)
+        {
+            return new StateSetBuilder(state, id, action);
+        }
     }
 }

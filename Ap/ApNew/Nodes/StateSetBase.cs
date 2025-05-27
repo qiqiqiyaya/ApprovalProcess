@@ -66,7 +66,7 @@ namespace ApNew.Nodes
             var behaviour = state.NodeTransitions[trigger.Trigger];
 
             state.Exit();
-            CurrentState = behaviour.Destination;
+            behaviour.ExecuteAsync(this);
             var nextState = GetState(CurrentState);
             nextState.Entry();
         }

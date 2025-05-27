@@ -5,5 +5,11 @@
         public string Trigger { get; } = trigger;
 
         public string Destination { get; } = destination;
+
+        public virtual ValueTask ExecuteAsync(StateSetBase stateSet)
+        {
+            stateSet.CurrentState = Destination;
+            return new ValueTask();
+        }
     }
 }

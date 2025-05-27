@@ -4,7 +4,9 @@ namespace ApNew.States
 {
     public class StartState : StateBase
     {
-        public StartState(string state) : base(state)
+        private const string StartStateName = "Start_";
+
+        public StartState(string builderId) : base(StartStateName + builderId)
         {
 
         }

@@ -1,6 +1,10 @@
 ﻿namespace ApNew.Nodes.Behaviours
 {
-    public class Complete(string trigger, string destination) : BehaviourBase(trigger, destination)
+    /// <summary>
+    /// Indicates completion
+    /// </summary>
+    /// <param name="trigger"></param>
+    public class Complete(string trigger) : BehaviourBase(trigger, TransitionConst.Complete)
     {
 
 

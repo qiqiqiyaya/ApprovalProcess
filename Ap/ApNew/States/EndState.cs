@@ -4,7 +4,9 @@ namespace ApNew.States
 {
     public class EndState : StateBase
     {
-        public EndState(string state) : base(state)
+        private const string EndStateName = "End_";
+
+        public EndState(string builderId) : base(EndStateName + builderId)
         {
 
         }
