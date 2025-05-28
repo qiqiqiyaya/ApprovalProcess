@@ -8,21 +8,17 @@
     /// <param name="destination"></param>
     public class Reject(string trigger, string destination) : BehaviourBase(trigger, destination)
     {
-        public override ValueTask ExecuteAsync(StateSetBase stateSet)
+        public override ValueTask ExecuteAsync(BehaviourExecuteContext context)
         {
-            var linked = stateSet.LinkedList;
-            var state = linked.First;
-            if (state == null)
+            var firstState = context.CurrentSet.RootLinkedList.FirstState;
+
+            if (Destination != firstState.State)
             {
-                throw new InvalidOperationException("The first State set is empty.");
+                throw new InvalidOperationException($"Reject behaviour can only be used to return to the first state: {firstState.State}, but was given: {Destination}");
             }
 
-            if (state.Value.State != destination)
-            {
-                throw new InvalidOperationException($"The first State set is {state.Value.State}, not equal to {destination}");
-            }
-
-            return base.ExecuteAsync(stateSet);
+            context.RootSet.CurrentState = Destination;
+            return new ValueTask();
         }
     }
 }

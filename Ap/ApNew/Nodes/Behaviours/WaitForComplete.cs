@@ -1,10 +1,12 @@
-﻿namespace ApNew.Nodes.Behaviours
+﻿using ApNew.Nodes.Core;
+
+namespace ApNew.Nodes.Behaviours
 {
     public class WaitForComplete(string trigger, string destination) : BehaviourBase(trigger, destination)
     {
-        public override ValueTask ExecuteAsync(StateSetBase stateSet)
+        public override ValueTask ExecuteAsync(BehaviourExecuteContext context)
         {
-            return base.ExecuteAsync(stateSet);
+            return base.ExecuteAsync(context);
         }
     }
 }

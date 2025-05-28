@@ -1,18 +1,23 @@
 ﻿using ApNew.Nodes.Behaviours;
 
-namespace ApNew.Nodes
+namespace ApNew.Nodes.Core
 {
-    public class StateBase : NodeBase, IState
+    public abstract class StateBase : NodeBase, IState
     {
         public StateBase(string state)
         {
             State = state;
         }
 
-        public string State { get; }
+        public string State { get; protected set; }
 
         public IDictionary<string, INodeBehaviour> NodeTransitions { get; } =
             new Dictionary<string, INodeBehaviour>();
+
+        public virtual List<string> GetTrigger()
+        {
+            return NodeTransitions.Select(s => s.Key).ToList();
+        }
 
         public void Entry()
         {
@@ -21,17 +26,12 @@ namespace ApNew.Nodes
 
         public void Exit()
         {
-            //var behaviour = NodeTransitions[trigger];
 
-            //return behaviour.Destination;
         }
-
-
 
         public void AddTransition(INodeBehaviour behaviour)
         {
             Check(behaviour.Trigger);
-
             NodeTransitions.Add(behaviour.Trigger, behaviour);
         }
 

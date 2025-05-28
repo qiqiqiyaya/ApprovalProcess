@@ -6,9 +6,9 @@
 
         public string Destination { get; } = destination;
 
-        public virtual ValueTask ExecuteAsync(StateSetBase stateSet)
+        public virtual ValueTask ExecuteAsync(BehaviourExecuteContext context)
         {
-            stateSet.CurrentState = Destination;
+            context.CurrentSet.CurrentState = Destination;
             return new ValueTask();
         }
     }

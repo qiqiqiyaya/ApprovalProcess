@@ -1,6 +1,6 @@
-﻿using ApNew.Nodes;
+﻿using ApNew.Nodes.Core;
 
-namespace ApNew.States
+namespace ApNew.Nodes.States
 {
     public class EndState : StateBase
     {

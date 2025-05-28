@@ -1,4 +1,6 @@
-﻿namespace ApNew.Nodes.Behaviours
+﻿using ApNew.Nodes.Core;
+
+namespace ApNew.Nodes.Behaviours
 {
     public interface INodeBehaviour
     {
@@ -9,8 +11,8 @@
         /// <summary>
         /// Executing state transition
         /// </summary>
-        /// <param name="stateSet"></param>
+        /// <param name="context"></param>
         /// <returns></returns>
-        ValueTask ExecuteAsync(StateSetBase stateSet);
+        ValueTask ExecuteAsync(BehaviourExecuteContext context);
     }
 }

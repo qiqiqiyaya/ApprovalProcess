@@ -1,9 +1,11 @@
-﻿namespace ApNew.Nodes
+﻿using ApNew.Nodes.Builders;
+
+namespace ApNew.Nodes.Core
 {
     /// <summary>
     /// State set
     /// </summary>
-    public interface IStateSet : INode, IStateTrigger
+    public interface IStateSet : IState, IStateTrigger
     {
         /// <summary>
         /// Initial state
@@ -17,14 +19,11 @@
         /// </summary>
         IDictionary<string, IState> Nodes { get; }
 
-        /// <summary>
-        /// line
-        /// </summary>
-        LinkedList<IState> LinkedList { get; }
+        StateLinkedList LinkedList { get; }
+
+        StateLinkedList RootLinkedList { get; }
 
         bool IsEnd { get; }
-
-        IState GetState(string state);
 
         void Configure(IState state);
     }

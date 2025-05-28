@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ApNew.Nodes.Core;
 
 namespace ApNew.Nodes
 {
@@ -12,5 +8,6 @@ namespace ApNew.Nodes
 
         public string Trigger { get; set; }
 
+        public StateSetBase? RootStateSet { get; set; }
     }
 }
