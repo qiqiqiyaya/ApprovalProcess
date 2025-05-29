@@ -15,14 +15,10 @@ namespace ApNew.Test
 
             builder.Then("FirstApprove")
                 .Then("SecondApprove")
-                .BranchAnd(branch =>
-                {
-                    branch.New("SecondApprove_A1", "1")
-                        .Then("SecondApprove_A2");
-                    branch.New("SecondApprove_B1", "2")
-                        .Then("SecondApprove_B2");
-                })
-                .Join("ThirdApprove")
+                .If(() => true,
+                    builderProvider => provider.Create(""),
+                    builderProvider => provider.Create(""))
+                .Then("ThirdApprove")
                 .Complete();
 
             IStateSet stateSet = builder.Build();

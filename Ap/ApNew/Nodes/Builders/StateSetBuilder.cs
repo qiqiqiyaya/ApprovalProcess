@@ -148,6 +148,12 @@ namespace ApNew.Nodes.Builders
             return branchBuilder;
         }
 
+        public StateSetBuilder If(Func<bool> action, Action<StateSetBuilderProvider> True, Action<StateSetBuilderProvider> False)
+        {
+
+            return this;
+        }
+
         protected virtual void CheckIsConfigured(string state)
         {
             if (IsConfigured(state))
