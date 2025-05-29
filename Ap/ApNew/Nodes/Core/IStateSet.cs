@@ -14,6 +14,8 @@ namespace ApNew.Nodes.Core
 
         string CurrentState { get; }
 
+        IState CurrentStateNode { get; }
+
         /// <summary>
         /// Dictionary
         /// </summary>
@@ -26,5 +28,10 @@ namespace ApNew.Nodes.Core
         bool IsEnd { get; }
 
         void Configure(IState state);
+
+        /// <summary>
+        /// reset ot initial state
+        /// </summary>
+        void Reset();
     }
 }

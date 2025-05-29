@@ -10,6 +10,8 @@ namespace ApNew.Nodes.Core
 
         public string CurrentState { get; set; }
 
+        public IState CurrentStateNode => GetState(CurrentState);
+
         public IDictionary<string, IState> Nodes { get; } = new Dictionary<string, IState>();
 
         public StateLinkedList LinkedList { get; }
@@ -91,6 +93,7 @@ namespace ApNew.Nodes.Core
 
             var behaviour = res.NodeTransitions[trigger.Trigger];
             ExitAndEntry(res, behaviour, trigger);
+
             EndStateHandle();
         }
 
@@ -98,6 +101,13 @@ namespace ApNew.Nodes.Core
         {
             state.Exit();
             behaviour.ExecuteAsync(new BehaviourExecuteContext(trigger.RootStateSet!, this));
+
+            if (IsJumpOut(behaviour.Destination))
+            {
+                Reset();
+                return;
+            }
+
             var nextState = GetState(CurrentState);
             nextState.Entry();
         }
@@ -130,11 +140,23 @@ namespace ApNew.Nodes.Core
 
         protected virtual void EndStateHandle()
         {
-            var current = GetState(CurrentState);
-            if (current is EndState endState)
-            {
-                endState.Exit();
-            }
+            if (GetState(CurrentState) is EndState endState) endState.Exit();
+        }
+
+        /// <summary>
+        /// reset ot initial state
+        /// </summary>
+        public void Reset()
+        {
+            CurrentState = InitialState;
+        }
+
+        /// <summary>
+        /// Jump out this to parent StateSet
+        /// </summary>
+        protected bool IsJumpOut(string state)
+        {
+            return !LinkedList.TryGet(state, out _);
         }
     }
 }

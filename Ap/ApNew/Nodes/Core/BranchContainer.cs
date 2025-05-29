@@ -27,6 +27,10 @@ namespace ApNew.Nodes.Core
             {
                 // Go directly to the next state
                 _parent.ExecuteTrigger(new TriggerParameter() { StateSetId = _parent.Id, Trigger = TransitionConst.Direct });
+                foreach (var stateSet in StateSets)
+                {
+                    stateSet.Value.Reset();
+                }
             }
         }
 
@@ -45,6 +49,12 @@ namespace ApNew.Nodes.Core
         public bool IsConfigured(string state)
         {
             return StateSets.Any(x => x.Value.Nodes.ContainsKey(state));
+        }
+
+        protected void fdsafs()
+        {
+            // Did it jump out of the container?
+
         }
     }
 }

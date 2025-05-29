@@ -46,6 +46,12 @@ namespace ApNew.Nodes.Builders
         {
             foreach (var item in this)
             {
+                if (item.State == state)
+                {
+                    destination = item;
+                    return true;
+                }
+
                 switch (item)
                 {
                     case IStateSet set:
@@ -53,13 +59,6 @@ namespace ApNew.Nodes.Builders
                         break;
                     case IStateSetContainer container:
                         if (TryGet(container, state, out destination)) return true;
-                        break;
-                    default:
-                        if (item.State == state)
-                        {
-                            destination = item;
-                            return true;
-                        }
                         break;
                 }
             }
@@ -81,8 +80,7 @@ namespace ApNew.Nodes.Builders
 
         private bool TryGet(IStateSet set, string state, out IState? destination)
         {
-            if (set.Nodes.TryGetValue(state, out destination)) return true;
-            return false;
+            return set.LinkedList.TryGet(state, out destination);
         }
     }
 }

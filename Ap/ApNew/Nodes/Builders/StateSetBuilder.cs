@@ -101,9 +101,19 @@ namespace ApNew.Nodes.Builders
             return this;
         }
 
-        public BranchJoinBuilder Branch(Action<BranchBuilder> branchAction)
+        public BranchJoinBuilder BranchAnd(Action<BranchBuilder> branchAction)
         {
-            BranchBuilder branchBuilder = new BranchBuilder(LogicalRelationship.And, RootStateLinked);
+            return Branch(LogicalRelationship.And, branchAction);
+        }
+
+        public BranchJoinBuilder BranchOr(Action<BranchBuilder> branchAction)
+        {
+            return Branch(LogicalRelationship.Or, branchAction);
+        }
+
+        public BranchJoinBuilder Branch(LogicalRelationship relationship, Action<BranchBuilder> branchAction)
+        {
+            BranchBuilder branchBuilder = new BranchBuilder(relationship, RootStateLinked);
 
             branchAction.Invoke(branchBuilder);
 

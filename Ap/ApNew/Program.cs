@@ -7,7 +7,8 @@ namespace ApNew
         static void Main(string[] args)
         {
 
-            Test1.Test();
+            //BranchAndTest.Test();
+            BranchOrTest.Test();
 
             Console.Read();
         }

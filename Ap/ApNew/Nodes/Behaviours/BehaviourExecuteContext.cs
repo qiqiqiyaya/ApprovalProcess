@@ -7,5 +7,6 @@ namespace ApNew.Nodes.Behaviours
         public StateSetBase RootSet { get; set; } = rootSet;
 
         public StateSetBase CurrentSet { get; set; } = currentSet;
+
     }
 }

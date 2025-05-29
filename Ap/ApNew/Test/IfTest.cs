@@ -5,7 +5,7 @@ using ApNew.Nodes.Core;
 
 namespace ApNew.Test
 {
-    public class Test1
+    public class IfTest
     {
         public static void Test()
         {
@@ -15,7 +15,7 @@ namespace ApNew.Test
 
             builder.Then("FirstApprove")
                 .Then("SecondApprove")
-                .Branch(branch =>
+                .BranchAnd(branch =>
                 {
                     branch.New("SecondApprove_A1", "1")
                         .Then("SecondApprove_A2");
