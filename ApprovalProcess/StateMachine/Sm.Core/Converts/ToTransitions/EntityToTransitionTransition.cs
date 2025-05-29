@@ -5,9 +5,9 @@ namespace Sm.Core.Converts.ToTransitions
 {
     public class EntityToTransitionTransition : IConvertToTransition<TransitionEntity, string, string>
     {
-        public Transition<string, string> To(TransitionEntity parameter)
+        public TriggerBehaviour<string, string> To(TransitionEntity parameter)
         {
-            return new Transition<string, string>(parameter.Trigger, parameter.DtState);
+            return new TriggerBehaviour<string, string>(parameter.Trigger, parameter.Destination);
         }
     }
 }

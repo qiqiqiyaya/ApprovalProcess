@@ -34,14 +34,14 @@ namespace Sm.Core.Services
                     Id = Guid.NewGuid().ToString("N")
                 };
 
-                var trList = setting.Value.TriggerBehaviours.SelectMany(s => s.Value).ToList();
+                var trList = setting.Value.Transitions.SelectMany(s => s.Value).ToList();
                 foreach (var transition in trList)
                 {
                     settingEntity.Transitions.Add(new TransitionEntity()
                     {
                         Id = Guid.NewGuid().ToString("N"),
                         Trigger = converter.ToTrigger(transition.Trigger),
-                        DtState = converter.ToState(transition.DtState),
+                        Destination = converter.ToState(transition.Destination),
                         StateSettingsId = settingEntity.Id,
                     });
                 }

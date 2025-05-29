@@ -9,7 +9,7 @@ namespace Sm.Core.Converts.ToStateSettings
     {
         public TState State { get; set; }
 
-        public List<Transition<TState, TTrigger>> Transitions { get; set; } = new List<Transition<TState, TTrigger>>();
+        public List<TriggerBehaviour<TState, TTrigger>> Transitions { get; set; } = new List<TriggerBehaviour<TState, TTrigger>>();
 
         public Dictionary<string, ActionConfiguration?> EntryActionNames { get; set; } = new Dictionary<string, ActionConfiguration?>();
 

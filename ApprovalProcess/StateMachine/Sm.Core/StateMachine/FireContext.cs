@@ -28,12 +28,12 @@ namespace Sm.Core.StateMachine
         /// <summary>
         /// current state
         /// </summary>
-        public StateSettings<TState, TTrigger> CurrentSettings { get; set; }
+        public StateRepresentation<TState, TTrigger> CurrentRepresentation { get; set; }
 
         /// <summary>
         /// Next
         /// </summary>
-        public StateSettings<TState, TTrigger> NextSettings { get; set; }
+        public StateRepresentation<TState, TTrigger> NextRepresentation { get; set; }
 
         /// <summary>
         /// destination State
@@ -60,12 +60,12 @@ namespace Sm.Core.StateMachine
         /// <summary>
         /// Previous
         /// </summary>
-        public StateSettings<TState, TTrigger> PreviousSettings { get; set; }
+        public StateRepresentation<TState, TTrigger> PreviousRepresentation { get; set; }
 
         /// <summary>
         /// current state
         /// </summary>
-        public StateSettings<TState, TTrigger> CurrentSettings { get; set; }
+        public StateRepresentation<TState, TTrigger> CurrentRepresentation { get; set; }
 
         public TransitionDescription<TState, TTrigger> TransitionDescription { get; set; }
 

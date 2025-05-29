@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfCore.Migration", "Test\Ef
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ap.Register", "ApprovalProcess\Ap.Register\Ap.Register.csproj", "{690A8C6E-8FD7-4541-A861-C63B3786EEE2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateMachineTest", "Test\StateMachineTest\StateMachineTest.csproj", "{0A979A68-07BA-42E5-9465-4610070AD4A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +91,10 @@ Global
 		{690A8C6E-8FD7-4541-A861-C63B3786EEE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{690A8C6E-8FD7-4541-A861-C63B3786EEE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{690A8C6E-8FD7-4541-A861-C63B3786EEE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A979A68-07BA-42E5-9465-4610070AD4A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A979A68-07BA-42E5-9465-4610070AD4A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A979A68-07BA-42E5-9465-4610070AD4A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A979A68-07BA-42E5-9465-4610070AD4A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -107,6 +113,7 @@ Global
 		{06D5E12D-17BF-4972-8F0F-254C23382DCA} = {F23F14B2-A030-410B-B04B-1FAD2C6C3550}
 		{47B941AC-6C05-DD2C-4B55-078CFCFBFEE8} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{690A8C6E-8FD7-4541-A861-C63B3786EEE2} = {F23F14B2-A030-410B-B04B-1FAD2C6C3550}
+		{0A979A68-07BA-42E5-9465-4610070AD4A4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D9A20C47-F2B1-4DC9-BC29-8B857C037C1E}

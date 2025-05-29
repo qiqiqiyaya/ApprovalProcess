@@ -10,7 +10,7 @@ namespace Sm.Core.Converts.ToStateMachines
 
 		IStateMachineBuilder<TState, TTrigger> SetCurrentState(TState state);
 
-		IStateMachineBuilder<TState, TTrigger> SetStateConfiguration(StateSettings<TState, TTrigger> settings);
+		IStateMachineBuilder<TState, TTrigger> SetStateConfiguration(StateRepresentation<TState, TTrigger> representation);
 
 		StateMachine<TState, TTrigger> Build();
 	}

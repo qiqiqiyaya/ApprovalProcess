@@ -30,14 +30,14 @@ namespace Sm.Core.Converts.ToStateMachines
 			return this;
 		}
 
-		public IStateMachineBuilder<TState, TTrigger> SetStateConfiguration(StateSettings<TState, TTrigger> settings)
+		public IStateMachineBuilder<TState, TTrigger> SetStateConfiguration(StateRepresentation<TState, TTrigger> representation)
 		{
-			if (_configuration.StateConfigurations.ContainsKey(settings.State))
+			if (_configuration.StateConfigurations.ContainsKey(representation.State))
 			{
 				throw new Exception("已经存在");
 			}
 
-			_configuration.StateConfigurations.Add(settings.State, settings);
+			_configuration.StateConfigurations.Add(representation.State, representation);
 			return this;
 		}
 

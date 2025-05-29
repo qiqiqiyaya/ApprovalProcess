@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FreeSql" Version="3.5.203" />
+		<PackageReference Include="FreeSql.DbContext" Version="3.5.203" />
+		<PackageReference Include="FreeSql.Provider.Sqlite" Version="3.5.203" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Sm.Share\Sm.Share.csproj" />
+	</ItemGroup>
+
+</Project>

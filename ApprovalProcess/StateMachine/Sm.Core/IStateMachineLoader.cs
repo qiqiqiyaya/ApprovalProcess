@@ -9,6 +9,6 @@ namespace Sm.Core
 
 		ValueTask<StateMachine<string, string>> GetStateMachineAsync(string id, string currentState);
 
-		ValueTask<StateSettings<string, string>> GetStateSettings(string id);
+		ValueTask<StateRepresentation<string, string>> GetStateSettings(string id);
 	}
 }
