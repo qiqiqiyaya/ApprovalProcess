@@ -4,159 +4,172 @@ using ApNew.Nodes.States;
 
 namespace ApNew.Nodes.Core
 {
-    public abstract class StateSetBase : StateBase, IStateSet
-    {
-        public string InitialState { get; }
+	public abstract class StateSetBase : StateBase, IStateSet
+	{
+		public string InitialState { get; }
 
-        public string CurrentState { get; set; }
+		public string CurrentState { get; set; }
 
-        public IState CurrentStateNode => GetState(CurrentState);
+		public virtual bool IsInitial => CurrentState == InitialState;
 
-        public IDictionary<string, IState> Nodes { get; } = new Dictionary<string, IState>();
+		public virtual IState CurrentStateNode => GetState(CurrentState);
 
-        public StateLinkedList LinkedList { get; }
+		public IDictionary<string, IState> Nodes { get; } = new Dictionary<string, IState>();
 
-        public StateLinkedList RootLinkedList { get; }
+		public virtual StateLinkedList LinkedList { get; }
 
-        public bool IsEnd => GetState(CurrentState) is EndState;
+		public StateLinkedList RootLinkedList { get; }
 
-        protected StateSetBase(IState state, StateLinkedList rootLinkedList)
-            : this(state, rootLinkedList, Guid.NewGuid().ToString("N"))
-        {
+		public bool IsEnd => GetState(CurrentState) is EndState;
 
-        }
+		protected StateSetBase(IState state, StateLinkedList rootLinkedList)
+			: this(state, rootLinkedList, Guid.NewGuid().ToString("N"))
+		{
 
-        protected StateSetBase(IState state, StateLinkedList rootLinkedList, string id)
-            : base("StateSetBase_" + id)
-        {
-            Id = id;
+		}
 
-            Nodes.Add(state.State, state);
-            InitialState = state.State;
-            CurrentState = state.State;
+		protected StateSetBase(IState state, StateLinkedList rootLinkedList, string id)
+			: base("StateSetBase_" + id)
+		{
+			Id = id;
 
-            LinkedList = new StateLinkedList(Nodes.Values);
-            RootLinkedList = rootLinkedList;
-        }
+			Nodes.Add(state.State, state);
+			InitialState = state.State;
+			CurrentState = state.State;
 
-        public void Configure(IState state)
-        {
-            Nodes.Add(state.State, state);
-            LinkedList.AddLast(state);
-        }
+			LinkedList = new StateLinkedList(Nodes.Values);
+			RootLinkedList = rootLinkedList;
+		}
 
-        public IState GetState(string state)
-        {
-            if (Nodes.TryGetValue(state, out var result))
-            {
-                return result;
-            }
+		public void Configure(IState state)
+		{
+			Nodes.Add(state.State, state);
+			LinkedList.AddLast(state);
+		}
 
-            if (RootLinkedList.TryGet(state, out result))
-            {
-                return result!;
-            }
+		public IState GetState(string state)
+		{
+			if (Nodes.TryGetValue(state, out var result))
+			{
+				return result;
+			}
 
-            throw new InvalidOperationException($"State {state} not found in the state set.");
-        }
+			if (RootLinkedList.TryGet(state, out result))
+			{
+				return result!;
+			}
 
-        public override List<string> GetTrigger()
-        {
-            var state = GetState(CurrentState);
-            return state.GetTrigger();
-        }
+			throw new InvalidOperationException($"State {state} not found in the state set.");
+		}
 
-        public virtual void ExecuteTrigger(string trigger)
-        {
-            IState state = GetState(CurrentState);
-            ExitAndEntry(state, new TriggerParameter() { Trigger = trigger, RootStateSet = this });
-        }
+		public override List<TriggerResult> GetTrigger()
+		{
+			var state = GetState(CurrentState);
+			return state.GetTrigger();
+		}
 
-        public virtual void ExecuteTrigger(TriggerParameter trigger)
-        {
-            var state = GetState(CurrentState);
+		public virtual void ExecuteTrigger(string trigger)
+		{
+			ExecuteTrigger(new TriggerParameter() { Trigger = trigger, RootStateSet = this });
+		}
 
-            switch (state)
-            {
-                case IStateSetContainer container:
-                    SetContainerHandle(container, trigger);
-                    break;
-                default:
-                    ExitAndEntry(state, trigger);
-                    break;
-            }
-        }
+		public virtual void ExecuteTrigger(TriggerParameter trigger)
+		{
+			var state = GetState(CurrentState);
 
-        protected virtual void ExitAndEntry(IState state, TriggerParameter trigger)
-        {
-            var res = StartStateHandle(state, trigger);
+			switch (state)
+			{
+				case IStateSetContainer container:
+					SetContainerHandle(container, trigger);
+					break;
+				case IStateSet set:
+					StateSetHandle(set, trigger);
+					break;
+				default:
+					ExitAndEntry(state, trigger);
+					break;
+			}
+		}
 
-            var behaviour = res.NodeTransitions[trigger.Trigger];
-            ExitAndEntry(res, behaviour, trigger);
+		protected virtual void ExitAndEntry(IState state, TriggerParameter trigger)
+		{
+			var res = StartStateHandle(state, trigger);
 
-            EndStateHandle();
-        }
+			var behaviour = res.NodeTransitions[trigger.Trigger];
+			ExitAndEntry(res, behaviour, trigger);
 
-        protected virtual void ExitAndEntry(IState state, INodeBehaviour behaviour, TriggerParameter trigger)
-        {
-            state.Exit();
-            behaviour.ExecuteAsync(new BehaviourExecuteContext(trigger.RootStateSet!, this));
+			EndStateHandle();
+		}
 
-            if (IsJumpOut(behaviour.Destination))
-            {
-                Reset();
-                return;
-            }
+		protected virtual void ExitAndEntry(IState state, INodeBehaviour behaviour, TriggerParameter trigger)
+		{
+			state.Exit();
+			behaviour.ExecuteAsync(new BehaviourExecuteContext(trigger.RootStateSet!, this));
 
-            var nextState = GetState(CurrentState);
-            nextState.Entry();
-        }
+			if (IsJumpOut(behaviour.Destination))
+			{
+				Reset();
+				return;
+			}
 
-        protected virtual void SetContainerHandle(IStateSetContainer container, TriggerParameter trigger)
-        {
-            if (!container.IsEnd)
-            {
-                trigger.RootStateSet ??= this;
-                container.ExecuteTrigger(trigger);
-            }
-            else
-            {
-                // if it ends, jump out
-                ExitAndEntry(container, trigger);
-            }
-        }
+			var nextState = GetState(CurrentState);
+			nextState.Entry();
+		}
 
-        protected virtual IState StartStateHandle(IState state, TriggerParameter trigger)
-        {
-            if (state is StartState startState)
-            {
-                var behaviour = startState.FindNext();
-                ExitAndEntry(state, behaviour, trigger);
-                return GetState(CurrentState); ;
-            }
+		protected virtual void StateSetHandle(IStateSet set, TriggerParameter trigger)
+		{
+			if (!set.IsEnd)
+			{
+				set.ExecuteTrigger(trigger);
+			}
+			else
+			{
+				// if it ends, jump out
+				ExitAndEntry(set, trigger);
+			}
+		}
 
-            return state;
-        }
+		protected virtual void SetContainerHandle(IStateSetContainer container, TriggerParameter trigger)
+		{
+			if (!container.IsEnd)
+			{
+				trigger.RootStateSet ??= this;
+				container.ExecuteTrigger(trigger);
+			}
+			else
+			{
+				// if it ends, jump out
+				ExitAndEntry(container, trigger);
+			}
+		}
 
-        protected virtual void EndStateHandle()
-        {
-            if (GetState(CurrentState) is EndState endState) endState.Exit();
-        }
+		protected virtual IState StartStateHandle(IState state, TriggerParameter trigger)
+		{
+			if (state is not StartState startState) return state;
+			var behaviour = startState.FindNext();
+			ExitAndEntry(state, behaviour, trigger);
+			return GetState(CurrentState);
+		}
 
-        /// <summary>
-        /// reset ot initial state
-        /// </summary>
-        public void Reset()
-        {
-            CurrentState = InitialState;
-        }
+		protected virtual void EndStateHandle()
+		{
+			if (GetState(CurrentState) is EndState endState) endState.Exit();
+		}
 
-        /// <summary>
-        /// Jump out this to parent StateSet
-        /// </summary>
-        protected bool IsJumpOut(string state)
-        {
-            return !LinkedList.TryGet(state, out _);
-        }
-    }
+		/// <summary>
+		/// reset ot initial state
+		/// </summary>
+		public virtual void Reset()
+		{
+			CurrentState = InitialState;
+		}
+
+		/// <summary>
+		/// Jump out this to parent StateSet
+		/// </summary>
+		protected virtual bool IsJumpOut(string state)
+		{
+			return !LinkedList.TryGet(state, out _);
+		}
+	}
 }

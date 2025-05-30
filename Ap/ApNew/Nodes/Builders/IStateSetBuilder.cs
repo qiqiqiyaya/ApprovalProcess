@@ -2,7 +2,7 @@
 
 namespace ApNew.Nodes.Builders
 {
-    public interface IStateSetBuilder : IStateBuilder
+    public interface IStateSetBuilder
     {
         IDictionary<string, IState> StateDictionary { get; }
     }

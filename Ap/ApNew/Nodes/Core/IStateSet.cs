@@ -2,36 +2,38 @@
 
 namespace ApNew.Nodes.Core
 {
-    /// <summary>
-    /// State set
-    /// </summary>
-    public interface IStateSet : IState, IStateTrigger
-    {
-        /// <summary>
-        /// Initial state
-        /// </summary>
-        string InitialState { get; }
+	/// <summary>
+	/// State set
+	/// </summary>
+	public interface IStateSet : IState, IStateTrigger
+	{
+		/// <summary>
+		/// Initial state
+		/// </summary>
+		string InitialState { get; }
 
-        string CurrentState { get; }
+		string CurrentState { get; }
 
-        IState CurrentStateNode { get; }
+		bool IsInitial { get; }
 
-        /// <summary>
-        /// Dictionary
-        /// </summary>
-        IDictionary<string, IState> Nodes { get; }
+		IState CurrentStateNode { get; }
 
-        StateLinkedList LinkedList { get; }
+		/// <summary>
+		/// Dictionary
+		/// </summary>
+		IDictionary<string, IState> Nodes { get; }
 
-        StateLinkedList RootLinkedList { get; }
+		StateLinkedList LinkedList { get; }
 
-        bool IsEnd { get; }
+		StateLinkedList RootLinkedList { get; }
 
-        void Configure(IState state);
+		bool IsEnd { get; }
 
-        /// <summary>
-        /// reset ot initial state
-        /// </summary>
-        void Reset();
-    }
+		void Configure(IState state);
+
+		/// <summary>
+		/// reset ot initial state
+		/// </summary>
+		void Reset();
+	}
 }

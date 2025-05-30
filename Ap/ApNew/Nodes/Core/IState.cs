@@ -20,6 +20,6 @@ namespace ApNew.Nodes.Core
 
 		void Exit();
 
-		List<string> GetTrigger();
+		List<TriggerResult> GetTrigger();
 	}
 }

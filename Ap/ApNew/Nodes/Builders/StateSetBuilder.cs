@@ -16,19 +16,27 @@ namespace ApNew.Nodes.Builders
 
         internal Action<string> AddTransition = _ => { };
 
+        internal List<Action> JumpAction = new List<Action>();
+
         private readonly StateMachine _sm;
 
-        public StateSetBuilder(string state)
-            : this(state, Guid.NewGuid().ToString())
+        internal StateSetBuilder(string state, StateLinkedList? rootStateLinked = null)
+            : this(state, Guid.NewGuid().ToString(), rootStateLinked)
         {
         }
 
-        public StateSetBuilder(string state, string id)
-            : this(state, id, null, null)
+        internal StateSetBuilder(string state, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
+            : this(state, Guid.NewGuid().ToString(), rootStateLinked, action)
+        {
+
+        }
+
+        internal StateSetBuilder(string state, string id, StateLinkedList? rootStateLinked = null)
+            : this(state, id, rootStateLinked, null)
         {
         }
 
-        public StateSetBuilder(string state, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
+        internal StateSetBuilder(string state, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
         {
             Id = id;
 
@@ -101,6 +109,30 @@ namespace ApNew.Nodes.Builders
             return this;
         }
 
+        public StateSetBuilder Then(string state, Action<IState, string>? addTransition)
+        {
+            CheckIsConfigured(state);
+
+            var result = new StateRepresentation(state);
+            StateDictionary.Add(state, result);
+            StateLinked.AddLast(result);
+            AddTransition(state);
+            if (addTransition == null)
+            {
+                AddTransition = destination =>
+                {
+                    var first = RootStateLinked.FirstState!;
+                    result.AddTransition(new Approve(TransitionConst.Approve, destination));
+                    result.AddTransition(new Reject(TransitionConst.Reject, first.State));
+                };
+            }
+            else
+            {
+                AddTransition = destination => addTransition(result, destination);
+            }
+            return this;
+        }
+
         public BranchJoinBuilder BranchAnd(Action<BranchBuilder> branchAction)
         {
             return Branch(LogicalRelationship.And, branchAction);
@@ -138,8 +170,10 @@ namespace ApNew.Nodes.Builders
 
         public CompleteBuilder Complete()
         {
-            CompleteBuilder branchBuilder = new CompleteBuilder(this);
+            var last = StateLinked.Last!.Value;
+            if (last is EndState) return new CompleteBuilder(this);
 
+            CompleteBuilder branchBuilder = new CompleteBuilder(this);
             var result = new EndState(Id);
             StateDictionary.Add(result.State, result);
             StateLinked.AddLast(result);
@@ -148,10 +182,71 @@ namespace ApNew.Nodes.Builders
             return branchBuilder;
         }
 
-        public StateSetBuilder If(Func<bool> action, Action<StateSetBuilderProvider> True, Action<StateSetBuilderProvider> False)
+        public StateSetBuilder If(Func<bool> action, string @true, string @false)
         {
 
+            return If(action,
+            provider => provider.Create(@true, (result, destination) =>
+                {
+                    var first = RootStateLinked.FirstState;
+                    result.AddTransition(new Approve(TransitionConst.Approve, destination));
+                    result.AddTransition(new Reject(TransitionConst.Reject, first.State));
+                }),
+                provider => provider.Create(@false, (result, destination) =>
+                {
+                    var first = RootStateLinked.FirstState;
+                    result.AddTransition(new Approve(TransitionConst.Approve, destination));
+                    result.AddTransition(new Reject(TransitionConst.Reject, first.State));
+                }));
+        }
+
+        public StateSetBuilder If(Func<bool> action,
+            Func<StateSetBuilderProvider, StateSetBuilder> @true,
+            Func<StateSetBuilderProvider, StateSetBuilder> @false)
+        {
+            var trueBuilder = @true.Invoke(new StateSetBuilderProvider(RootStateLinked));
+            var falseBuilder = @false.Invoke(new StateSetBuilderProvider(RootStateLinked));
+
+            trueBuilder.Complete();
+
+            var sm = new IfContainer(Id, _sm, action, trueBuilder.Build(), falseBuilder.Build());
+
+            AddTransition(sm.State);
+            AddTransition = destination =>
+            {
+                sm.AddTransition(new Direct(destination));
+            };
+            StateDictionary.Add(sm.State, sm);
+            StateLinked.AddLast(sm);
             return this;
+        }
+
+        /// <summary>
+        /// Jumps to a specified state in the state set, cannot jump into any container
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="destination"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public StateSetBuilder Jump(string state, string destination)
+        {
+            CheckIsConfigured(state);
+            return Then(state, (stateNode, next) =>
+            {
+                JumpAction.Add(() =>
+                {
+                    // Cannot jump into any container
+                    if (StateLinked.All(x => x.State != destination))
+                    {
+                        throw new ArgumentException($"Destination state '{destination}' is not configured in the state set.", nameof(destination));
+                    }
+
+                    var first = RootStateLinked.FirstState;
+                    stateNode.AddTransition(new Jump(TransitionConst.Jump, destination));
+                    stateNode.AddTransition(new Approve(TransitionConst.Approve, next));
+                    stateNode.AddTransition(new Reject(TransitionConst.Reject, first.State));
+                });
+            });
         }
 
         protected virtual void CheckIsConfigured(string state)
@@ -164,23 +259,7 @@ namespace ApNew.Nodes.Builders
 
         public virtual bool IsConfigured(string state)
         {
-            foreach (var item in RootStateLinked)
-            {
-                switch (item)
-                {
-                    case IStateSet set:
-                        if (set.Nodes.ContainsKey(state)) return true;
-                        break;
-                    case IStateSetContainer container:
-                        if (container.IsConfigured(state)) return true;
-                        break;
-                    default:
-                        if (item.State == state) return true;
-                        break;
-                }
-            }
-
-            return false;
+            return RootStateLinked.TryGet(state, out _);
         }
 
         internal IStateSet Build()
@@ -189,6 +268,9 @@ namespace ApNew.Nodes.Builders
             {
                 throw new ArgumentNullException(nameof(StateDictionary), "State set is empty");
             }
+
+            Complete();
+            JumpAction.ForEach(s => s());
 
             var value = StateDictionary.First().Value;
             StateDictionary.Remove(value.State);

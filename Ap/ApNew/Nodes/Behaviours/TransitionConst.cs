@@ -14,5 +14,7 @@
 
         public const string WaitForCompleteState = "WaitForComplete";
 
+        public const string Jump = "Jump";
+
     }
 }

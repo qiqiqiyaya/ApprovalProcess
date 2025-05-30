@@ -2,59 +2,69 @@
 
 namespace ApNew.Nodes.Core
 {
-    public class BranchContainer : StateBase, IStateSetContainer
-    {
-        private readonly StateSetBase _parent;
+	public class BranchContainer : StateBase, IStateSetContainer
+	{
+		private readonly StateSetBase _parent;
 
-        public BranchContainer(string name, LogicalRelationship relationship, StateSetBase parent) : base(name)
-        {
-            Relationship = relationship;
-            _parent = parent;
-        }
+		public BranchContainer(string name, LogicalRelationship relationship, StateSetBase parent) : base(name)
+		{
+			Relationship = relationship;
+			_parent = parent;
 
-        public IDictionary<string, IStateSet> StateSets { get; } = new Dictionary<string, IStateSet>();
+			Id = Guid.NewGuid().ToString("N");
+		}
 
-        public bool IsEnd => CheckIsEnding();
+		public IDictionary<string, IStateSet> StateSets { get; } = new Dictionary<string, IStateSet>();
 
-        public LogicalRelationship Relationship { get; set; }
+		public bool IsEnd => CheckIsEnding();
 
-        public void ExecuteTrigger(TriggerParameter trigger)
-        {
-            IStateTrigger set = StateSets[trigger.StateSetId];
-            set.ExecuteTrigger(trigger);
+		public LogicalRelationship Relationship { get; set; }
 
-            if (IsEnd)
-            {
-                // Go directly to the next state
-                _parent.ExecuteTrigger(new TriggerParameter() { StateSetId = _parent.Id, Trigger = TransitionConst.Direct });
-                foreach (var stateSet in StateSets)
-                {
-                    stateSet.Value.Reset();
-                }
-            }
-        }
+		public void ExecuteTrigger(TriggerParameter trigger)
+		{
+			IStateTrigger set = StateSets[trigger.StateSetId];
+			set.ExecuteTrigger(trigger);
 
-        public void ExecuteTrigger(string trigger)
-        {
-            ExecuteTrigger(new TriggerParameter() { StateSetId = _parent.Id, Trigger = trigger });
-        }
+			if (IsEnd)
+			{
+				// Go directly to the next state
+				_parent.ExecuteTrigger(new TriggerParameter() { StateSetId = _parent.Id, Trigger = TransitionConst.Direct });
+				foreach (var stateSet in StateSets)
+				{
+					stateSet.Value.Reset();
+				}
+			}
+		}
 
-        private bool CheckIsEnding()
-        {
-            return Relationship == LogicalRelationship.And ?
-                // Ensure all sets are in end state
-                StateSets.Values.All(s => s.IsEnd) : StateSets.Values.Any(s => s.IsEnd);
-        }
+		public void ExecuteTrigger(string trigger)
+		{
+			ExecuteTrigger(new TriggerParameter() { StateSetId = _parent.Id, Trigger = trigger });
+		}
 
-        public bool IsConfigured(string state)
-        {
-            return StateSets.Any(x => x.Value.Nodes.ContainsKey(state));
-        }
+		private bool CheckIsEnding()
+		{
+			return Relationship == LogicalRelationship.And ?
+				// Ensure all sets are in end state
+				StateSets.Values.All(s => s.IsEnd) : StateSets.Values.Any(s => s.IsEnd);
+		}
 
-        protected void fdsafs()
-        {
-            // Did it jump out of the container?
+		public bool IsConfigured(string state)
+		{
+			return StateSets.Any(x => x.Value.Nodes.ContainsKey(state));
+		}
 
-        }
-    }
+		public override List<TriggerResult> GetTrigger()
+		{
+			List<TriggerResult> results = new List<TriggerResult>();
+			foreach (var stateSet in StateSets.Values)
+			{
+				var nodeTriggers = stateSet.LinkedList.FirstState.GetTrigger();
+				nodeTriggers.ForEach(s => s.StateSetId = stateSet.Id);
+
+				results.AddRange(nodeTriggers);
+			}
+
+			return results;
+		}
+	}
 }
