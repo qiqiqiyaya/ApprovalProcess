@@ -52,7 +52,7 @@ namespace ApNew.Nodes.Builders
             }
 
             Start().Start(state, action);
-            _sm = new StateMachine(StateLinked.OriginFirst.Value, RootStateLinked);
+            _sm = new StateMachine(StateLinked.OriginFirst.Value, RootStateLinked, id);
         }
 
         private StateSetBuilder Start()
@@ -247,6 +247,23 @@ namespace ApNew.Nodes.Builders
                     stateNode.AddTransition(new Reject(TransitionConst.Reject, first.State));
                 });
             });
+        }
+
+        public StateSetBuilder Children(Action<ContainerBuilder> builderAction)
+        {
+            ContainerBuilder container = new ContainerBuilder(RootStateLinked);
+            builderAction(container);
+
+            var setContainer = container.Build(_sm);
+
+            AddTransition(setContainer.State);
+            AddTransition = destination =>
+            {
+                setContainer.AddTransition(new Direct(destination));
+            };
+            StateDictionary.Add(setContainer.State, setContainer);
+            StateLinked.AddLast(setContainer);
+            return this;
         }
 
         protected virtual void CheckIsConfigured(string state)

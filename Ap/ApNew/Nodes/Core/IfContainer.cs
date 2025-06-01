@@ -65,14 +65,16 @@ namespace ApNew.Nodes.Core
             return StateSets.Any(x => x.Value.Nodes.ContainsKey(state));
         }
 
-        public override List<TriggerResult> GetTrigger()
+        public override TriggerDictionary GetTrigger()
         {
             IStateSet set = GetStateSet();
-            return set.LinkedList.FirstState.GetTrigger().Select(t =>
+            var list = set.LinkedList.FirstState.GetTrigger().Select(t =>
             {
-                t.StateSetId = set.Id;
+                t.Value.StateSetId = set.Id;
                 return t;
             }).ToList();
+
+            return new TriggerDictionary(list);
         }
     }
 }

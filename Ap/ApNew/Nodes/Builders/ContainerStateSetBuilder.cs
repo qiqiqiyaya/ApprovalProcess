@@ -21,7 +21,7 @@ namespace ApNew.Nodes.Builders
         {
         }
 
-        public void JumpOut(string state, string destination)
+        public virtual void JumpOut(string state, string destination)
         {
             CheckIsConfigured(state);
             Then(state, (stateNode, next) =>

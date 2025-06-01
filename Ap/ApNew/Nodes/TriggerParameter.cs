@@ -4,7 +4,7 @@ namespace ApNew.Nodes
 {
     public class TriggerParameter
     {
-        public string StateSetId { get; set; }
+        public string? StateSetId { get; set; }
 
         public string Trigger { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using ApNew.Nodes.Behaviours;
+using ApNew.Nodes.Core;
 
 namespace ApNew.Nodes.Builders
 {
@@ -8,29 +9,26 @@ namespace ApNew.Nodes.Builders
 
         public IDictionary<string, StateSetBuilder> StateSetBuilderDic { get; } = new Dictionary<string, StateSetBuilder>();
 
-        public LogicalRelationship Relationship { get; }
-
         public string State { get; }
 
         public StateLinkedList RootStateLinked { get; }
 
         public const string ContainerStateNamePrefix = "Container_";
 
-        public ContainerBuilder(LogicalRelationship relationship, StateLinkedList rootStateLinked)
+        public ContainerBuilder(StateLinkedList rootStateLinked)
         {
             Id = Guid.NewGuid().ToString("N");
 
-            Relationship = relationship;
             State = ContainerStateNamePrefix + Id;
             RootStateLinked = rootStateLinked;
         }
 
-        public ContainerStateSetBuilder New(string state, string id)
+        public ContainerStateSetBuilder New(string state)
         {
             var provider = new StateSetBuilderProvider(RootStateLinked);
 
             var containerBuilder = provider.Create<ContainerStateSetBuilder>(
-                () => new ContainerStateSetBuilder(state, id, RootStateLinked,
+                () => new ContainerStateSetBuilder(state, Guid.NewGuid().ToString("N"), RootStateLinked,
                 (result, destination) =>
                 {
                     var first = RootStateLinked.FirstState;
@@ -40,6 +38,22 @@ namespace ApNew.Nodes.Builders
 
             StateSetBuilderDic.Add(containerBuilder.Id, containerBuilder);
             return containerBuilder;
+        }
+
+        internal IStateSetContainer Build(StateSetBase parent)
+        {
+            StateSetContainer container = new StateSetContainer(State, parent);
+
+            foreach (var builder in StateSetBuilderDic)
+            {
+                var setBuilder = builder.Value;
+                setBuilder.Complete();
+                var set = setBuilder.Build();
+
+                container.StateSets.Add(builder.Key, set);
+            }
+
+            return container;
         }
     }
 }

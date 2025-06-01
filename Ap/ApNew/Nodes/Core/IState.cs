@@ -2,24 +2,24 @@
 
 namespace ApNew.Nodes.Core
 {
-	/// <summary>
-	/// node
-	/// </summary>
-	public interface IState : INode
-	{
-		public string State { get; }
+    /// <summary>
+    /// node
+    /// </summary>
+    public interface IState : INode
+    {
+        public string State { get; }
 
-		/// <summary>
-		/// Transition to
-		/// </summary>
-		IDictionary<string, INodeBehaviour> NodeTransitions { get; }
+        /// <summary>
+        /// Transition to
+        /// </summary>
+        IDictionary<string, INodeBehaviour> NodeTransitions { get; }
 
-		void AddTransition(INodeBehaviour behaviour);
+        void AddTransition(INodeBehaviour behaviour);
 
-		void Entry();
+        void Entry();
 
-		void Exit();
+        void Exit();
 
-		List<TriggerResult> GetTrigger();
-	}
+        TriggerDictionary GetTrigger();
+    }
 }
