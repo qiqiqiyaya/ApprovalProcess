@@ -1,6 +1,7 @@
-﻿using ApNew.Nodes.Core;
+﻿using System;
+using Ap.Core.Definitions;
 
-namespace ApNew.Nodes.Builders
+namespace Ap.Core.Builders
 {
     public class StateSetBuilderProvider(StateLinkedList? rootStateLinked = null)
     {

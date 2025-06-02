@@ -8,7 +8,7 @@ namespace ApNew
         {
 
             //BranchAndTest.Test();
-            JumpOutTest.Test();
+            BranchAndTest.Test();
 
             Console.Read();
         }

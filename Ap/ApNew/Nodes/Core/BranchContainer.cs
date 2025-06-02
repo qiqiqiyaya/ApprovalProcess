@@ -59,7 +59,7 @@ namespace ApNew.Nodes.Core
             TriggerDictionary dic = new TriggerDictionary();
             foreach (var stateSet in StateSets.Values)
             {
-                var nodeTriggers = stateSet.LinkedList.FirstState.GetTrigger();
+                var nodeTriggers = stateSet.GetTrigger();
                 foreach (var item in nodeTriggers)
                 {
                     item.Value.StateSetId = stateSet.Id;

@@ -1,14 +1,17 @@
-﻿using ApNew.Nodes.Behaviours;
-using ApNew.Nodes.Core;
-using ApNew.Nodes.States;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Ap.Core.Behaviours;
+using Ap.Core.Definitions;
+using Ap.Core.States;
 
-namespace ApNew.Nodes.Builders
+namespace Ap.Core.Builders
 {
     public class StateSetBuilder : IStateSetBuilder
     {
         public string Id { get; set; }
 
-        public IDictionary<string, IState> StateDictionary { get; } = new Dictionary<string, IState>();
+        public Dictionary<string, IState> StateDictionary { get; } = new Dictionary<string, IState>();
 
         public StateLinkedList StateLinked { get; private set; }
 
@@ -104,7 +107,7 @@ namespace ApNew.Nodes.Builders
             {
                 var first = RootStateLinked.FirstState;
                 result.AddTransition(new Approve(TransitionConst.Approve, destination));
-                result.AddTransition(new Reject(TransitionConst.Reject, first.State));
+                result.AddTransition(new Reject(TransitionConst.Reject, first.Name));
             };
             return this;
         }
@@ -123,7 +126,7 @@ namespace ApNew.Nodes.Builders
                 {
                     var first = RootStateLinked.FirstState;
                     result.AddTransition(new Approve(TransitionConst.Approve, destination));
-                    result.AddTransition(new Reject(TransitionConst.Reject, first.State));
+                    result.AddTransition(new Reject(TransitionConst.Reject, first.Name));
                 };
             }
             else
@@ -175,9 +178,9 @@ namespace ApNew.Nodes.Builders
 
             CompleteBuilder branchBuilder = new CompleteBuilder(this);
             var result = new EndState(Id);
-            StateDictionary.Add(result.State, result);
+            StateDictionary.Add(result.Name, result);
             StateLinked.AddLast(result);
-            AddTransition(result.State);
+            AddTransition(result.Name);
 
             return branchBuilder;
         }
@@ -190,13 +193,13 @@ namespace ApNew.Nodes.Builders
                 {
                     var first = RootStateLinked.FirstState;
                     result.AddTransition(new Approve(TransitionConst.Approve, destination));
-                    result.AddTransition(new Reject(TransitionConst.Reject, first.State));
+                    result.AddTransition(new Reject(TransitionConst.Reject, first.Name));
                 }),
                 provider => provider.Create(@false, (result, destination) =>
                 {
                     var first = RootStateLinked.FirstState;
                     result.AddTransition(new Approve(TransitionConst.Approve, destination));
-                    result.AddTransition(new Reject(TransitionConst.Reject, first.State));
+                    result.AddTransition(new Reject(TransitionConst.Reject, first.Name));
                 }));
         }
 
@@ -211,12 +214,12 @@ namespace ApNew.Nodes.Builders
 
             var sm = new IfContainer(Id, _sm, action, trueBuilder.Build(), falseBuilder.Build());
 
-            AddTransition(sm.State);
+            AddTransition(sm.Name);
             AddTransition = destination =>
             {
                 sm.AddTransition(new Direct(destination));
             };
-            StateDictionary.Add(sm.State, sm);
+            StateDictionary.Add(sm.Name, sm);
             StateLinked.AddLast(sm);
             return this;
         }
@@ -236,7 +239,7 @@ namespace ApNew.Nodes.Builders
                 JumpAction.Add(() =>
                 {
                     // Cannot jump into any container
-                    if (StateLinked.All(x => x.State != destination))
+                    if (StateLinked.All(x => x.Name != destination))
                     {
                         throw new ArgumentException($"Destination state '{destination}' is not configured in the state set.", nameof(destination));
                     }
@@ -244,7 +247,7 @@ namespace ApNew.Nodes.Builders
                     var first = RootStateLinked.FirstState;
                     stateNode.AddTransition(new Jump(TransitionConst.Jump, destination));
                     stateNode.AddTransition(new Approve(TransitionConst.Approve, next));
-                    stateNode.AddTransition(new Reject(TransitionConst.Reject, first.State));
+                    stateNode.AddTransition(new Reject(TransitionConst.Reject, first.Name));
                 });
             });
         }
@@ -256,12 +259,12 @@ namespace ApNew.Nodes.Builders
 
             var setContainer = container.Build(_sm);
 
-            AddTransition(setContainer.State);
+            AddTransition(setContainer.Name);
             AddTransition = destination =>
             {
                 setContainer.AddTransition(new Direct(destination));
             };
-            StateDictionary.Add(setContainer.State, setContainer);
+            StateDictionary.Add(setContainer.Name, setContainer);
             StateLinked.AddLast(setContainer);
             return this;
         }
@@ -290,7 +293,7 @@ namespace ApNew.Nodes.Builders
             JumpAction.ForEach(s => s());
 
             var value = StateDictionary.First().Value;
-            StateDictionary.Remove(value.State);
+            StateDictionary.Remove(value.Name);
 
             foreach (var node in StateDictionary)
             {

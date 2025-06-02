@@ -1,12 +1,14 @@
-﻿using ApNew.Nodes.Core;
+﻿using System;
+using System.Collections.Generic;
+using Ap.Core.Definitions;
 
-namespace ApNew.Nodes.Builders
+namespace Ap.Core.Builders
 {
     public interface IStateSetBuilder
     {
         string Id { get; }
 
-        IDictionary<string, IState> StateDictionary { get; }
+        Dictionary<string, IState> StateDictionary { get; }
 
         StateLinkedList StateLinked { get; }
 
@@ -17,7 +19,7 @@ namespace ApNew.Nodes.Builders
     {
         string Id { get; }
 
-        IDictionary<string, IState> StateDictionary { get; }
+        Dictionary<string, IState> StateDictionary { get; }
 
         StateLinkedList StateLinked { get; }
 

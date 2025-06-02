@@ -1,13 +1,16 @@
-﻿using ApNew.Nodes.Behaviours;
-using ApNew.Nodes.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Ap.Core.Behaviours;
+using Ap.Core.Definitions;
 
-namespace ApNew.Nodes.Builders
+namespace Ap.Core.Builders
 {
     public class BranchBuilder : IBranchBuilder
     {
         public string Id { get; }
 
-        public IDictionary<string, StateSetBuilder> StateSetBuilderDic { get; } = new Dictionary<string, StateSetBuilder>();
+        public Dictionary<string, StateSetBuilder> StateSetBuilderDic { get; } = new Dictionary<string, StateSetBuilder>();
 
         public LogicalRelationship Relationship { get; }
 
@@ -35,7 +38,7 @@ namespace ApNew.Nodes.Builders
                     {
                         var first = RootStateLinked.FirstState;
                         result.AddTransition(new Approve(TransitionConst.Approve, destination));
-                        result.AddTransition(new Reject(TransitionConst.Reject, first.State));
+                        result.AddTransition(new Reject(TransitionConst.Reject, first.Name));
                     }));
 
             StateSetBuilderDic.Add(containerBuilder.Id, containerBuilder);
