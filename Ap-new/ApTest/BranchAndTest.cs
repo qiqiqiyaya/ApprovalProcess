@@ -1,0 +1,61 @@
+using Ap.Core.Behaviours;
+using Ap.Core.Builders;
+using Ap.Core.Definitions;
+
+namespace ApTest
+{
+    public class BranchAndTest
+    {
+        [Fact]
+        public void Test()
+        {
+            StateSetBuilderProvider provider = new StateSetBuilderProvider();
+
+            var builder = provider.Create("edit");
+
+            string aId = "";
+            string bId = "";
+
+            builder.Then("FirstApprove")
+                .Then("SecondApprove")
+                .BranchAnd(branch =>
+                {
+                    var builderA = branch.New("SecondApprove_A1")
+                        .Then("SecondApprove_A2");
+                    aId = builderA.Id;
+
+                    var builderB = branch.New("SecondApprove_B1", "2")
+                        .Then("SecondApprove_B2");
+                    bId = builderB.Id;
+                })
+                .Then("ThirdApprove")
+                .Complete();
+
+            IStateSet stateSet = builder.Build();
+            stateSet.ExecuteTrigger(TransitionConst.Submit);
+            stateSet.ExecuteTrigger(TransitionConst.Approve);
+
+            stateSet.ExecuteTrigger(TransitionConst.Reject);
+
+            stateSet.ExecuteTrigger(TransitionConst.Submit);
+            stateSet.ExecuteTrigger(TransitionConst.Approve);
+            stateSet.ExecuteTrigger(TransitionConst.Approve);
+
+            stateSet.ExecuteTrigger(aId, TransitionConst.Approve);
+            var triggerDictionary = stateSet.GetTrigger();
+            stateSet.ExecuteTrigger(aId, TransitionConst.Reject);
+
+            stateSet.ExecuteTrigger(TransitionConst.Submit);
+            stateSet.ExecuteTrigger(TransitionConst.Approve);
+            stateSet.ExecuteTrigger(TransitionConst.Approve);
+
+            stateSet.ExecuteTrigger(aId, TransitionConst.Approve);
+            stateSet.ExecuteTrigger(aId, TransitionConst.Approve);
+
+            stateSet.ExecuteTrigger(bId, TransitionConst.Approve);
+            stateSet.ExecuteTrigger(bId, TransitionConst.Approve);
+
+            stateSet.ExecuteTrigger(TransitionConst.Approve);
+        }
+    }
+}

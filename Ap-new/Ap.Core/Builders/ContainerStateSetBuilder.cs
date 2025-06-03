@@ -5,7 +5,7 @@ using Ap.Core.Definitions;
 
 namespace Ap.Core.Builders
 {
-    public class ContainerStateSetBuilder : StateSetBuilder
+    public class ContainerStateSetBuilder : StateSetBuilder<IContainerStateSetBuilder>, IContainerStateSetBuilder
     {
         internal ContainerStateSetBuilder(string state, StateLinkedList? rootStateLinked = null) : base(state, rootStateLinked)
         {
@@ -23,7 +23,7 @@ namespace Ap.Core.Builders
         {
         }
 
-        public virtual void JumpOut(string state, string destination)
+        public virtual IContainerStateSetBuilder JumpOut(string state, string destination)
         {
             CheckIsConfigured(state);
             Then(state, (stateNode, next) =>
@@ -49,6 +49,7 @@ namespace Ap.Core.Builders
                 });
             });
 
+            return this;
         }
     }
 }

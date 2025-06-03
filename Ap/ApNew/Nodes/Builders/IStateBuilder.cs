@@ -1,4 +1,6 @@
-﻿namespace ApNew.Nodes.Builders
+﻿using ApNew.Nodes.Core;
+
+namespace ApNew.Nodes.Builders
 {
     public interface IStateBuilder
     {

@@ -5,50 +5,60 @@ using Ap.Core.Definitions;
 
 namespace Ap.Core.Builders
 {
-    public class ContainerBuilder
+    public class ContainerBuilder : IContainerBuilder
     {
         public string Id { get; }
 
-        public Dictionary<string, StateSetBuilder> StateSetBuilderDic { get; } = new Dictionary<string, StateSetBuilder>();
+        public Dictionary<string, object> StateSetBuilderDic { get; } = new();
 
-        public string State { get; }
+        public string State { get; protected set; }
 
         public StateLinkedList RootStateLinked { get; }
 
         public const string ContainerStateNamePrefix = "Container_";
 
-        public ContainerBuilder(StateLinkedList rootStateLinked)
+        public ContainerBuilder(StateLinkedList rootStateLinked) : this(Guid.NewGuid().ToString("N"), rootStateLinked)
         {
-            Id = Guid.NewGuid().ToString("N");
+
+        }
+
+        public ContainerBuilder(string id, StateLinkedList rootStateLinked)
+        {
+            Id = id;
 
             State = ContainerStateNamePrefix + Id;
             RootStateLinked = rootStateLinked;
         }
 
-        public ContainerStateSetBuilder New(string state)
+        public virtual IContainerStateSetBuilder New(string state, string id)
         {
             var provider = new StateSetBuilderProvider(RootStateLinked);
 
-            var containerBuilder = provider.Create<ContainerStateSetBuilder>(
-                () => new ContainerStateSetBuilder(state, Guid.NewGuid().ToString("N"), RootStateLinked,
-                (result, destination) =>
-                {
-                    var first = RootStateLinked.FirstState;
-                    result.AddTransition(new Approve(TransitionConst.Approve, destination));
-                    result.AddTransition(new Reject(TransitionConst.Reject, first.Name));
-                }));
+            var containerBuilder = provider.Create<IContainerStateSetBuilder>(
+                () => new ContainerStateSetBuilder(state, id, RootStateLinked,
+                    (result, destination) =>
+                    {
+                        var first = RootStateLinked.FirstState;
+                        result.AddTransition(new Approve(TransitionConst.Approve, destination));
+                        result.AddTransition(new Reject(TransitionConst.Reject, first.Name));
+                    }));
 
             StateSetBuilderDic.Add(containerBuilder.Id, containerBuilder);
             return containerBuilder;
         }
 
-        internal IStateSetContainer Build(StateSetBase parent)
+        public virtual IContainerStateSetBuilder New(string state)
+        {
+            return New(state, Guid.NewGuid().ToString("N"));
+        }
+
+        public virtual IStateSetContainer Build(StateSetBase parent)
         {
             StateSetContainer container = new StateSetContainer(State, parent);
 
             foreach (var builder in StateSetBuilderDic)
             {
-                var setBuilder = builder.Value;
+                var setBuilder = (ContainerStateSetBuilder)builder.Value;
                 setBuilder.Complete();
                 var set = setBuilder.Build();
 

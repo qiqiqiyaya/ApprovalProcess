@@ -5,7 +5,7 @@ namespace Ap.Core.Builders
 {
     public class StateSetBuilderProvider(StateLinkedList? rootStateLinked = null)
     {
-        public StateSetBuilder Create(string state)
+        public IStateSetBuilder<StateSetBuilder> Create(string state)
         {
             return new StateSetBuilder(state, rootStateLinked);
         }
@@ -26,7 +26,7 @@ namespace Ap.Core.Builders
         }
 
         public TStateSetBuilder Create<TStateSetBuilder>(Func<TStateSetBuilder> action)
-            where TStateSetBuilder : StateSetBuilder
+            where TStateSetBuilder : IStateSetBuilder<TStateSetBuilder>
         {
             return action();
         }

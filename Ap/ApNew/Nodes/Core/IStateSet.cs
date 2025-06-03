@@ -1,6 +1,4 @@
-﻿using ApNew.Nodes.Builders;
-
-namespace ApNew.Nodes.Core
+﻿namespace ApNew.Nodes.Core
 {
 	/// <summary>
 	/// State set

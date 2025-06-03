@@ -17,7 +17,7 @@ namespace Ap.Core.Behaviours
 
             if (Destination != firstState.Name)
             {
-                throw new InvalidOperationException($"Reject behaviour can only be used to return to the first state: {firstState.State}, but was given: {Destination}");
+                throw new InvalidOperationException($"Reject behaviour can only be used to return to the first state: {firstState.Name}, but was given: {Destination}");
             }
 
             context.RootSet.CurrentState = Destination;

@@ -1,18 +1,12 @@
-﻿using System;
+﻿using Ap.Core.Definitions;
+using System;
 using System.Collections.Generic;
-using Ap.Core.Definitions;
 
 namespace Ap.Core.Builders
 {
-    public interface IStateSetBuilder
+    public interface IStateSetBuilder : IStateSetBuilder<IStateSetBuilder>
     {
-        string Id { get; }
 
-        Dictionary<string, IState> StateDictionary { get; }
-
-        StateLinkedList StateLinked { get; }
-
-        StateLinkedList RootStateLinked { get; }
     }
 
     public interface IStateSetBuilder<out TStateSetBuilder>
@@ -29,11 +23,11 @@ namespace Ap.Core.Builders
 
         TStateSetBuilder Then(string state, Action<IState, string>? addTransition);
 
-        BranchJoinBuilder BranchAnd(Action<BranchBuilder> branchAction);
+        TStateSetBuilder BranchAnd(Action<BranchBuilder> branchAction);
 
-        BranchJoinBuilder BranchOr(Action<BranchBuilder> branchAction);
+        TStateSetBuilder BranchOr(Action<BranchBuilder> branchAction);
 
-        BranchJoinBuilder Branch(LogicalRelationship relationship, Action<BranchBuilder> branchAction);
+        TStateSetBuilder Branch(LogicalRelationship relationship, Action<BranchBuilder> branchAction);
 
         void Complete(string state);
 
@@ -50,5 +44,7 @@ namespace Ap.Core.Builders
         TStateSetBuilder Children(Action<ContainerBuilder> builderAction);
 
         bool IsConfigured(string state);
+
+        IStateSet Build();
     }
 }
