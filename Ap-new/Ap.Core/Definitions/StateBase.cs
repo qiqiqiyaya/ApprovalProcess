@@ -1,20 +1,35 @@
-﻿using Ap.Core.Behaviours;
+﻿using System;
+using Ap.Core.Behaviours;
 using Ap.Core.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Ap.Core.Definitions
 {
-    public abstract class StateBase(string name) : NodeBase, IState
+    public abstract class StateBase : NodeBase, IState
     {
-        public string Name { get; protected set; } = name;
+        protected StateBase(string name) : this(name, Guid.NewGuid().ToString("N"))
+        {
+
+        }
+
+        protected StateBase(string name, string id)
+        {
+            Name = name;
+            Id = id;
+        }
+
+        public string Name { get; protected set; }
 
         public Dictionary<string, IBehaviour> Transitions { get; } = new();
 
         public virtual TriggerDictionary GetTrigger()
         {
-            var list = Transitions.Select(s => new TriggerResult(s.Key));
-            return new(list);
+            var node = new StateNode(Id, Name)
+            {
+                Triggers = Transitions.Select(s => s.Key).ToList()
+            };
+            return new(node);
         }
 
         public void Entry()

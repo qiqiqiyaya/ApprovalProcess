@@ -43,6 +43,9 @@ namespace ApTest
 
             stateSet.ExecuteTrigger(aId, TransitionConst.Approve);
             var triggerDictionary = stateSet.GetTrigger();
+
+            Assert.True(triggerDictionary.Count > 0);
+
             stateSet.ExecuteTrigger(aId, TransitionConst.Reject);
 
             stateSet.ExecuteTrigger(TransitionConst.Submit);
@@ -56,6 +59,7 @@ namespace ApTest
             stateSet.ExecuteTrigger(bId, TransitionConst.Approve);
 
             stateSet.ExecuteTrigger(TransitionConst.Approve);
+            Assert.True(stateSet.IsEnd);
         }
     }
 }

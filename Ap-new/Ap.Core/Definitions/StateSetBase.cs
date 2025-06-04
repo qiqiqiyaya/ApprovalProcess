@@ -87,6 +87,7 @@ namespace Ap.Core.Definitions
 
         public virtual void ExecuteTrigger(StateTrigger trigger)
         {
+            trigger.RootStateSet ??= this;
             var state = GetState(CurrentState);
 
             switch (state)

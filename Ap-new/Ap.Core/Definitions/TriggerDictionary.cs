@@ -2,27 +2,36 @@
 
 namespace Ap.Core.Definitions
 {
-    public class TriggerDictionary : Dictionary<string, TriggerResult>
+    public class TriggerDictionary : Dictionary<string, StateNode>
     {
         public TriggerDictionary()
         {
 
         }
 
-        public TriggerDictionary(IEnumerable<TriggerResult> list)
+        public TriggerDictionary(StateNode node)
         {
-            foreach (var item in list)
-            {
-                this[item.Trigger] = item;
-            }
+            Add(node.StateId, node);
         }
 
-        public TriggerDictionary(IEnumerable<KeyValuePair<string, TriggerResult>> collection)
-        {
-            foreach (var item in collection)
-            {
-                Add(item.Key, item.Value);
-            }
-        }
+        //public TriggerDictionary(IEnumerable<KeyValuePair<string, TriggerResult>> collection)
+        //{
+        //    foreach (var item in collection)
+        //    {
+        //        Add(item.Key, item.Value);
+        //    }
+        //}
+    }
+
+
+    public class StateNode(string stateId, string name)
+    {
+        public string StateId { get; set; } = stateId;
+
+        public string Name { get; set; } = name;
+
+        public string StateSetId { get; set; }
+
+        public List<string> Triggers { get; set; }
     }
 }

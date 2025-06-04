@@ -56,13 +56,14 @@ namespace Ap.Core.Definitions
         public override TriggerDictionary GetTrigger()
         {
             IStateSet set = GetStateSet();
-            var list = set.LinkedList.FirstState.GetTrigger().Select(t =>
-            {
-                t.Value.StateSetId = set.Id;
-                return t;
-            }).ToList();
+            var trigger = set.LinkedList.FirstState.GetTrigger();
 
-            return new(list);
+            foreach (var item in trigger)
+            {
+                item.Value.StateSetId = set.Id;
+            }
+
+            return trigger;
         }
     }
 }
