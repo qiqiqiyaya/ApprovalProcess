@@ -28,6 +28,8 @@ namespace ApNew.Test
             IStateSet stateSet = builder.Build();
             stateSet.ExecuteTrigger(TransitionConst.Submit);
             stateSet.ExecuteTrigger(TransitionConst.Approve);
+            Console.WriteLine("IsEnd:" + stateSet.CurrentState);
+            Console.WriteLine("Triggers:" + string.Join(',', stateSet.GetTrigger()));
 
             stateSet.ExecuteTrigger(TransitionConst.Reject);
             Console.WriteLine("IsEnd:" + stateSet.CurrentState);
@@ -38,9 +40,10 @@ namespace ApNew.Test
             stateSet.ExecuteTrigger(TransitionConst.Approve);
 
             stateSet.ExecuteTrigger(new TriggerParameter() { StateSetId = "1", Trigger = TransitionConst.Approve });
+            Console.WriteLine("IsEnd:" + stateSet.CurrentState);
+            var aa = stateSet.GetTrigger();
             stateSet.ExecuteTrigger(new TriggerParameter() { StateSetId = "1", Trigger = TransitionConst.Reject });
             Console.WriteLine("IsEnd:" + stateSet.CurrentState);
-            Console.WriteLine("Triggers:" + string.Join(',', stateSet.GetTrigger()));
 
             stateSet.ExecuteTrigger(TransitionConst.Submit);
             stateSet.ExecuteTrigger(TransitionConst.Approve);

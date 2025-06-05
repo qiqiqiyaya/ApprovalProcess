@@ -1,5 +1,4 @@
 ﻿using ApNew.Nodes.Behaviours;
-using ApNew.Nodes.Builders;
 using ApNew.Nodes.States;
 
 namespace ApNew.Nodes.Core
@@ -10,11 +9,13 @@ namespace ApNew.Nodes.Core
 
         public string CurrentState { get; set; }
 
-        public IState CurrentStateNode => GetState(CurrentState);
+        public virtual bool IsInitial => CurrentState == InitialState;
+
+        public virtual IState CurrentStateNode => GetState(CurrentState);
 
         public IDictionary<string, IState> Nodes { get; } = new Dictionary<string, IState>();
 
-        public StateLinkedList LinkedList { get; }
+        public virtual StateLinkedList LinkedList { get; }
 
         public StateLinkedList RootLinkedList { get; }
 
@@ -60,16 +61,23 @@ namespace ApNew.Nodes.Core
             throw new InvalidOperationException($"State {state} not found in the state set.");
         }
 
-        public override List<string> GetTrigger()
+        public override TriggerDictionary GetTrigger()
         {
             var state = GetState(CurrentState);
+
+            // state is never EndState
+            // state is StartState ， skip it
+            if (state is StartState)
+            {
+                return LinkedList.FirstState.GetTrigger();
+            }
+
             return state.GetTrigger();
         }
 
         public virtual void ExecuteTrigger(string trigger)
         {
-            IState state = GetState(CurrentState);
-            ExitAndEntry(state, new TriggerParameter() { Trigger = trigger, RootStateSet = this });
+            ExecuteTrigger(new TriggerParameter() { Trigger = trigger, RootStateSet = this });
         }
 
         public virtual void ExecuteTrigger(TriggerParameter trigger)
@@ -80,6 +88,9 @@ namespace ApNew.Nodes.Core
             {
                 case IStateSetContainer container:
                     SetContainerHandle(container, trigger);
+                    break;
+                case IStateSet set:
+                    StateSetHandle(set, trigger);
                     break;
                 default:
                     ExitAndEntry(state, trigger);
@@ -112,6 +123,19 @@ namespace ApNew.Nodes.Core
             nextState.Entry();
         }
 
+        protected virtual void StateSetHandle(IStateSet set, TriggerParameter trigger)
+        {
+            if (!set.IsEnd)
+            {
+                set.ExecuteTrigger(trigger);
+            }
+            else
+            {
+                // if it ends, jump out
+                ExitAndEntry(set, trigger);
+            }
+        }
+
         protected virtual void SetContainerHandle(IStateSetContainer container, TriggerParameter trigger)
         {
             if (!container.IsEnd)
@@ -128,14 +152,10 @@ namespace ApNew.Nodes.Core
 
         protected virtual IState StartStateHandle(IState state, TriggerParameter trigger)
         {
-            if (state is StartState startState)
-            {
-                var behaviour = startState.FindNext();
-                ExitAndEntry(state, behaviour, trigger);
-                return GetState(CurrentState); ;
-            }
-
-            return state;
+            if (state is not StartState startState) return state;
+            var behaviour = startState.FindNext();
+            ExitAndEntry(state, behaviour, trigger);
+            return GetState(CurrentState);
         }
 
         protected virtual void EndStateHandle()
@@ -146,7 +166,7 @@ namespace ApNew.Nodes.Core
         /// <summary>
         /// reset ot initial state
         /// </summary>
-        public void Reset()
+        public virtual void Reset()
         {
             CurrentState = InitialState;
         }
@@ -154,7 +174,7 @@ namespace ApNew.Nodes.Core
         /// <summary>
         /// Jump out this to parent StateSet
         /// </summary>
-        protected bool IsJumpOut(string state)
+        protected virtual bool IsJumpOut(string state)
         {
             return !LinkedList.TryGet(state, out _);
         }

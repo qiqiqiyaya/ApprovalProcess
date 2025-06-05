@@ -10,6 +10,8 @@ namespace ApNew.Nodes.Core
         {
             Relationship = relationship;
             _parent = parent;
+
+            Id = Guid.NewGuid().ToString("N");
         }
 
         public IDictionary<string, IStateSet> StateSets { get; } = new Dictionary<string, IStateSet>();
@@ -20,6 +22,7 @@ namespace ApNew.Nodes.Core
 
         public void ExecuteTrigger(TriggerParameter trigger)
         {
+            if (string.IsNullOrEmpty(trigger.StateSetId)) throw new ArgumentException("StateSetId cannot be null or empty.", nameof(trigger.StateSetId));
             IStateTrigger set = StateSets[trigger.StateSetId];
             set.ExecuteTrigger(trigger);
 
@@ -51,10 +54,20 @@ namespace ApNew.Nodes.Core
             return StateSets.Any(x => x.Value.Nodes.ContainsKey(state));
         }
 
-        protected void fdsafs()
+        public override TriggerDictionary GetTrigger()
         {
-            // Did it jump out of the container?
+            TriggerDictionary dic = new TriggerDictionary();
+            foreach (var stateSet in StateSets.Values)
+            {
+                var nodeTriggers = stateSet.GetTrigger();
+                foreach (var item in nodeTriggers)
+                {
+                    item.Value.StateSetId = stateSet.Id;
+                    dic.Add(item.Key, item.Value);
+                }
+            }
 
+            return dic;
         }
     }
 }

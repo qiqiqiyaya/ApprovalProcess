@@ -14,9 +14,13 @@ namespace ApNew.Nodes.Core
         public IDictionary<string, INodeBehaviour> NodeTransitions { get; } =
             new Dictionary<string, INodeBehaviour>();
 
-        public virtual List<string> GetTrigger()
+        public virtual TriggerDictionary GetTrigger()
         {
-            return NodeTransitions.Select(s => s.Key).ToList();
+            var list = NodeTransitions
+                .Select(s => new TriggerResult(s.Key))
+                .ToList();
+
+            return new TriggerDictionary(list);
         }
 
         public void Entry()

@@ -1,6 +1,5 @@
 ﻿using ApNew.Nodes.Behaviours;
 using ApNew.Nodes.Core;
-using ApNew.Nodes.States;
 
 namespace ApNew.Nodes.Builders
 {
@@ -27,18 +26,20 @@ namespace ApNew.Nodes.Builders
             RootStateLinked = rootStateLinked;
         }
 
-        public StateSetBuilder New(string state, string id)
+        public ContainerStateSetBuilder New(string state, string id)
         {
-            var provider = new StateSetBuilderProvider();
-            var setBuilder = provider.Create(state, id, RootStateLinked, (result, destination) =>
-            {
-                var first = RootStateLinked.FirstState;
-                result.AddTransition(new Approve(TransitionConst.Approve, destination));
-                result.AddTransition(new Reject(TransitionConst.Reject, first.State));
-            });
+            var provider = new StateSetBuilderProvider(RootStateLinked);
+            var containerBuilder = provider.Create<ContainerStateSetBuilder>(
+                () => new ContainerStateSetBuilder(state, Guid.NewGuid().ToString("N"), RootStateLinked,
+                    (result, destination) =>
+                    {
+                        var first = RootStateLinked.FirstState;
+                        result.AddTransition(new Approve(TransitionConst.Approve, destination));
+                        result.AddTransition(new Reject(TransitionConst.Reject, first.State));
+                    }));
 
-            StateSetBuilderDic.Add(setBuilder.Id, setBuilder);
-            return setBuilder;
+            StateSetBuilderDic.Add(containerBuilder.Id, containerBuilder);
+            return containerBuilder;
         }
 
         public virtual bool IsConfigured(string state)
@@ -52,12 +53,7 @@ namespace ApNew.Nodes.Builders
 
             foreach (var builder in StateSetBuilderDic)
             {
-                var linked = builder.Value.RootStateLinked;
-                if (!(linked.Last?.Value is EndState))
-                {
-                    builder.Value.Complete();
-                }
-
+                builder.Value.Complete();
                 var set = builder.Value.Build();
                 container.StateSets.Add(builder.Key, set);
             }
