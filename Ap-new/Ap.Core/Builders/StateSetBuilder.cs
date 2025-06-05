@@ -1,5 +1,6 @@
 ﻿using Ap.Core.Behaviours;
 using Ap.Core.Definitions;
+using Ap.Core.Exceptions;
 using Ap.Core.States;
 using System;
 using System.Collections.Generic;
@@ -9,22 +10,22 @@ namespace Ap.Core.Builders
 {
     public class StateSetBuilder : StateSetBuilder<StateSetBuilder>
     {
-        internal StateSetBuilder(string state, StateLinkedList? rootStateLinked = null) : base(state, rootStateLinked)
+        internal StateSetBuilder(string name, StateLinkedList? rootStateLinked = null) : base(name, rootStateLinked)
         {
 
         }
 
-        internal StateSetBuilder(string state, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null) : base(state, rootStateLinked, action)
+        internal StateSetBuilder(string name, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null) : base(name, rootStateLinked, action)
         {
 
         }
 
-        internal StateSetBuilder(string state, string id, StateLinkedList? rootStateLinked = null) : base(state, id, rootStateLinked)
+        internal StateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null) : base(name, id, rootStateLinked)
         {
 
         }
 
-        internal StateSetBuilder(string state, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null) : base(state, id, rootStateLinked, action)
+        internal StateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null) : base(name, id, rootStateLinked, action)
         {
 
         }
@@ -35,7 +36,7 @@ namespace Ap.Core.Builders
     {
         public string Id { get; set; }
 
-        public Dictionary<string, IState> StateDictionary { get; } = new Dictionary<string, IState>();
+        //public Dictionary<string, IState> StateDictionary { get; } = new Dictionary<string, IState>();
 
         public StateLinkedList StateLinked { get; private set; }
 
@@ -47,23 +48,23 @@ namespace Ap.Core.Builders
 
         private readonly StateMachine _sm;
 
-        internal StateSetBuilder(string state, StateLinkedList? rootStateLinked = null)
-            : this(state, Guid.NewGuid().ToString(), rootStateLinked)
+        internal StateSetBuilder(string name, StateLinkedList? rootStateLinked = null)
+            : this(name, Guid.NewGuid().ToString(), rootStateLinked)
         {
         }
 
-        internal StateSetBuilder(string state, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
-            : this(state, Guid.NewGuid().ToString(), rootStateLinked, action)
+        internal StateSetBuilder(string name, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
+            : this(name, Guid.NewGuid().ToString(), rootStateLinked, action)
         {
 
         }
 
-        internal StateSetBuilder(string state, string id, StateLinkedList? rootStateLinked = null)
-            : this(state, id, rootStateLinked, null)
+        internal StateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null)
+            : this(name, id, rootStateLinked, null)
         {
         }
 
-        internal StateSetBuilder(string state, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
+        internal StateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
         {
             Id = id;
 
@@ -79,7 +80,7 @@ namespace Ap.Core.Builders
             }
 
             Start();
-            Start(state, action);
+            Start(name, action);
             _sm = new StateMachine(StateLinked.OriginFirst.Value, RootStateLinked, id);
         }
 
@@ -91,43 +92,38 @@ namespace Ap.Core.Builders
                 result.AddTransition(new Direct(destination));
             };
 
-            StateDictionary.Add(result.Name, result);
             StateLinked.AddFirst(result);
             return (this as TBuilder)!;
         }
 
-        private TBuilder Start(string state, Action<IState, string>? action = null)
+        private TBuilder Start(string name, Action<IState, string>? action = null)
         {
-            if (!StateDictionary.TryGetValue(state, out IState? result))
-            {
-                result = new StateRepresentation(state);
+            CheckState(name);
 
-                AddTransition(state);
-                AddTransition = destination =>
+            var result = new StateRepresentation(name);
+            AddTransition(name);
+            AddTransition = destination =>
+            {
+                if (action == null)
                 {
-                    if (action == null)
-                    {
-                        result.AddTransition(new Submit(TransitionConst.Submit, destination));
-                    }
-                    else
-                    {
-                        action.Invoke(result, destination);
-                    }
-                };
-                StateDictionary.Add(state, result);
-            }
+                    result.AddTransition(new Submit(TransitionConst.Submit, destination));
+                }
+                else
+                {
+                    action.Invoke(result, destination);
+                }
+            };
             StateLinked.AddLast(result);
             return (this as TBuilder)!;
         }
 
-        public TBuilder Then(string state)
+        public TBuilder Then(string name)
         {
-            CheckIsConfigured(state);
+            CheckState(name);
 
-            var result = new StateRepresentation(state);
-            StateDictionary.Add(state, result);
+            var result = new StateRepresentation(name);
             StateLinked.AddLast(result);
-            AddTransition(state);
+            AddTransition(name);
             AddTransition = destination =>
             {
                 var first = RootStateLinked.FirstState;
@@ -137,14 +133,13 @@ namespace Ap.Core.Builders
             return (this as TBuilder)!;
         }
 
-        public TBuilder Then(string state, Action<IState, string>? addTransition)
+        public TBuilder Then(string name, Action<IState, string>? addTransition)
         {
-            CheckIsConfigured(state);
+            CheckState(name);
 
-            var result = new StateRepresentation(state);
-            StateDictionary.Add(state, result);
+            var result = new StateRepresentation(name);
             StateLinked.AddLast(result);
-            AddTransition(state);
+            AddTransition(name);
             if (addTransition == null)
             {
                 AddTransition = destination =>
@@ -176,7 +171,6 @@ namespace Ap.Core.Builders
             BranchBuilder branchBuilder = new BranchBuilder(relationship, RootStateLinked);
 
             branchAction.Invoke(branchBuilder);
-
             AddTransition(branchBuilder.State);
             var result = branchBuilder.Build(_sm);
 
@@ -184,16 +178,14 @@ namespace Ap.Core.Builders
             {
                 result.AddTransition(new Direct(destination));
             };
-
-            StateDictionary.Add(branchBuilder.State, result);
             StateLinked.AddLast(result);
-
             return (this as TBuilder)!;
         }
 
-        public void Complete(string state)
+        public void Complete(string name)
         {
-            Then(state);
+            CheckState(name);
+            Then(name);
             Complete();
         }
 
@@ -203,13 +195,14 @@ namespace Ap.Core.Builders
             if (last is EndState) return;
 
             var result = new EndState(Id);
-            StateDictionary.Add(result.Name, result);
             StateLinked.AddLast(result);
             AddTransition(result.Name);
         }
 
         public TBuilder If(Func<bool> action, string @true, string @false)
         {
+            CheckState(@true);
+            CheckState(@false);
 
             return If(action,
             provider => provider.Create(@true, (result, destination) =>
@@ -242,22 +235,22 @@ namespace Ap.Core.Builders
             {
                 sm.AddTransition(new Direct(destination));
             };
-            StateDictionary.Add(sm.Name, sm);
             StateLinked.AddLast(sm);
             return (this as TBuilder)!;
         }
 
         /// <summary>
-        /// Jumps to a specified state in the state set, cannot jump into any container
+        /// Jumps to a specified state in the current set, cannot jump to child or parent level
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="name"></param>
         /// <param name="destination"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public TBuilder Jump(string state, string destination)
+        public TBuilder Jump(string name, string destination)
         {
-            CheckIsConfigured(state);
-            return Then(state, (stateNode, next) =>
+            CheckState(name);
+
+            return Then(name, (stateNode, next) =>
             {
                 JumpAction.Add(() =>
                 {
@@ -287,43 +280,47 @@ namespace Ap.Core.Builders
             {
                 setContainer.AddTransition(new Direct(destination));
             };
-            StateDictionary.Add(setContainer.Name, setContainer);
             StateLinked.AddLast(setContainer);
             return (this as TBuilder)!;
         }
 
-        protected virtual void CheckIsConfigured(string state)
-        {
-            if (IsConfigured(state))
-            {
-                throw new ArgumentException($"State '{state}' is already configured in RootStateLinked.", nameof(state));
-            }
-        }
-
+        /// <summary>
+        /// Check if the state is configured in the root state set (including children state set).
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public virtual bool IsConfigured(string state)
         {
-            return RootStateLinked.TryGet(state, out _);
+            return RootStateLinked.Has(state);
         }
 
         public IStateSet Build()
         {
-            if (StateDictionary.Count == 0)
+            if (StateLinked.Count == 0)
             {
-                throw new ArgumentNullException(nameof(StateDictionary), "State set is empty");
+                throw new ArgumentNullException($"State set is empty");
             }
 
             Complete();
             JumpAction.ForEach(s => s());
 
-            var value = StateDictionary.First().Value;
-            StateDictionary.Remove(value.Name);
-
-            foreach (var node in StateDictionary)
+            foreach (var node in StateLinked.Skip(1))
             {
-                _sm.Configure(node.Value);
+                _sm.Configure(node);
             }
 
             return _sm;
+        }
+
+        /// <summary>
+        /// state name must be unique
+        /// </summary>
+        protected void CheckState(string name)
+        {
+            if (StateLinked.Has(name))
+            {
+                throw new ApAlreadyExistsException($"There already exists a state named '{name}'");
+            }
         }
     }
 }

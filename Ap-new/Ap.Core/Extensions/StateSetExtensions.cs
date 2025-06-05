@@ -10,7 +10,6 @@ public static class StateSetExtensions
         set.ExecuteTrigger(new StateTrigger() { Trigger = trigger, StateSetId = set.Id });
     }
 
-
     public static void ExecuteTrigger(this IStateSet set, string stateSetId, string trigger)
     {
         if (string.IsNullOrWhiteSpace(trigger)) throw new ArgumentNullException(nameof(trigger));

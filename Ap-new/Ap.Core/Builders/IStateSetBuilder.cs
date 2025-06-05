@@ -13,15 +13,13 @@ namespace Ap.Core.Builders
     {
         string Id { get; }
 
-        Dictionary<string, IState> StateDictionary { get; }
-
         StateLinkedList StateLinked { get; }
 
         StateLinkedList RootStateLinked { get; }
 
-        TStateSetBuilder Then(string state);
+        TStateSetBuilder Then(string name);
 
-        TStateSetBuilder Then(string state, Action<IState, string>? addTransition);
+        TStateSetBuilder Then(string name, Action<IState, string>? addTransition);
 
         TStateSetBuilder BranchAnd(Action<BranchBuilder> branchAction);
 
@@ -29,7 +27,7 @@ namespace Ap.Core.Builders
 
         TStateSetBuilder Branch(LogicalRelationship relationship, Action<BranchBuilder> branchAction);
 
-        void Complete(string state);
+        void Complete(string name);
 
         void Complete();
 
@@ -39,10 +37,15 @@ namespace Ap.Core.Builders
             Func<StateSetBuilderProvider, StateSetBuilder> @true,
             Func<StateSetBuilderProvider, StateSetBuilder> @false);
 
-        TStateSetBuilder Jump(string state, string destination);
+        TStateSetBuilder Jump(string name, string destination);
 
         TStateSetBuilder Children(Action<ContainerBuilder> builderAction);
 
+        /// <summary>
+        /// Check if the state is configured in the root state set (including children state set).
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         bool IsConfigured(string state);
 
         IStateSet Build();

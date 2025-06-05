@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Ap.Core.Behaviours;
+﻿using Ap.Core.Behaviours;
 using Ap.Core.Definitions;
+using Ap.Core.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Ap.Core.Builders
 {
@@ -54,8 +56,9 @@ namespace Ap.Core.Builders
 
         public virtual IStateSetContainer Build(StateSetBase parent)
         {
-            StateSetContainer container = new StateSetContainer(State, parent);
+            CheckState();
 
+            StateSetContainer container = new StateSetContainer(State, parent);
             foreach (var builder in StateSetBuilderDic)
             {
                 var setBuilder = (ContainerStateSetBuilder)builder.Value;
@@ -66,6 +69,44 @@ namespace Ap.Core.Builders
             }
 
             return container;
+        }
+
+        /// <summary>
+        /// state name must be unique
+        /// </summary>
+        protected void CheckState()
+        {
+            foreach (var builder in StateSetBuilderDic)
+            {
+                var setBuilder = (ContainerStateSetBuilder)builder.Value;
+                foreach (var item in setBuilder.StateLinked)
+                {
+                    CheckState(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// state name must be unique
+        /// </summary>
+        /// <param name="state"><see cref="IState"/> state</param>
+        /// <exception cref="ApAlreadyExistsException"></exception>
+        protected void CheckState(IState state)
+        {
+            foreach (var builder in StateSetBuilderDic)
+            {
+                var setBuilder = (ContainerStateSetBuilder)builder.Value;
+                if (setBuilder.StateLinked.Has(s => s.Name == state.Name && s.Id != state.Id)
+                    || RootStateLinked.Has(s => s.Name == state.Name && s.Id != state.Id))
+                {
+                    var linked = StateSetBuilderDic
+                        .Select(s => (ContainerStateSetBuilder)s.Value)
+                        .Select(s => s.StateLinked)
+                        .ToList();
+
+                    throw new ApAlreadyExistsException<List<StateLinkedList>>($"There already exists a state named '{state.Name}'", linked);
+                }
+            }
         }
     }
 }

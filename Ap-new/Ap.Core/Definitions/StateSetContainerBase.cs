@@ -37,9 +37,14 @@ namespace Ap.Core.Definitions
 
         public virtual bool IsEnd => CheckIsEnding();
 
+        /// <summary>
+        /// Check if the state is configured in any state set (including children state set).
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public virtual bool IsConfigured(string state)
         {
-            return StateSets.Any(x => x.Value.StateConfiguration.ContainsKey(state));
+            return StateSets.Any(x => x.Value.LinkedList.Has(state));
         }
 
         protected virtual bool CheckIsEnding()

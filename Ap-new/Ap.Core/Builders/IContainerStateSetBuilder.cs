@@ -2,6 +2,6 @@
 {
     public interface IContainerStateSetBuilder : IStateSetBuilder<IContainerStateSetBuilder>
     {
-        IContainerStateSetBuilder JumpOut(string state, string destination);
+        IContainerStateSetBuilder JumpOut(string name, string destination);
     }
 }

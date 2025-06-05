@@ -16,6 +16,8 @@ namespace Ap.Core.Builders
 
         public override IStateSetContainer Build(StateSetBase parent)
         {
+            CheckState();
+
             IStateSetContainer container = new BranchContainer(State, Relationship, parent);
 
             foreach (var builder in StateSetBuilderDic)

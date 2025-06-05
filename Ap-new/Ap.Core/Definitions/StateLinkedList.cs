@@ -42,11 +42,26 @@ namespace Ap.Core.Definitions
             }
         }
 
-        public bool TryGet(string name, out IState? destination)
+        public bool Has(string name)
+        {
+            return TryGet(s => s.Name == name, out _);
+        }
+
+        public bool Has(Func<IState, bool> predicate)
+        {
+            return TryGet(predicate, out _);
+        }
+
+        public bool TryGet(string name, out IState? state)
+        {
+            return TryGet(s => s.Name == name, out state);
+        }
+
+        public bool TryGet(Func<IState, bool> predicate, out IState? destination)
         {
             foreach (var item in this)
             {
-                if (item.Name == name)
+                if (predicate.Invoke(item))
                 {
                     destination = item;
                     return true;
@@ -55,10 +70,10 @@ namespace Ap.Core.Definitions
                 switch (item)
                 {
                     case IStateSet set:
-                        if (TryGet(set, name, out destination)) return true;
+                        if (TryGet(set, predicate, out destination)) return true;
                         break;
                     case IStateSetContainer container:
-                        if (TryGet(container, name, out destination)) return true;
+                        if (TryGet(container, predicate, out destination)) return true;
                         break;
                 }
             }
@@ -67,20 +82,20 @@ namespace Ap.Core.Definitions
             return false;
         }
 
-        private bool TryGet(IStateSetContainer container, string name, out IState? destination)
+        private bool TryGet(IStateSetContainer container, Func<IState, bool> predicate, out IState? destination)
         {
             foreach (var item in container.StateSets)
             {
-                if (TryGet(item.Value, name, out destination)) return true;
+                if (TryGet(item.Value, predicate, out destination)) return true;
             }
 
             destination = null;
             return false;
         }
 
-        private bool TryGet(IStateSet set, string name, out IState? destination)
+        private bool TryGet(IStateSet set, Func<IState, bool> predicate, out IState? destination)
         {
-            return set.LinkedList.TryGet(name, out destination);
+            return set.LinkedList.TryGet(predicate, out destination);
         }
     }
 }
