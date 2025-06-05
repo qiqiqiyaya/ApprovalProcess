@@ -35,6 +35,8 @@ namespace Ap.Core.Definitions
             }
         }
 
+        public override bool IsEnd => GetStateSet().IsEnd;
+
         private IStateSet GetStateSet()
         {
             var trueSet = StateSets[TrueState];
@@ -56,7 +58,7 @@ namespace Ap.Core.Definitions
         public override TriggerDictionary GetTrigger()
         {
             IStateSet set = GetStateSet();
-            var trigger = set.LinkedList.FirstState.GetTrigger();
+            var trigger = set.GetTrigger();
 
             foreach (var item in trigger)
             {

@@ -84,7 +84,7 @@ namespace Ap.Core.Builders
             _sm = new StateMachine(StateLinked.OriginFirst.Value, RootStateLinked, id);
         }
 
-        private TBuilder Start()
+        private void Start()
         {
             var result = new StartState(Id);
             AddTransition = destination =>
@@ -93,10 +93,9 @@ namespace Ap.Core.Builders
             };
 
             StateLinked.AddFirst(result);
-            return (this as TBuilder)!;
         }
 
-        private TBuilder Start(string name, Action<IState, string>? action = null)
+        private void Start(string name, Action<IState, string>? action = null)
         {
             CheckState(name);
 
@@ -114,7 +113,6 @@ namespace Ap.Core.Builders
                 }
             };
             StateLinked.AddLast(result);
-            return (this as TBuilder)!;
         }
 
         public TBuilder Then(string name)
@@ -220,11 +218,11 @@ namespace Ap.Core.Builders
         }
 
         public TBuilder If(Func<bool> action,
-            Func<StateSetBuilderProvider, StateSetBuilder> @true,
-            Func<StateSetBuilderProvider, StateSetBuilder> @false)
+            Func<IfBuilderProvider, StateSetBuilder> @true,
+            Func<IfBuilderProvider, StateSetBuilder> @false)
         {
-            var trueBuilder = @true.Invoke(new StateSetBuilderProvider(RootStateLinked));
-            var falseBuilder = @false.Invoke(new StateSetBuilderProvider(RootStateLinked));
+            var trueBuilder = @true.Invoke(new IfBuilderProvider(RootStateLinked));
+            var falseBuilder = @false.Invoke(new IfBuilderProvider(RootStateLinked));
 
             trueBuilder.Complete();
 

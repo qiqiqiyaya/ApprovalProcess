@@ -1,6 +1,5 @@
 ﻿using Ap.Core.Definitions;
 using System;
-using System.Collections.Generic;
 
 namespace Ap.Core.Builders
 {
@@ -34,8 +33,8 @@ namespace Ap.Core.Builders
         TStateSetBuilder If(Func<bool> action, string @true, string @false);
 
         TStateSetBuilder If(Func<bool> action,
-            Func<StateSetBuilderProvider, StateSetBuilder> @true,
-            Func<StateSetBuilderProvider, StateSetBuilder> @false);
+            Func<IfBuilderProvider, StateSetBuilder> @true,
+            Func<IfBuilderProvider, StateSetBuilder> @false);
 
         TStateSetBuilder Jump(string name, string destination);
 
