@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Ap.Core.Behaviours;
+﻿using Ap.Core.Behaviours;
 using Ap.Core.Exceptions;
-using Ap.Core.States;
+using System;
+using System.Collections.Generic;
 
 namespace Ap.Core.Definitions
 {

@@ -1,9 +1,6 @@
-﻿using Ap.Core.Definitions;
+﻿namespace Ap.Core.Definitions;
 
-namespace Ap.Core.States
+public class EndState(string builderId) : StateBase(EndStateName + builderId)
 {
-    public class EndState(string builderId) : StateBase(EndStateName + builderId)
-    {
-        private const string EndStateName = "End_";
-    }
+    private const string EndStateName = "End_";
 }
