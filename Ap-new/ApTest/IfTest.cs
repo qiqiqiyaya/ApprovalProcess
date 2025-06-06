@@ -1,15 +1,16 @@
 ﻿using Ap.Core.Behaviours;
 using Ap.Core.Builders;
 using Ap.Core.Definitions;
+using Ap.Core.Extensions;
 
 namespace ApTest
 {
-    public class IfTest
+    public class IfTest : Base
     {
         [Fact]
         public void Test1()
         {
-            StateSetBuilderProvider provider = new StateSetBuilderProvider();
+            var provider = GetService<IStateSetBuilderProvider>();
             var builder = provider.Create("edit");
             builder.Then("FirstApprove")
                 .Then("SecondApprove")
@@ -31,7 +32,7 @@ namespace ApTest
         [Fact]
         public void Test2()
         {
-            StateSetBuilderProvider provider = new StateSetBuilderProvider();
+            var provider = GetService<IStateSetBuilderProvider>();
 
             var builder = provider.Create("edit");
             builder.Then("FirstApprove")

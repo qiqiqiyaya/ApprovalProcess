@@ -19,13 +19,17 @@ namespace Ap.Core.Builders
 
         public const string ContainerStateNamePrefix = "Container_";
 
-        public ContainerBuilder(StateLinkedList rootStateLinked) : this(Guid.NewGuid().ToString("N"), rootStateLinked)
+        private readonly IStateSetBuilderProvider _setBuilderProvider;
+
+        public ContainerBuilder(IStateSetBuilderProvider setBuilderProvider, StateLinkedList rootStateLinked)
+            : this(setBuilderProvider, Guid.NewGuid().ToString("N"), rootStateLinked)
         {
 
         }
 
-        public ContainerBuilder(string id, StateLinkedList rootStateLinked)
+        public ContainerBuilder(IStateSetBuilderProvider setBuilderProvider, string id, StateLinkedList rootStateLinked)
         {
+            _setBuilderProvider = setBuilderProvider;
             Id = id;
 
             State = ContainerStateNamePrefix + Id;
@@ -34,10 +38,8 @@ namespace Ap.Core.Builders
 
         public virtual IContainerStateSetBuilder New(string state, string id)
         {
-            var provider = new StateSetBuilderProvider(RootStateLinked);
-
-            var containerBuilder = provider.Create<IContainerStateSetBuilder>(
-                () => new ContainerStateSetBuilder(state, id, RootStateLinked,
+            var containerBuilder = (IContainerStateSetBuilder)_setBuilderProvider.Create(
+                () => new ContainerStateSetBuilder(_setBuilderProvider.ServiceProvider, state, id, RootStateLinked,
                     (result, destination) =>
                     {
                         var first = RootStateLinked.FirstState;

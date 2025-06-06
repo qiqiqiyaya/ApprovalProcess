@@ -1,30 +1,38 @@
 ﻿using Ap.Core.Behaviours;
 using Ap.Core.Definitions;
+using Ap.Core.Definitions.Actions;
 using Ap.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Ap.Core.States;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Ap.Core.Builders
 {
     public class StateSetBuilder : StateSetBuilder<StateSetBuilder>
     {
-        internal StateSetBuilder(string name, StateLinkedList? rootStateLinked = null) : base(name, rootStateLinked)
+        public StateSetBuilder(IServiceProvider serviceProvider, string name, StateLinkedList? rootStateLinked = null)
+            : base(serviceProvider, name, rootStateLinked)
         {
 
         }
 
-        internal StateSetBuilder(string name, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null) : base(name, rootStateLinked, action)
+        public StateSetBuilder(IServiceProvider serviceProvider, string name, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
+            : base(serviceProvider, name, rootStateLinked, action)
         {
 
         }
 
-        internal StateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null) : base(name, id, rootStateLinked)
+        public StateSetBuilder(IServiceProvider serviceProvider, string name, string id, StateLinkedList? rootStateLinked = null)
+            : base(serviceProvider, name, id, rootStateLinked)
         {
 
         }
 
-        internal StateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null) : base(name, id, rootStateLinked, action)
+        public StateSetBuilder(IServiceProvider serviceProvider, string name, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
+            : base(serviceProvider, name, id, rootStateLinked, action)
         {
 
         }
@@ -37,7 +45,7 @@ namespace Ap.Core.Builders
 
         //public Dictionary<string, IState> StateDictionary { get; } = new Dictionary<string, IState>();
 
-        public StateLinkedList StateLinked { get; private set; }
+        public StateLinkedList StateLinked { get; }
 
         public StateLinkedList RootStateLinked { get; }
 
@@ -47,24 +55,29 @@ namespace Ap.Core.Builders
 
         private readonly StateMachine _sm;
 
-        internal StateSetBuilder(string name, StateLinkedList? rootStateLinked = null)
-            : this(name, Guid.NewGuid().ToString(), rootStateLinked)
+        protected readonly IServiceProvider ServiceProvider;
+
+        private readonly IStateSetBuilderProvider _stateSetBuilderProvider;
+
+        public StateSetBuilder(IServiceProvider serviceProvider, string name, StateLinkedList? rootStateLinked = null)
+            : this(serviceProvider, name, Guid.NewGuid().ToString(), rootStateLinked)
         {
         }
 
-        internal StateSetBuilder(string name, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
-            : this(name, Guid.NewGuid().ToString(), rootStateLinked, action)
+        public StateSetBuilder(IServiceProvider serviceProvider, string name, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
+            : this(serviceProvider, name, Guid.NewGuid().ToString(), rootStateLinked, action)
         {
 
         }
 
-        internal StateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null)
-            : this(name, id, rootStateLinked, null)
+        public StateSetBuilder(IServiceProvider serviceProvider, string name, string id, StateLinkedList? rootStateLinked = null)
+            : this(serviceProvider, name, id, rootStateLinked, null)
         {
         }
 
-        internal StateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
+        public StateSetBuilder(IServiceProvider serviceProvider, string name, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
         {
+            ServiceProvider = serviceProvider;
             Id = id;
 
             if (rootStateLinked == null)
@@ -77,6 +90,9 @@ namespace Ap.Core.Builders
                 RootStateLinked = rootStateLinked;
                 StateLinked = new StateLinkedList();
             }
+
+            _stateSetBuilderProvider = (IStateSetBuilderProvider)ActivatorUtilities
+                .CreateInstance(ServiceProvider, typeof(StateSetBuilderProvider), RootStateLinked);
 
             Start();
             Start(name, action);
@@ -165,7 +181,7 @@ namespace Ap.Core.Builders
 
         public TBuilder Branch(LogicalRelationship relationship, Action<BranchBuilder> branchAction)
         {
-            BranchBuilder branchBuilder = new BranchBuilder(relationship, RootStateLinked);
+            BranchBuilder branchBuilder = new BranchBuilder(_stateSetBuilderProvider, relationship, RootStateLinked);
 
             branchAction.Invoke(branchBuilder);
             AddTransition(branchBuilder.State);
@@ -202,13 +218,13 @@ namespace Ap.Core.Builders
             CheckState(@false);
 
             return If(action,
-            provider => provider.Create(@true, (result, destination) =>
+            provider => (IStateSetBuilder)provider.Create(@true, (result, destination) =>
                 {
                     var first = RootStateLinked.FirstState;
                     result.AddTransition(new Approve(TransitionConst.Approve, destination));
                     result.AddTransition(new Reject(TransitionConst.Reject, first.Name));
                 }),
-                provider => provider.Create(@false, (result, destination) =>
+                provider => (IStateSetBuilder)provider.Create(@false, (result, destination) =>
                 {
                     var first = RootStateLinked.FirstState;
                     result.AddTransition(new Approve(TransitionConst.Approve, destination));
@@ -217,11 +233,11 @@ namespace Ap.Core.Builders
         }
 
         public TBuilder If(Func<bool> action,
-            Func<IfBuilderProvider, StateSetBuilder> @true,
-            Func<IfBuilderProvider, StateSetBuilder> @false)
+            Func<IIfBuilderProvider, IStateSetBuilder> @true,
+            Func<IIfBuilderProvider, IStateSetBuilder> @false)
         {
-            var trueBuilder = @true.Invoke(new IfBuilderProvider(RootStateLinked));
-            var falseBuilder = @false.Invoke(new IfBuilderProvider(RootStateLinked));
+            var trueBuilder = @true.Invoke(new IfBuilderProvider(_stateSetBuilderProvider, RootStateLinked));
+            var falseBuilder = @false.Invoke(new IfBuilderProvider(_stateSetBuilderProvider, RootStateLinked));
 
             trueBuilder.Complete();
 
@@ -267,7 +283,7 @@ namespace Ap.Core.Builders
 
         public TBuilder Children(Action<ContainerBuilder> builderAction)
         {
-            ContainerBuilder container = new ContainerBuilder(RootStateLinked);
+            ContainerBuilder container = new ContainerBuilder(_stateSetBuilderProvider, RootStateLinked);
             builderAction(container);
 
             var setContainer = container.Build(_sm);
@@ -291,6 +307,75 @@ namespace Ap.Core.Builders
             return RootStateLinked.Has(state);
         }
 
+        /// <summary>
+        /// state name must be unique
+        /// </summary>
+        protected void CheckState(string name)
+        {
+            if (StateLinked.Has(name))
+            {
+                throw new ApAlreadyExistsException($"There already exists a state named '{name}'");
+            }
+        }
+
+        #region Entry
+        public void ConfigureEntry<TEntryAction>(string name)
+            where TEntryAction : IEntryAction
+        {
+            ConfigureEntry(name, new ApAction(typeof(TEntryAction)));
+        }
+
+        public void ConfigureEntry(string name, Func<EntryContext, ValueTask> entryAction)
+        {
+            ConfigureEntry(name, new ApAction(typeof(GeneralEntryAction), entryAction));
+        }
+
+        public void ConfigureEntry<TEntryAction>(string name, params object[] parameters)
+            where TEntryAction : IEntryAction
+        {
+            ConfigureEntry(name, new ApAction(typeof(TEntryAction), parameters));
+        }
+
+        public void ConfigureEntry(string name, ApAction action)
+        {
+            var actionType = typeof(IEntryAction);
+            if (action.Type.GetInterfaces().All(type => type != actionType))
+            {
+                throw new Exception("the action.Type is not subclass of IEntryAction");
+            }
+
+            var state = RootStateLinked.Get(name);
+            state.ActionConfiguration.EntryTypes.Add(action);
+        }
+        #endregion
+
+        #region Exit
+        public void ConfigureExit<TExitAction>(string name)
+            where TExitAction : IExitAction
+        {
+            var state = RootStateLinked.Get(name);
+            state.ActionConfiguration.ExitTypes.Add(new ApAction(typeof(TExitAction)));
+        }
+
+        public void ConfigureExit<TExitAction>(string name, params object[] parameters)
+            where TExitAction : IExitAction
+        {
+            var state = RootStateLinked.Get(name);
+            state.ActionConfiguration.ExitTypes.Add(new ApAction(typeof(TExitAction), parameters));
+        }
+
+        public void ConfigureExit(string name, ApAction action)
+        {
+            if (!action.Type.IsSubclassOf(typeof(IExitAction)))
+            {
+                throw new Exception("the action.Type is not subclass of IEntryAction");
+            }
+
+            var state = RootStateLinked.Get(name);
+            state.ActionConfiguration.ExitTypes.Add(action);
+        }
+        #endregion
+
         public IStateSet Build()
         {
             if (StateLinked.Count == 0)
@@ -307,17 +392,6 @@ namespace Ap.Core.Builders
             }
 
             return _sm;
-        }
-
-        /// <summary>
-        /// state name must be unique
-        /// </summary>
-        protected void CheckState(string name)
-        {
-            if (StateLinked.Has(name))
-            {
-                throw new ApAlreadyExistsException($"There already exists a state named '{name}'");
-            }
         }
     }
 }

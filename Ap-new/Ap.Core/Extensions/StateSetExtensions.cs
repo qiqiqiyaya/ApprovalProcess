@@ -1,6 +1,7 @@
 ﻿using System;
+using Ap.Core.Definitions;
 
-namespace Ap.Core.Definitions;
+namespace Ap.Core.Extensions;
 
 public static class StateSetExtensions
 {

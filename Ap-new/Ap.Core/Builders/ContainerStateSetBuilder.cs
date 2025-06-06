@@ -7,19 +7,23 @@ namespace Ap.Core.Builders
 {
     public class ContainerStateSetBuilder : StateSetBuilder<IContainerStateSetBuilder>, IContainerStateSetBuilder
     {
-        internal ContainerStateSetBuilder(string name, StateLinkedList? rootStateLinked = null) : base(name, rootStateLinked)
+        public ContainerStateSetBuilder(IServiceProvider serviceProvider, string name, StateLinkedList? rootStateLinked = null)
+            : base(serviceProvider, name, rootStateLinked)
         {
         }
 
-        internal ContainerStateSetBuilder(string name, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null) : base(name, rootStateLinked, action)
+        public ContainerStateSetBuilder(IServiceProvider serviceProvider, string name, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
+            : base(serviceProvider, name, rootStateLinked, action)
         {
         }
 
-        internal ContainerStateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null) : base(name, id, rootStateLinked)
+        public ContainerStateSetBuilder(IServiceProvider serviceProvider, string name, string id, StateLinkedList? rootStateLinked = null)
+            : base(serviceProvider, name, id, rootStateLinked)
         {
         }
 
-        internal ContainerStateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null) : base(name, id, rootStateLinked, action)
+        public ContainerStateSetBuilder(IServiceProvider serviceProvider, string name, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
+            : base(serviceProvider, name, id, rootStateLinked, action)
         {
         }
 

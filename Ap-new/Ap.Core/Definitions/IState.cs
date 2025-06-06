@@ -1,23 +1,26 @@
 ﻿using System.Collections.Generic;
 using Ap.Core.Behaviours;
+using Ap.Core.Definitions.Actions;
 
 namespace Ap.Core.Definitions
 {
-    public interface IState : INode
-    {
-        string Name { get; }
+	public interface IState : INode
+	{
+		string Name { get; }
 
-        /// <summary>
-        /// Transition to
-        /// </summary>
-        Dictionary<string, IBehaviour> Transitions { get; }
+		/// <summary>
+		/// Transition to
+		/// </summary>
+		Dictionary<string, IBehaviour> Transitions { get; }
 
-        void AddTransition(IBehaviour behaviour);
+		ActionConfiguration ActionConfiguration { get; }
 
-        void Entry();
+		void AddTransition(IBehaviour behaviour);
 
-        void Exit();
+		void Entry();
 
-        TriggerDictionary GetTrigger();
-    }
+		void Exit();
+
+		TriggerDictionary GetTrigger();
+	}
 }

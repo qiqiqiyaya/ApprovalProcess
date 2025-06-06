@@ -2,18 +2,19 @@
 using Ap.Core.Builders;
 using Ap.Core.Definitions;
 using Ap.Core.Exceptions;
+using Ap.Core.Extensions;
 
 namespace ApTest
 {
-    public class ChildrenTest
+    public class ChildrenTest : Base
     {
         [Fact]
         public void Test1()
         {
+            var provider = GetService<IStateSetBuilderProvider>();
+
             Assert.Throws<ApAlreadyExistsException<List<StateLinkedList>>>(() =>
             {
-                StateSetBuilderProvider provider = new StateSetBuilderProvider();
-
                 var builder = provider.Create("edit");
                 builder.Then("FirstApprove")
                     .Then("SecondApprove")
@@ -31,7 +32,7 @@ namespace ApTest
         [Fact]
         public void Test2()
         {
-            StateSetBuilderProvider provider = new StateSetBuilderProvider();
+            var provider = GetService<IStateSetBuilderProvider>();
 
             var builder = provider.Create("edit");
             builder.Then("FirstApprove")
@@ -63,7 +64,7 @@ namespace ApTest
         [Fact]
         public void Test3()
         {
-            StateSetBuilderProvider provider = new StateSetBuilderProvider();
+            var provider = GetService<IStateSetBuilderProvider>();
 
             var builder = provider.Create("edit");
             builder.Then("FirstApprove")

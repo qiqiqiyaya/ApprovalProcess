@@ -1,16 +1,16 @@
 using Ap.Core.Behaviours;
 using Ap.Core.Builders;
 using Ap.Core.Definitions;
+using Ap.Core.Extensions;
 
 namespace ApTest
 {
-    public class BranchAndTest
+    public class BranchAndTest : Base
     {
         [Fact]
         public void Test()
         {
-            StateSetBuilderProvider provider = new StateSetBuilderProvider();
-
+            var provider = GetService<IStateSetBuilderProvider>();
             var builder = provider.Create("edit");
 
             string aId = "";
@@ -30,6 +30,21 @@ namespace ApTest
                 })
                 .Then("ThirdApprove")
                 .Complete();
+
+            builder.ConfigureEntry("FirstApprove", async context =>
+            {
+                await Task.Delay(100);
+            });
+
+            builder.ConfigureEntry("SecondApprove_B1", async context =>
+            {
+                await Task.Delay(100);
+            });
+
+            builder.ConfigureEntry("SecondApprove_B2", async context =>
+            {
+                await Task.Delay(100);
+            });
 
             IStateSet stateSet = builder.Build();
             stateSet.ExecuteTrigger(TransitionConst.Submit);

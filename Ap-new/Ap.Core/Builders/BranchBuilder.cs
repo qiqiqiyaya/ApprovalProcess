@@ -8,7 +8,8 @@ namespace Ap.Core.Builders
 
         public const string BranchStateNamePrefix = "BranchState_";
 
-        public BranchBuilder(LogicalRelationship relationship, StateLinkedList rootStateLinked) : base(rootStateLinked)
+        public BranchBuilder(IStateSetBuilderProvider setBuilderProvider, LogicalRelationship relationship, StateLinkedList rootStateLinked)
+            : base(setBuilderProvider, rootStateLinked)
         {
             Relationship = relationship;
             State = BranchStateNamePrefix + Id;

@@ -4,13 +4,11 @@ using System;
 
 namespace Ap.Core.Builders
 {
-    public class IfBuilderProvider(StateLinkedList rootStateLinked)
+    public class IfBuilderProvider(IStateSetBuilderProvider stateSetBuilder, StateLinkedList rootStateLinked) : IIfBuilderProvider
     {
-        private readonly StateSetBuilderProvider _builderProvider = new StateSetBuilderProvider(rootStateLinked);
-
-        public virtual IStateSetBuilder<StateSetBuilder> Create(string state)
+        public virtual IStateSetBuilder<IStateSetBuilder> Create(string state)
         {
-            return _builderProvider.Create(state, (result, destination) =>
+            return stateSetBuilder.Create(state, (result, destination) =>
             {
                 var first = rootStateLinked.FirstState;
                 result.AddTransition(new Approve(TransitionConst.Approve, destination));
@@ -18,9 +16,9 @@ namespace Ap.Core.Builders
             });
         }
 
-        public virtual StateSetBuilder Create(string state, Action<IState, string> action)
+        public virtual IStateSetBuilder<IStateSetBuilder> Create(string state, Action<IState, string> action)
         {
-            return new StateSetBuilder(state, rootStateLinked, action);
+            return stateSetBuilder.Create(state, action);
         }
     }
 }
