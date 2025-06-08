@@ -4,7 +4,8 @@ using System.Text;
 
 namespace Ap.Core.Host
 {
-    class MemoryBlockingLockQueue
+    public class MemoryBlockingLockQueue
     {
+
     }
 }

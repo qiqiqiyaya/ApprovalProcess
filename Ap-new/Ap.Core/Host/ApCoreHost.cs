@@ -6,6 +6,9 @@ namespace Ap.Core.Host
     {
         public ValueTask StartAsync()
         {
+            var main = new MainThreadTaskScheduler(1);
+
+
             return new ValueTask();
         }
 
