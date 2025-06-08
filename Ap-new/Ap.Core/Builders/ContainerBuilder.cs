@@ -19,33 +19,37 @@ namespace Ap.Core.Builders
 
         public const string ContainerStateNamePrefix = "Container_";
 
-        private readonly IStateSetBuilderProvider _setBuilderProvider;
+        protected readonly IStateSetBuilderProvider StateSetBuilderProvider;
 
-        public ContainerBuilder(IStateSetBuilderProvider setBuilderProvider, StateLinkedList rootStateLinked)
-            : this(setBuilderProvider, Guid.NewGuid().ToString("N"), rootStateLinked)
+        public ContainerBuilder(IStateSetBuilderProvider stateSetBuilderProvider, StateLinkedList rootStateLinked)
+            : this(stateSetBuilderProvider, Guid.NewGuid().ToString("N"), rootStateLinked)
         {
 
         }
 
-        public ContainerBuilder(IStateSetBuilderProvider setBuilderProvider, string id, StateLinkedList rootStateLinked)
+        public ContainerBuilder(IStateSetBuilderProvider stateSetBuilderProvider, string id, StateLinkedList rootStateLinked)
         {
-            _setBuilderProvider = setBuilderProvider;
             Id = id;
-
+            StateSetBuilderProvider = stateSetBuilderProvider;
             State = ContainerStateNamePrefix + Id;
             RootStateLinked = rootStateLinked;
         }
 
         public virtual IContainerStateSetBuilder New(string state, string id)
         {
-            var containerBuilder = (IContainerStateSetBuilder)_setBuilderProvider.Create(
-                () => new ContainerStateSetBuilder(_setBuilderProvider.ServiceProvider, state, id, RootStateLinked,
-                    (result, destination) =>
-                    {
-                        var first = RootStateLinked.FirstState;
-                        result.AddTransition(new Approve(TransitionConst.Approve, destination));
-                        result.AddTransition(new Reject(TransitionConst.Reject, first.Name));
-                    }));
+            var containerBuilder = StateSetBuilderProvider.Create<IContainerStateSetBuilder>((_, _) =>
+                {
+                    var builder = new ContainerStateSetBuilder(state, id, RootStateLinked,
+                        (result, destination) =>
+                        {
+                            var first = RootStateLinked.FirstState;
+                            result.AddTransition(new Approve(destination));
+                            result.AddTransition(new Reject(first.Name));
+                        });
+
+                    builder.Initial(StateSetBuilderProvider.ServiceProvider);
+                    return builder;
+                });
 
             StateSetBuilderDic.Add(containerBuilder.Id, containerBuilder);
             return containerBuilder;

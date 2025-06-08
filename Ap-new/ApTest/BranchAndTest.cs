@@ -1,7 +1,5 @@
 using Ap.Core.Behaviours;
-using Ap.Core.Builders;
 using Ap.Core.Definitions;
-using Ap.Core.Extensions;
 
 namespace ApTest
 {
@@ -10,9 +8,7 @@ namespace ApTest
         [Fact]
         public void Test()
         {
-            var provider = GetService<IStateSetBuilderProvider>();
-            var builder = provider.Create("edit");
-
+            var builder = StateSetBuilderProvider.Create("edit");
             string aId = "";
             string bId = "";
 
@@ -31,49 +27,49 @@ namespace ApTest
                 .Then("ThirdApprove")
                 .Complete();
 
-            builder.ConfigureEntry("FirstApprove", async context =>
+            builder.ConfigureEntry("FirstApprove", async (context) =>
             {
-                await Task.Delay(100);
+                await Task.Delay(2000);
             });
 
-            builder.ConfigureEntry("SecondApprove_B1", async context =>
+            builder.ConfigureEntry("SecondApprove_B1", async (context) =>
             {
-                await Task.Delay(100);
+                await Task.Delay(2000);
             });
 
-            builder.ConfigureEntry("SecondApprove_B2", async context =>
+            builder.ConfigureEntry("ThirdApprove", async (context) =>
             {
-                await Task.Delay(100);
+                await Task.Delay(2000);
             });
 
             IStateSet stateSet = builder.Build();
-            stateSet.ExecuteTrigger(TransitionConst.Submit);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Submit);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
 
-            stateSet.ExecuteTrigger(TransitionConst.Reject);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Reject);
 
-            stateSet.ExecuteTrigger(TransitionConst.Submit);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Submit);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
 
-            stateSet.ExecuteTrigger(aId, TransitionConst.Approve);
+            stateSet.ExecuteTrigger(aId, ApCoreTriggers.Approve);
             var triggerDictionary = stateSet.GetTrigger();
 
             Assert.True(triggerDictionary.Count > 0);
 
-            stateSet.ExecuteTrigger(aId, TransitionConst.Reject);
+            stateSet.ExecuteTrigger(aId, ApCoreTriggers.Reject);
 
-            stateSet.ExecuteTrigger(TransitionConst.Submit);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Submit);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
 
-            stateSet.ExecuteTrigger(aId, TransitionConst.Approve);
-            stateSet.ExecuteTrigger(aId, TransitionConst.Approve);
+            stateSet.ExecuteTrigger(aId, ApCoreTriggers.Approve);
+            stateSet.ExecuteTrigger(aId, ApCoreTriggers.Approve);
 
-            stateSet.ExecuteTrigger(bId, TransitionConst.Approve);
-            stateSet.ExecuteTrigger(bId, TransitionConst.Approve);
+            stateSet.ExecuteTrigger(bId, ApCoreTriggers.Approve);
+            stateSet.ExecuteTrigger(bId, ApCoreTriggers.Approve);
 
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
             Assert.True(stateSet.IsEnd);
         }
     }

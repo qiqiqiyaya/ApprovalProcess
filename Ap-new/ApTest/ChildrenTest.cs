@@ -1,8 +1,6 @@
 ﻿using Ap.Core.Behaviours;
-using Ap.Core.Builders;
 using Ap.Core.Definitions;
 using Ap.Core.Exceptions;
-using Ap.Core.Extensions;
 
 namespace ApTest
 {
@@ -11,11 +9,9 @@ namespace ApTest
         [Fact]
         public void Test1()
         {
-            var provider = GetService<IStateSetBuilderProvider>();
-
             Assert.Throws<ApAlreadyExistsException<List<StateLinkedList>>>(() =>
             {
-                var builder = provider.Create("edit");
+                var builder = StateSetBuilderProvider.Create("edit");
                 builder.Then("FirstApprove")
                     .Then("SecondApprove")
                     .Children(branch =>
@@ -32,9 +28,7 @@ namespace ApTest
         [Fact]
         public void Test2()
         {
-            var provider = GetService<IStateSetBuilderProvider>();
-
-            var builder = provider.Create("edit");
+            var builder = StateSetBuilderProvider.Create("edit");
             builder.Then("FirstApprove")
                 .Then("SecondApprove")
                 .Children(branch =>
@@ -45,18 +39,18 @@ namespace ApTest
                 });
 
             IStateSet stateSet = builder.Build();
-            stateSet.ExecuteTrigger(TransitionConst.Submit);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Submit);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
 
             var child = stateSet.GetTrigger();
-            var aTrigger = child.GetTrigger("aaa", TransitionConst.Approve);
+            var aTrigger = child.GetTrigger("aaa", ApCoreTriggers.Approve);
             stateSet.ExecuteTrigger(aTrigger!);
             Assert.True(!stateSet.IsEnd);
-            var bTrigger = child.GetTrigger("bbb", TransitionConst.Approve);
+            var bTrigger = child.GetTrigger("bbb", ApCoreTriggers.Approve);
             stateSet.ExecuteTrigger(bTrigger!);
             Assert.True(!stateSet.IsEnd);
-            var cTrigger = child.GetTrigger("ccc", TransitionConst.Approve);
+            var cTrigger = child.GetTrigger("ccc", ApCoreTriggers.Approve);
             stateSet.ExecuteTrigger(cTrigger!);
             Assert.True(stateSet.IsEnd);
         }
@@ -64,9 +58,7 @@ namespace ApTest
         [Fact]
         public void Test3()
         {
-            var provider = GetService<IStateSetBuilderProvider>();
-
-            var builder = provider.Create("edit");
+            var builder = StateSetBuilderProvider.Create("edit");
             builder.Then("FirstApprove")
                 .Then("SecondApprove")
                 .Children(branch =>
@@ -77,32 +69,32 @@ namespace ApTest
                 });
 
             IStateSet stateSet = builder.Build();
-            stateSet.ExecuteTrigger(TransitionConst.Submit);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Submit);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
 
             var child = stateSet.GetTrigger();
-            var aTrigger1 = child.GetTrigger("aaa", TransitionConst.Approve);
+            var aTrigger1 = child.GetTrigger("aaa", ApCoreTriggers.Approve);
             stateSet.ExecuteTrigger(aTrigger1!);
             child = stateSet.GetTrigger();
-            var aTrigger2 = child.GetTrigger("aaa1", TransitionConst.Approve);
+            var aTrigger2 = child.GetTrigger("aaa1", ApCoreTriggers.Approve);
             stateSet.ExecuteTrigger(aTrigger2!);
             Assert.True(!stateSet.IsEnd);
 
 
             child = stateSet.GetTrigger();
-            var bTrigger1 = child.GetTrigger("bbb", TransitionConst.Approve);
+            var bTrigger1 = child.GetTrigger("bbb", ApCoreTriggers.Approve);
             stateSet.ExecuteTrigger(bTrigger1!);
             child = stateSet.GetTrigger();
-            var bTrigger2 = child.GetTrigger("bbb2", TransitionConst.Approve);
+            var bTrigger2 = child.GetTrigger("bbb2", ApCoreTriggers.Approve);
             stateSet.ExecuteTrigger(bTrigger2!);
             Assert.True(!stateSet.IsEnd);
 
             child = stateSet.GetTrigger();
-            var cTrigger1 = child.GetTrigger("ccc", TransitionConst.Approve);
+            var cTrigger1 = child.GetTrigger("ccc", ApCoreTriggers.Approve);
             stateSet.ExecuteTrigger(cTrigger1!);
             child = stateSet.GetTrigger();
-            var cTrigger2 = child.GetTrigger("ccc2", TransitionConst.Approve);
+            var cTrigger2 = child.GetTrigger("ccc2", ApCoreTriggers.Approve);
             stateSet.ExecuteTrigger(cTrigger2!);
             Assert.True(stateSet.IsEnd);
         }

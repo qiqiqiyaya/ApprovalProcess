@@ -4,23 +4,23 @@ using Ap.Core.Definitions.Actions;
 
 namespace Ap.Core.Definitions
 {
-	public interface IState : INode
-	{
-		string Name { get; }
+    public interface IState : INode
+    {
+        string Name { get; }
 
-		/// <summary>
-		/// Transition to
-		/// </summary>
-		Dictionary<string, IBehaviour> Transitions { get; }
+        /// <summary>
+        /// Transition to
+        /// </summary>
+        Dictionary<string, IBehaviour> Transitions { get; }
 
-		ActionConfiguration ActionConfiguration { get; }
+        ActionConfiguration ActionConfiguration { get; }
 
-		void AddTransition(IBehaviour behaviour);
+        void AddTransition(IBehaviour behaviour);
 
-		void Entry();
+        void Entry();
 
-		void Exit();
+        void Exit();
 
-		TriggerDictionary GetTrigger();
-	}
+        TriggerDictionary GetTrigger();
+    }
 }

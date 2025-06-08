@@ -3,58 +3,42 @@ using System;
 
 namespace Ap.Core.Builders
 {
-    public class StateSetBuilderProvider(IServiceProvider serviceProvider, StateLinkedList? rootStateLinked = null)
-        : IStateSetBuilderProvider
-    {
-        public IServiceProvider ServiceProvider { get; } = serviceProvider;
+	public class StateSetBuilderProvider(IServiceProvider serviceProvider, StateLinkedList? rootStateLinked = null) : IStateSetBuilderProvider
+	{
+		public IServiceProvider ServiceProvider { get; } = serviceProvider;
 
-        public virtual IStateSetBuilder<IStateSetBuilder> Create(string state)
-        {
-            var obj = (IStateSetBuilder)Activator.CreateInstance(typeof(StateSetBuilder),
-                ServiceProvider,
-                state,
-                rootStateLinked!);
+		public virtual IStateSetBuilder Create(string state)
+		{
+			var builder = new StateSetBuilder(state, rootStateLinked);
+			builder.Initial(ServiceProvider);
+			return builder;
+		}
 
-            return (IStateSetBuilder<IStateSetBuilder>)obj;
-        }
+		public virtual IStateSetBuilder Create(string state, Action<IState, string> action)
+		{
+			var builder = new StateSetBuilder(state, rootStateLinked, action);
+			builder.Initial(ServiceProvider);
+			return builder;
+		}
 
-        public virtual IStateSetBuilder<IStateSetBuilder> Create(string state, Action<IState, string> action)
-        {
-            var obj = Activator.CreateInstance(typeof(StateSetBuilder),
-                ServiceProvider,
-                state,
-                rootStateLinked!,
-                action);
-            return (IStateSetBuilder<IStateSetBuilder>)obj;
-        }
+		public virtual IStateSetBuilder Create(string state, string id)
+		{
+			var builder = new StateSetBuilder(state, id, rootStateLinked);
+			builder.Initial(ServiceProvider);
+			return builder;
+		}
 
-        public virtual IStateSetBuilder<IStateSetBuilder> Create(string state, string id)
-        {
-            var obj = Activator.CreateInstance(typeof(StateSetBuilder),
-                ServiceProvider,
-                state,
-                id,
-                rootStateLinked!);
+		public virtual IStateSetBuilder Create(string state, string id, Action<IState, string> action)
+		{
+			var builder = new StateSetBuilder(state, id, rootStateLinked, action);
+			builder.Initial(ServiceProvider);
+			return builder;
+		}
 
-            return (IStateSetBuilder<IStateSetBuilder>)obj;
-        }
-
-        public virtual IStateSetBuilder<IStateSetBuilder> Create(string state, string id, Action<IState, string> action)
-        {
-            var obj = Activator.CreateInstance(typeof(StateSetBuilder),
-                ServiceProvider,
-                state,
-                id,
-                rootStateLinked!,
-                action);
-
-            return (IStateSetBuilder<IStateSetBuilder>)obj;
-        }
-
-        public virtual IStateSetBuilder<TStateSetBuilder> Create<TStateSetBuilder>(Func<IStateSetBuilder<TStateSetBuilder>> action)
-            where TStateSetBuilder : class
-        {
-            return action();
-        }
-    }
+		public virtual TBuilder Create<TBuilder>(Func<IServiceProvider, StateLinkedList?, TBuilder> createAction)
+				where TBuilder : class
+		{
+			return createAction(ServiceProvider, rootStateLinked);
+		}
+	}
 }

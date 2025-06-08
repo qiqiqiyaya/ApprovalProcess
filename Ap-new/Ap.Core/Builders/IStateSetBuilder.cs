@@ -10,8 +10,7 @@ namespace Ap.Core.Builders
 
     }
 
-    public interface IStateSetBuilder<out TStateSetBuilder>
-        where TStateSetBuilder : class
+    public interface IStateSetBuilder<TStateSetBuilder>
     {
         string Id { get; }
 
@@ -36,8 +35,8 @@ namespace Ap.Core.Builders
         TStateSetBuilder If(Func<bool> action, string @true, string @false);
 
         TStateSetBuilder If(Func<bool> action,
-            Func<IIfBuilderProvider, IStateSetBuilder> @true,
-            Func<IIfBuilderProvider, IStateSetBuilder> @false);
+            Func<IfBuilderProvider, TStateSetBuilder> @true,
+            Func<IfBuilderProvider, TStateSetBuilder> @false);
 
         TStateSetBuilder Jump(string name, string destination);
 
@@ -49,6 +48,7 @@ namespace Ap.Core.Builders
         /// <param name="state"></param>
         /// <returns></returns>
         bool IsConfigured(string state);
+
 
         void ConfigureEntry<TEntryAction>(string name) where TEntryAction : IEntryAction;
 

@@ -1,23 +1,25 @@
 ﻿using Ap.Core;
+using Ap.Core.Builders;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApTest
 {
-    public class Base
-    {
-        protected IServiceProvider ServiceProvider;
+	public class Base
+	{
+		private readonly IServiceProvider _provider;
 
-        public Base()
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddApCore();
-            ServiceProvider = serviceCollection.BuildServiceProvider();
-        }
+		public Base()
+		{
+			var service = new ServiceCollection();
+			service.AddApCore();
+			_provider = service.BuildServiceProvider();
+		}
 
-        public T GetService<T>() where T : notnull
-        {
-            var service = ServiceProvider.GetRequiredService<T>();
-            return service;
-        }
-    }
+		protected IStateSetBuilderProvider StateSetBuilderProvider => GetService<IStateSetBuilderProvider>();
+
+		protected T GetService<T>() where T : class
+		{
+			return _provider.GetRequiredService<T>();
+		}
+	}
 }

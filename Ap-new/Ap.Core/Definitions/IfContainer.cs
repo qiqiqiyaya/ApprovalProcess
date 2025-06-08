@@ -30,7 +30,7 @@ namespace Ap.Core.Definitions
             if (IsEnd)
             {
                 // Go directly to the next state
-                _parent.ExecuteTrigger(new StateTrigger() { StateSetId = _parent.Id, Trigger = TransitionConst.Direct });
+                _parent.ExecuteTrigger(new StateTrigger() { StateSetId = _parent.Id, Trigger = ApCoreTriggers.Direct });
                 set.Reset();
             }
         }

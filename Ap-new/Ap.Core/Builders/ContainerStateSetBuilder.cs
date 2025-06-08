@@ -7,23 +7,19 @@ namespace Ap.Core.Builders
 {
     public class ContainerStateSetBuilder : StateSetBuilder<IContainerStateSetBuilder>, IContainerStateSetBuilder
     {
-        public ContainerStateSetBuilder(IServiceProvider serviceProvider, string name, StateLinkedList? rootStateLinked = null)
-            : base(serviceProvider, name, rootStateLinked)
+        internal ContainerStateSetBuilder(string name, StateLinkedList? rootStateLinked = null) : base(name, rootStateLinked)
         {
         }
 
-        public ContainerStateSetBuilder(IServiceProvider serviceProvider, string name, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
-            : base(serviceProvider, name, rootStateLinked, action)
+        internal ContainerStateSetBuilder(string name, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null) : base(name, rootStateLinked, action)
         {
         }
 
-        public ContainerStateSetBuilder(IServiceProvider serviceProvider, string name, string id, StateLinkedList? rootStateLinked = null)
-            : base(serviceProvider, name, id, rootStateLinked)
+        internal ContainerStateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null) : base(name, id, rootStateLinked)
         {
         }
 
-        public ContainerStateSetBuilder(IServiceProvider serviceProvider, string name, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null)
-            : base(serviceProvider, name, id, rootStateLinked, action)
+        internal ContainerStateSetBuilder(string name, string id, StateLinkedList? rootStateLinked = null, Action<IState, string>? action = null) : base(name, id, rootStateLinked, action)
         {
         }
 
@@ -48,9 +44,9 @@ namespace Ap.Core.Builders
                     }
 
                     var first = RootStateLinked.FirstState;
-                    stateNode.AddTransition(new JumpOut(TransitionConst.Jump, destination));
-                    stateNode.AddTransition(new Approve(TransitionConst.Approve, next));
-                    stateNode.AddTransition(new Reject(TransitionConst.Reject, first.Name));
+                    stateNode.AddTransition(new JumpOut(ApCoreTriggers.Jump, destination));
+                    stateNode.AddTransition(new Approve(next));
+                    stateNode.AddTransition(new Reject(first.Name));
                 });
             });
 

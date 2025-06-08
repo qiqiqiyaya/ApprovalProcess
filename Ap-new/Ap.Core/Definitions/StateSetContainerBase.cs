@@ -25,7 +25,7 @@ namespace Ap.Core.Definitions
             if (IsEnd)
             {
                 // Go directly to the next state
-                Parent.ExecuteTrigger(new StateTrigger() { StateSetId = Parent.Id, Trigger = TransitionConst.Direct });
+                Parent.ExecuteTrigger(new StateTrigger() { StateSetId = Parent.Id, Trigger = ApCoreTriggers.Direct });
                 foreach (var stateSet in StateSets)
                 {
                     stateSet.Value.Reset();

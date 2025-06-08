@@ -1,6 +1,4 @@
-﻿using Ap.Core.Definitions;
-
-namespace Ap.Core.States;
+﻿namespace Ap.Core.Definitions;
 
 public class EndState(string builderId) : StateBase(EndStateName + builderId)
 {

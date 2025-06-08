@@ -1,7 +1,5 @@
 ﻿using Ap.Core.Behaviours;
-using Ap.Core.Builders;
 using Ap.Core.Definitions;
-using Ap.Core.Extensions;
 
 namespace ApTest
 {
@@ -10,19 +8,18 @@ namespace ApTest
         [Fact]
         public void Test1()
         {
-            var provider = GetService<IStateSetBuilderProvider>();
-            var builder = provider.Create("edit");
+            var builder = StateSetBuilderProvider.Create("edit");
             builder.Then("FirstApprove")
                 .Then("SecondApprove")
                 .If(() => true, "aaa", "bbb")
                 .Complete();
             IStateSet stateSet = builder.Build();
-            stateSet.ExecuteTrigger(TransitionConst.Submit);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Submit);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
             var dictionary = stateSet.GetTrigger();
 
-            var trigger = dictionary.GetTrigger("aaa", TransitionConst.Approve);
+            var trigger = dictionary.GetTrigger("aaa", ApCoreTriggers.Approve);
             Assert.NotNull(trigger);
 
             stateSet.ExecuteTrigger(trigger);
@@ -32,9 +29,7 @@ namespace ApTest
         [Fact]
         public void Test2()
         {
-            var provider = GetService<IStateSetBuilderProvider>();
-
-            var builder = provider.Create("edit");
+            var builder = StateSetBuilderProvider.Create("edit");
             builder.Then("FirstApprove")
                 .Then("SecondApprove")
                 .If(() => true,
@@ -42,17 +37,17 @@ namespace ApTest
                     builderProvider => builderProvider.Create("bbb").Then("bbbApprove"));
 
             IStateSet stateSet = builder.Build();
-            stateSet.ExecuteTrigger(TransitionConst.Submit);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
-            stateSet.ExecuteTrigger(TransitionConst.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Submit);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
+            stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
 
             var dictionary = stateSet.GetTrigger();
-            var trigger1 = dictionary.GetTrigger("aaa", TransitionConst.Approve);
+            var trigger1 = dictionary.GetTrigger("aaa", ApCoreTriggers.Approve);
             Assert.NotNull(trigger1);
             stateSet.ExecuteTrigger(trigger1);
 
             dictionary = stateSet.GetTrigger();
-            var trigger2 = dictionary.GetTrigger("aaaApprove", TransitionConst.Approve);
+            var trigger2 = dictionary.GetTrigger("aaaApprove", ApCoreTriggers.Approve);
             Assert.NotNull(trigger2);
             stateSet.ExecuteTrigger(trigger2);
             Assert.True(stateSet.IsEnd);

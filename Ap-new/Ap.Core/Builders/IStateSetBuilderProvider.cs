@@ -3,19 +3,21 @@ using System;
 
 namespace Ap.Core.Builders
 {
-    public interface IStateSetBuilderProvider
-    {
-        public IServiceProvider ServiceProvider { get; }
+	public delegate IStateSetBuilderProvider CreateStateSetBuilderProvider(IServiceProvider serviceProvider, StateLinkedList? rootStateLinked = null);
 
-        IStateSetBuilder<IStateSetBuilder> Create(string state);
+	public interface IStateSetBuilderProvider
+	{
+		IServiceProvider ServiceProvider { get; }
 
-        IStateSetBuilder<IStateSetBuilder> Create(string state, Action<IState, string> action);
+		IStateSetBuilder Create(string state);
 
-        IStateSetBuilder<IStateSetBuilder> Create(string state, string id);
+		IStateSetBuilder Create(string state, Action<IState, string> action);
 
-        IStateSetBuilder<IStateSetBuilder> Create(string state, string id, Action<IState, string> action);
+		IStateSetBuilder Create(string state, string id);
 
-        IStateSetBuilder<TStateSetBuilder> Create<TStateSetBuilder>(Func<IStateSetBuilder<TStateSetBuilder>> action)
-            where TStateSetBuilder : class;
-    }
+		IStateSetBuilder Create(string state, string id, Action<IState, string> action);
+
+		TBuilder Create<TBuilder>(Func<IServiceProvider, StateLinkedList?, TBuilder> createAction)
+		  where TBuilder : class;
+	}
 }

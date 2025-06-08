@@ -1,6 +1,6 @@
 ﻿namespace Ap.Core.Behaviours
 {
-    public class Submit(string trigger, string destination) : BehaviourBase(trigger, destination)
+    public class Submit(string destination) : BehaviourBase(ApCoreTriggers.Submit, destination)
     {
     }
 }

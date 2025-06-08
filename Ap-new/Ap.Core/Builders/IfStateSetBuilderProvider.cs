@@ -4,21 +4,21 @@ using System;
 
 namespace Ap.Core.Builders
 {
-    public class IfBuilderProvider(IStateSetBuilderProvider stateSetBuilder, StateLinkedList rootStateLinked) : IIfBuilderProvider
+    public class IfBuilderProvider(IStateSetBuilderProvider builderProvider, StateLinkedList rootStateLinked)
     {
-        public virtual IStateSetBuilder<IStateSetBuilder> Create(string state)
+        public virtual IStateSetBuilder Create(string state)
         {
-            return stateSetBuilder.Create(state, (result, destination) =>
+            return builderProvider.Create(state, (result, destination) =>
             {
                 var first = rootStateLinked.FirstState;
-                result.AddTransition(new Approve(TransitionConst.Approve, destination));
-                result.AddTransition(new Reject(TransitionConst.Reject, first.Name));
+                result.AddTransition(new Approve(destination));
+                result.AddTransition(new Reject(first.Name));
             });
         }
 
-        public virtual IStateSetBuilder<IStateSetBuilder> Create(string state, Action<IState, string> action)
+        public virtual IStateSetBuilder Create(string state, Action<IState, string> action)
         {
-            return stateSetBuilder.Create(state, action);
+            return builderProvider.Create(state, action);
         }
     }
 }
