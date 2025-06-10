@@ -20,7 +20,7 @@ namespace Ap.Core.Definitions
             Id = id;
         }
 
-        public string Name { get; protected set; }
+        public string Name { get; internal set; }
 
         public Dictionary<string, IBehaviour> Transitions { get; } = new();
 

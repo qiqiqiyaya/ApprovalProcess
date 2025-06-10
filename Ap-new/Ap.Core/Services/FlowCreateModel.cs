@@ -1,4 +1,5 @@
 ﻿using Ap.Core.Definitions;
+using Ap.Core.Services.Interfaces;
 
 namespace Ap.Core.Services
 {
@@ -6,6 +7,6 @@ namespace Ap.Core.Services
     {
         public IUser User { get; set; }
 
-        public IStateSet StateSet { get; set; }
+        public string StateSetId { get; set; }
     }
 }

@@ -14,6 +14,18 @@ namespace Ap.Core.Definitions
 
         }
 
+        public new LinkedListNode<IState> Last
+        {
+            get
+            {
+                if (Count < 3)
+                {
+                    throw new InvalidOperationException($"Please use {nameof(StateSetBuilder)} to create a state");
+                }
+
+                return this.Last.Previous!;
+            }
+        }
 
         public new LinkedListNode<IState> First
         {

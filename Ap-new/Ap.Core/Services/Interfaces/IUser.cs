@@ -1,4 +1,4 @@
-﻿namespace Ap.Core.Services
+﻿namespace Ap.Core.Services.Interfaces
 {
     public interface IUser
     {

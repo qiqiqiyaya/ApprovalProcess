@@ -2,10 +2,15 @@
 {
     public class ExecutionParameter
     {
+        public string FlowId { get; set; }
+
         public string StateSetId { get; set; }
 
-        public string StateName { get; set; }
+        public string? ChildStateSetId { get; set; }
+
 
         public object User { get; set; }
+
+        public string Trigger { get; set; }
     }
 }

@@ -12,6 +12,11 @@ namespace Ap.Core.Builders
 
     public interface IStateSetBuilder<TStateSetBuilder>
     {
+        /// <summary>
+        /// IStateSet name
+        /// </summary>
+        public string Name { get; set; }
+
         string Id { get; }
 
         StateLinkedList StateLinked { get; }

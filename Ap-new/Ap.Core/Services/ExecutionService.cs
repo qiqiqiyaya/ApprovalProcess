@@ -1,31 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Ap.Core.Definitions;
+using Ap.Core.Services.Interfaces;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Services
 {
-    public class ExecutionService
+    public class ExecutionService : IExecutionService
     {
-        private readonly MemoryStorage _storage;
-        private readonly FlowService _flowService;
+        private readonly IFlowService _flowService;
+        private readonly IStateSetService _stateSetService;
 
-        public ExecutionService(MemoryStorage storage,
-            FlowService flowService)
+        public ExecutionService(IFlowService flowService, IStateSetService stateSetService)
         {
-            _storage = storage;
             _flowService = flowService;
+            _stateSetService = stateSetService;
         }
 
         public async ValueTask InvokeAsync(ExecutionParameter parameter)
         {
-            // 状态机
-            var set = await _storage.GetAsync(parameter.StateSetId);
+            // 流程
+            var flow = await _flowService.GetAsync(parameter.FlowId);
 
-            parameter.
-            _flowService.Get()
+            // 状态机
+            var config = await _stateSetService.GetByIdAsync(parameter.StateSetId);
+            var set = config.StateSet;
 
             // 恢复状态机状态
+            set.Recover(flow.StateName);
+
+            // 触发
+            set.ExecuteTrigger(parameter.ChildStateSetId, parameter.Trigger);
         }
     }
 }

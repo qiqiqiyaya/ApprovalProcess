@@ -2,6 +2,7 @@
 using Ap.Core.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Ap.Core.Definitions
 {
@@ -24,6 +25,29 @@ namespace Ap.Core.Definitions
         public virtual bool IsEnd => GetState(CurrentState) is EndState;
 
         public const string StateSetBaseNamePrefix = "StateSetBase_";
+
+        //public IState GetStartNode
+        //{
+        //    get
+        //    {
+        //        if (IsInitial) return LinkedList.First.Value;
+        //        if (IsEnd) return LinkedList.Last.Value;
+        //        var node = GetState(CurrentState);
+
+        //        switch (node)
+        //        {
+        //            case IStateSetContainer container:
+        //                SetContainerHandle(container, trigger);
+        //                break;
+        //            case IStateSet set:
+        //                StateSetHandle(set, trigger);
+        //                break;
+        //            default:
+        //                ExitAndEntry(state, trigger);
+        //                break;
+        //        }
+        //    }
+        //}
 
         protected StateSetBase(IState state, StateLinkedList rootLinkedList)
             : this(state, rootLinkedList, Guid.NewGuid().ToString("N"))
@@ -53,6 +77,11 @@ namespace Ap.Core.Definitions
 
             StateConfiguration.Add(state.Name, state);
             LinkedList.AddLast(state);
+        }
+
+        public void Recover(string stateName)
+        {
+            CurrentState = stateName;
         }
 
         public IState GetState(string state)

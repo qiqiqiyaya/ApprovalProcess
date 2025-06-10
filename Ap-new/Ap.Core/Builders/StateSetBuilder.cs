@@ -40,6 +40,8 @@ namespace Ap.Core.Builders
     public class StateSetBuilder<TBuilder> : IStateSetBuilder<TBuilder>
         where TBuilder : class
     {
+        public string Name { get; set; }
+
         public string Id { get; set; }
 
         public StateLinkedList StateLinked { get; private set; }
@@ -89,6 +91,7 @@ namespace Ap.Core.Builders
             Start();
             Start(name, action);
             _sm = new StateMachine(StateLinked.OriginFirst.Value, RootStateLinked, id);
+            Name = _sm.Name;
         }
 
         internal void Initial(IServiceProvider serviceProvider)
@@ -382,6 +385,7 @@ namespace Ap.Core.Builders
                 _sm.Configure(node);
             }
 
+            _sm.Name = Name;
             return _sm;
         }
 

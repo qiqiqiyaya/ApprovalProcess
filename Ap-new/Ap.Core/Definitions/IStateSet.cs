@@ -31,6 +31,8 @@ namespace Ap.Core.Definitions
 
         void Configure(IState state);
 
+        void Recover(string stateName);
+
         /// <summary>
         /// reset ot initial state
         /// </summary>
