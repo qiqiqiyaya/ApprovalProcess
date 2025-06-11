@@ -13,5 +13,10 @@ namespace Ap.Core.Behaviours
             context.CurrentSet.CurrentState = Destination;
             return new ValueTask();
         }
+
+        public Transition ToMap()
+        {
+            return new Transition(Trigger, Destination);
+        }
     }
 }

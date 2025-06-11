@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace Ap.Core.Definitions
 {
@@ -14,6 +13,11 @@ namespace Ap.Core.Definitions
         public TriggerDictionary(StateNode node)
         {
             Add(node.StateId, node);
+        }
+
+        public List<StateNodeTrigger> GetTriggers()
+        {
+            return Values.SelectMany(s => s.ToTriggers()).ToList();
         }
 
         public List<StateNodeTrigger> GetTriggers(string name)

@@ -99,7 +99,7 @@ namespace Ap.Core.Definitions
             throw new ApNotFindException<StateSetDetail>($"State {state} not found in the state set.", CreateStateSetDetail());
         }
 
-        public override TriggerDictionary GetTrigger()
+        public override StateTriggerCollection GetTrigger()
         {
             var state = GetState(CurrentState);
 

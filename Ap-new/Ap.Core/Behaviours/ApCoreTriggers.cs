@@ -31,5 +31,11 @@
         /// Can only jump in the current state set, cannot jump into sub levels
         /// </summary>
         public const string Jump = "Jump";
+
+        /// <summary>
+        /// Reentry to the state, used for reentry behaviours
+        /// </summary>
+        public const string Reentry = "Reentry";
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Ap.Core.Behaviours;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Ap.Core.Definitions
@@ -35,20 +36,9 @@ namespace Ap.Core.Definitions
                 StateSets.Values.All(s => s.IsEnd) : StateSets.Values.Any(s => s.IsEnd);
         }
 
-        public override TriggerDictionary GetTrigger()
+        public override StateTriggerCollection GetTrigger()
         {
-            TriggerDictionary dic = new TriggerDictionary();
-            foreach (var stateSet in StateSets.Values)
-            {
-                var nodeTriggers = stateSet.GetTrigger();
-                foreach (var item in nodeTriggers)
-                {
-                    item.Value.StateSetId = stateSet.Id;
-                    dic.Add(item.Key, item.Value);
-                }
-            }
-
-            return dic;
+            return StateSets.Values.SelectMany(s => s.GetTrigger()).ToList();
         }
     }
 }

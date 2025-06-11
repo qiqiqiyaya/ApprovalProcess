@@ -3,14 +3,21 @@ using Ap.Core.Definitions;
 
 namespace Ap.Core.Services
 {
-    public class StateSetConfig : ApproverConfiguration
+    public class StateSetConfig
     {
+        /// <summary>
+        /// 审批流
+        /// </summary>
         public IStateSet StateSet { get; set; }
 
-        public StateSetConfig(ApproverConfiguration configuration, IStateSet stateSet)
+        /// <summary>
+        /// 审批人配置
+        /// </summary>
+        public ApproverConfiguration ApproverConfig { get; set; }
+
+        public StateSetConfig(ApproverConfiguration config, IStateSet stateSet)
         {
-            PerBiulderType = configuration.PerBiulderType;
-            ApproverServiceType = configuration.ApproverServiceType;
+            ApproverConfig = config;
             StateSet = stateSet;
         }
     }

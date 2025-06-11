@@ -1,9 +1,9 @@
-﻿using System;
-using Ap.Core.Behaviours;
+﻿using Ap.Core.Behaviours;
+using Ap.Core.Definitions.Actions;
 using Ap.Core.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ap.Core.Definitions.Actions;
 
 namespace Ap.Core.Definitions
 {
@@ -26,13 +26,11 @@ namespace Ap.Core.Definitions
 
         public ActionConfiguration ActionConfiguration { get; } = new();
 
-        public virtual TriggerDictionary GetTrigger()
+        public virtual StateTriggerCollection GetTrigger()
         {
-            var node = new StateNode(Id, Name)
-            {
-                Triggers = Transitions.Select(s => s.Key).ToList()
-            };
-            return new(node);
+            var detail = ToDetail();
+            var triggers = Transitions.Keys.Select(s => new StateTrigger(s, detail)).ToList();
+            return new StateTriggerCollection(triggers);
         }
 
         public void Entry()
@@ -55,16 +53,25 @@ namespace Ap.Core.Definitions
         {
             if (Transitions.ContainsKey(trigger))
             {
-                throw new ApAlreadyExistsException<StateDetail>(trigger, new StateDetail(Id, Name, Transitions));
+                throw new ApAlreadyExistsException<StateDetail>(trigger, ToDetail());
             }
         }
 
-        private class StateDetail(string id, string name, Dictionary<string, IBehaviour> transitions)
+        protected List<Transition> ToTransition()
         {
-            public string Id { get; } = id;
-            public string Name { get; } = name;
-
-            public Dictionary<string, IBehaviour> Transitions { get; } = transitions;
+            return Transitions.Values.Select(s => s.ToMap()).ToList();
         }
+
+        public StateDetail ToDetail()
+        {
+            return new StateDetail(Id, Name, ToTransition());
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
+
     }
 }

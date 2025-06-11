@@ -5,27 +5,36 @@ namespace ApTest.FlowTest
 {
     public class FlowTest1 : Base
     {
-        [Fact]
-        public async Task CreateTest()
+        public async Task<Flow> CreateFlowAsync(IUser user, string flowName)
         {
             var flowService = GetService<IFlowService>();
             var stateSetService = GetService<IStateSetService>();
 
-            var config = await stateSetService.GetByNameAsync("FlowTest");
-            var user = new FlowUser();
-            var flow = await flowService.CreateAsync(user, config.StateSet);
+            var stateSet = await stateSetService.GetByNameAsync(flowName);
+            var flow = await flowService.CreateAsync(user, stateSet);
 
+            return flow;
+        }
+
+        [Fact]
+        public async Task CreateTest()
+        {
+            var flowService = GetService<IFlowService>();
+
+            var user = new FlowUser();
+            var flow = await CreateFlowAsync(user, FlowPreBuilder.FlowName);
+
+            var triggerList = await flowService.GetTriggerAsync(flow.Id);
+            var trigger = triggerList[0];
 
             var executionService = GetService<IExecutionService>();
             await executionService.InvokeAsync(new ExecutionParameter()
             {
                 FlowId = flow.Id,
                 StateSetId = flow.StateSetId,
-                Trigger = "",
+                Trigger = trigger.Trigger,
                 User = user,
             });
-
-
         }
     }
 }

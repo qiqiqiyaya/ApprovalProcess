@@ -1,4 +1,5 @@
-﻿using Ap.Core.Definitions;
+﻿using System.Collections.Generic;
+using Ap.Core.Definitions;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Services.Interfaces
@@ -8,5 +9,7 @@ namespace Ap.Core.Services.Interfaces
         ValueTask<Flow> GetAsync(string id);
 
         ValueTask<Flow> CreateAsync(IUser user, IStateSet set);
+
+        ValueTask<List<StateTrigger>> GetTriggerAsync(string id);
     }
 }

@@ -21,6 +21,8 @@ namespace Ap.Core.Definitions
 
         void Exit();
 
-        TriggerDictionary GetTrigger();
+        StateTriggerCollection GetTrigger();
+
+        StateDetail ToDetail();
     }
 }

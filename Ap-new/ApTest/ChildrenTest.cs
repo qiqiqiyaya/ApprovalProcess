@@ -44,7 +44,7 @@ namespace ApTest
             stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
 
             var child = stateSet.GetTrigger();
-            var aTrigger = child.GetTrigger("aaa", ApCoreTriggers.Approve);
+            var aTrigger = child.Get("aaa", ApCoreTriggers.Approve);
             stateSet.ExecuteTrigger(aTrigger!);
             Assert.True(!stateSet.IsEnd);
             var bTrigger = child.GetTrigger("bbb", ApCoreTriggers.Approve);

@@ -1,5 +1,6 @@
 ﻿using Ap.Core.Behaviours;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Ap.Core.Definitions
@@ -55,17 +56,10 @@ namespace Ap.Core.Definitions
             return set;
         }
 
-        public override TriggerDictionary GetTrigger()
+        public override StateTriggerCollection GetTrigger()
         {
             IStateSet set = GetStateSet();
-            var trigger = set.GetTrigger();
-
-            foreach (var item in trigger)
-            {
-                item.Value.StateSetId = set.Id;
-            }
-
-            return trigger;
+            return set.GetTrigger();
         }
     }
 }

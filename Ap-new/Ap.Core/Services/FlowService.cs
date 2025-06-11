@@ -1,6 +1,7 @@
 ﻿using Ap.Core.Definitions;
 using Ap.Core.Services.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Services
@@ -54,6 +55,20 @@ namespace Ap.Core.Services
         public async ValueTask UpdateAsync()
         {
 
+        }
+
+        public async ValueTask<List<StateTrigger>> GetTriggerAsync(Flow flow)
+        {
+            var set = await _configService.GetByIdAsync(flow.StateSetId);
+            set.Recover(flow.StateName);
+
+            return set.GetTrigger();
+        }
+
+        public async ValueTask<List<StateTrigger>> GetTriggerAsync(string id)
+        {
+            var flow = await _flowRepository.GetAsync(id);
+            return await GetTriggerAsync(flow);
         }
     }
 }

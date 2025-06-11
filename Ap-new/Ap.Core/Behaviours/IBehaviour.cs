@@ -14,5 +14,7 @@ namespace Ap.Core.Behaviours
         /// <param name="context"></param>
         /// <returns></returns>
         ValueTask ExecuteAsync(BehaviourExecuteContext context);
+
+        Transition ToMap();
     }
 }

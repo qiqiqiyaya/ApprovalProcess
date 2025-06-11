@@ -4,6 +4,8 @@ namespace ApTest.FlowTest
 {
     public class FlowPreBuilder : IPreBuilder
     {
+        public const string FlowName = "FlowTest";
+
         public IStateSetBuilder Build(IStateSetBuilderProvider builderProvider)
         {
             var builder = builderProvider.Create("edit");
@@ -12,7 +14,7 @@ namespace ApTest.FlowTest
                 .Then("SecondApprove")
                 .Then("ThirdApprove");
 
-            builder.Name = "FlowTest";
+            builder.Name = FlowName;
 
             return builder;
         }

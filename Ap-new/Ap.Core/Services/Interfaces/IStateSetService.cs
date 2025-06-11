@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Ap.Core.Definitions;
+using System.Threading.Tasks;
 
 namespace Ap.Core.Services.Interfaces
 {
@@ -6,8 +7,10 @@ namespace Ap.Core.Services.Interfaces
     {
         ValueTask Add(StateSetConfig config);
 
-        ValueTask<StateSetConfig> GetByIdAsync(string stateSetId);
+        ValueTask<IStateSet> GetByIdAsync(string stateSetId);
 
-        ValueTask<StateSetConfig> GetByNameAsync(string name);
+        ValueTask<IStateSet> GetByNameAsync(string name);
+
+        ValueTask<StateSetConfig> GetConfig(string stateSetId);
     }
 }

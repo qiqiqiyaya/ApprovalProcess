@@ -23,9 +23,12 @@ namespace Ap.Core.Definitions
                     throw new InvalidOperationException($"Please use {nameof(StateSetBuilder)} to create a state");
                 }
 
-                return this.Last.Previous!;
+                return base.Last.Previous!;
             }
         }
+
+        public LinkedListNode<IState> OriginLast => base.Last;
+
 
         public new LinkedListNode<IState> First
         {

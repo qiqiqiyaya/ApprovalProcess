@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Ap.Core.Builders
 {
@@ -206,7 +207,7 @@ namespace Ap.Core.Builders
 
         public void Complete()
         {
-            var last = StateLinked.Last!.Value;
+            var last = StateLinked.OriginLast;
             if (last is EndState) return;
 
             var result = new EndState(Id);
@@ -298,6 +299,22 @@ namespace Ap.Core.Builders
                 setContainer.AddTransition(new Direct(destination));
             };
             StateLinked.AddLast(setContainer);
+            return (this as TBuilder)!;
+        }
+
+        /// <summary>
+        /// Repeatedly entering a certain state
+        /// </summary>
+        /// <returns></returns>
+        public TBuilder Reentry(string destination)
+        {
+            if (!StateLinked.Has(destination))
+            {
+                throw new ApNotFindException<StateLinkedList>($"Can't find '{destination}' of state in StateLikedList", StateLinked);
+            }
+
+            var state = StateLinked.Get(destination);
+            state.AddTransition(new Reentry(destination));
             return (this as TBuilder)!;
         }
 

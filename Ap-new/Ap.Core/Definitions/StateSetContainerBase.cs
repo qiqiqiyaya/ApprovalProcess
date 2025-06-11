@@ -52,25 +52,9 @@ namespace Ap.Core.Definitions
             return StateSets.Values.All(s => s.IsEnd);
         }
 
-        public override TriggerDictionary GetTrigger()
+        public override StateTriggerCollection GetTrigger()
         {
-            var dic = new TriggerDictionary();
-
-            foreach (var stateSet in StateSets)
-            {
-                var set = stateSet.Value;
-                if (!set.IsEnd)
-                {
-                    var result = set.GetTrigger();
-                    foreach (var item in result)
-                    {
-                        item.Value.StateSetId = set.Id;
-                        dic.Add(item.Key, item.Value);
-                    }
-                }
-            }
-
-            return dic;
+            return StateSets.Values.SelectMany(s => s.GetTrigger()).ToList();
         }
     }
 }
