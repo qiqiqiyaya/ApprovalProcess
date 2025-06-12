@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Ap.Core.Definitions;
 
 namespace Ap.Core.Behaviours
 {
@@ -13,7 +14,7 @@ namespace Ap.Core.Behaviours
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        ValueTask ExecuteAsync(BehaviourExecuteContext context);
+        ValueTask ExecuteAsync(TriggerContext context);
 
         Transition ToMap();
     }

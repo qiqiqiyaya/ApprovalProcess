@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Ap.Core.Definitions;
 
 namespace Ap.Core.Behaviours
 {
@@ -10,7 +11,7 @@ namespace Ap.Core.Behaviours
     /// <param name="destination"></param>
     public class Reject(string destination) : BehaviourBase(ApCoreTriggers.Reject, destination)
     {
-        public override ValueTask ExecuteAsync(BehaviourExecuteContext context)
+        public override ValueTask ExecuteAsync(TriggerContext context)
         {
             var firstState = context.CurrentSet.RootLinkedList.FirstState;
 

@@ -1,4 +1,5 @@
 ﻿using Ap.Core.Behaviours;
+using Ap.Core.Definitions.States;
 using Ap.Core.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -105,47 +106,50 @@ namespace Ap.Core.Definitions
 
             // state is never EndState
             // state is StartState ， skip it
-            if (state is StartState)
+            var collection = state is StartState ? LinkedList.FirstState.GetTrigger() : state.GetTrigger();
+
+            foreach (var stateTrigger in collection)
             {
-                return LinkedList.FirstState.GetTrigger();
+                stateTrigger.StateSetId = Id;
             }
 
-            return state.GetTrigger();
+            return collection;
         }
 
-        public virtual void ExecuteTrigger(StateTrigger trigger)
+        public virtual void ExecuteTrigger(TriggerContext context)
         {
-            trigger.RootStateSet ??= this;
+            context.RootSet = this;
             var state = GetState(CurrentState);
 
             switch (state)
             {
                 case IStateSetContainer container:
-                    SetContainerHandle(container, trigger);
+                    SetContainerHandle(container, context);
                     break;
                 case IStateSet set:
-                    StateSetHandle(set, trigger);
+                    StateSetHandle(set, context);
                     break;
                 default:
-                    ExitAndEntry(state, trigger);
+                    ExitAndEntry(state, context);
                     break;
             }
         }
 
-        protected virtual void ExitAndEntry(IState state, StateTrigger trigger)
+        protected virtual void ExitAndEntry(IState state, TriggerContext context)
         {
-            var res = StartStateHandle(state, trigger);
+            var res = StartStateHandle(state, context);
 
-            var behaviour = res.Transitions[trigger.Trigger];
-            ExitAndEntry(res, behaviour, trigger);
+            var behaviour = res.Transitions[context.StateTrigger.Trigger];
+            ExitAndEntry(res, behaviour, context);
 
             EndStateHandle();
         }
 
-        protected virtual void ExitAndEntry(IState state, IBehaviour behaviour, StateTrigger trigger)
+        protected virtual void ExitAndEntry(IState state, IBehaviour behaviour, TriggerContext context)
         {
             state.Exit();
-            behaviour.ExecuteAsync(new BehaviourExecuteContext(trigger.RootStateSet!, this));
+            context.CurrentSet = this;
+            behaviour.ExecuteAsync(context);
 
             if (IsJumpOut(behaviour.Destination))
             {
@@ -157,38 +161,37 @@ namespace Ap.Core.Definitions
             nextState.Entry();
         }
 
-        protected virtual void StateSetHandle(IStateSet set, StateTrigger trigger)
+        protected virtual void StateSetHandle(IStateSet set, TriggerContext context)
         {
             if (!set.IsEnd)
             {
-                set.ExecuteTrigger(trigger);
+                set.ExecuteTrigger(context);
             }
             else
             {
                 // if it ends, jump out
-                ExitAndEntry(set, trigger);
+                ExitAndEntry(set, context);
             }
         }
 
-        protected virtual void SetContainerHandle(IStateSetContainer container, StateTrigger trigger)
+        protected virtual void SetContainerHandle(IStateSetContainer container, TriggerContext context)
         {
             if (!container.IsEnd)
             {
-                trigger.RootStateSet ??= this;
-                container.ExecuteTrigger(trigger);
+                container.ExecuteTrigger(context);
             }
             else
             {
                 // if it ends, jump out
-                ExitAndEntry(container, trigger);
+                ExitAndEntry(container, context);
             }
         }
 
-        protected virtual IState StartStateHandle(IState state, StateTrigger trigger)
+        protected virtual IState StartStateHandle(IState state, TriggerContext context)
         {
             if (state is not StartState startState) return state;
             var behaviour = startState.FindNext();
-            ExitAndEntry(state, behaviour, trigger);
+            ExitAndEntry(state, behaviour, context);
             return GetState(CurrentState);
         }
 
@@ -213,8 +216,6 @@ namespace Ap.Core.Definitions
             return !LinkedList.TryGet(state, out _);
         }
 
-
-
         private StateSetDetail CreateStateSetDetail()
         {
             return new StateSetDetail
@@ -227,23 +228,6 @@ namespace Ap.Core.Definitions
                 LinkedList = LinkedList,
                 RootLinkedList = RootLinkedList
             };
-        }
-
-        private class StateSetDetail
-        {
-            public string Id { get; set; }
-
-            public string Name { get; set; }
-
-            public string InitialState { get; set; }
-
-            public string CurrentState { get; set; }
-
-            public Dictionary<string, IState> StateConfiguration { get; set; }
-
-            public StateLinkedList LinkedList { get; set; }
-
-            public StateLinkedList RootLinkedList { get; set; }
         }
     }
 }

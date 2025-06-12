@@ -2,6 +2,6 @@
 {
     public interface IStateTrigger
     {
-        void ExecuteTrigger(StateTrigger trigger);
+        void ExecuteTrigger(TriggerContext context);
     }
 }

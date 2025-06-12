@@ -1,4 +1,5 @@
-﻿using Ap.Core.Definitions;
+﻿using System;
+using Ap.Core.Definitions;
 using Ap.Core.Services.Interfaces;
 using System.Threading.Tasks;
 
@@ -8,11 +9,15 @@ namespace Ap.Core.Services
     {
         private readonly IFlowService _flowService;
         private readonly IStateSetService _stateSetService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ExecutionService(IFlowService flowService, IStateSetService stateSetService)
+        public ExecutionService(IFlowService flowService,
+            IStateSetService stateSetService,
+            IServiceProvider serviceProvider)
         {
             _flowService = flowService;
             _stateSetService = stateSetService;
+            _serviceProvider = serviceProvider;
         }
 
         public async ValueTask InvokeAsync(ExecutionParameter parameter)
@@ -26,8 +31,9 @@ namespace Ap.Core.Services
             // 恢复状态机状态
             set.Recover(flow.StateName);
 
+            var context = new TriggerContext(parameter.StateTrigger, _serviceProvider);
             // 触发
-            set.ExecuteTrigger(parameter.ChildStateSetId, parameter.Trigger);
+            set.ExecuteTrigger(context);
         }
     }
 }

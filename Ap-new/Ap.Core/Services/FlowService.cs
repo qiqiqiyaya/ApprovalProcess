@@ -57,7 +57,7 @@ namespace Ap.Core.Services
 
         }
 
-        public async ValueTask<List<StateTrigger>> GetTriggerAsync(Flow flow)
+        public async ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow)
         {
             var set = await _configService.GetByIdAsync(flow.StateSetId);
             set.Recover(flow.StateName);
@@ -65,7 +65,7 @@ namespace Ap.Core.Services
             return set.GetTrigger();
         }
 
-        public async ValueTask<List<StateTrigger>> GetTriggerAsync(string id)
+        public async ValueTask<StateTriggerCollection> GetActionsAsync(string id)
         {
             var flow = await _flowRepository.GetAsync(id);
             return await GetTriggerAsync(flow);

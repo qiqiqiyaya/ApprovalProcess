@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Ap.Core.Definitions;
 
 namespace Ap.Core.Behaviours
 {
@@ -8,7 +9,7 @@ namespace Ap.Core.Behaviours
 
         public string Destination { get; } = destination;
 
-        public virtual ValueTask ExecuteAsync(BehaviourExecuteContext context)
+        public virtual ValueTask ExecuteAsync(TriggerContext context)
         {
             context.CurrentSet.CurrentState = Destination;
             return new ValueTask();

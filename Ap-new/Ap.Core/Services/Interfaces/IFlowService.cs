@@ -10,6 +10,6 @@ namespace Ap.Core.Services.Interfaces
 
         ValueTask<Flow> CreateAsync(IUser user, IStateSet set);
 
-        ValueTask<List<StateTrigger>> GetTriggerAsync(string id);
+        ValueTask<StateTriggerCollection> GetActionsAsync(string id);
     }
 }

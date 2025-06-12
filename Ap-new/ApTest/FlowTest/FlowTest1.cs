@@ -24,15 +24,15 @@ namespace ApTest.FlowTest
             var user = new FlowUser();
             var flow = await CreateFlowAsync(user, FlowPreBuilder.FlowName);
 
-            var triggerList = await flowService.GetTriggerAsync(flow.Id);
-            var trigger = triggerList[0];
+            var actions = await flowService.GetActionsAsync(flow.Id);
+            var trigger = actions[0];
 
             var executionService = GetService<IExecutionService>();
             await executionService.InvokeAsync(new ExecutionParameter()
             {
                 FlowId = flow.Id,
                 StateSetId = flow.StateSetId,
-                Trigger = trigger.Trigger,
+                StateTrigger = trigger,
                 User = user,
             });
         }

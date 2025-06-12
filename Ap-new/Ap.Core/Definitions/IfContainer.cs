@@ -1,6 +1,5 @@
 ﻿using Ap.Core.Behaviours;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Ap.Core.Definitions
@@ -23,15 +22,22 @@ namespace Ap.Core.Definitions
             StateSets.Add(FalseState, @false ?? throw new ArgumentNullException(nameof(@false)));
         }
 
-        public override void ExecuteTrigger(StateTrigger trigger)
+        public override void ExecuteTrigger(TriggerContext context)
         {
             IStateSet set = GetStateSet();
-            set.ExecuteTrigger(trigger);
+            set.ExecuteTrigger(context);
 
             if (IsEnd)
             {
                 // Go directly to the next state
-                _parent.ExecuteTrigger(new StateTrigger() { StateSetId = _parent.Id, Trigger = ApCoreTriggers.Direct });
+                var stateTrigger = new StateTrigger(ApCoreTriggers.Direct, ToDetail())
+                {
+                    StateSetId = Parent.Id
+                };
+                context.StateTrigger = stateTrigger;
+                context.CurrentSet = Parent;
+
+                _parent.ExecuteTrigger(context);
                 set.Reset();
             }
         }

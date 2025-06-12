@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace Ap.Core.Definitions;
+namespace Ap.Core.Definitions.States;
 
 public class StartState(string builderId) : StateBase(StartStateName + builderId)
 {

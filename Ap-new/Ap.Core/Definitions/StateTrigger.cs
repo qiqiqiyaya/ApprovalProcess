@@ -7,27 +7,17 @@ using System.Linq;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 namespace Ap.Core.Definitions
 {
-    //public class StateTrigger
-    //{
-    //    public string? StateSetId { get; set; }
-
-    //    public string Trigger { get; set; }
-
-    //    public StateSetBase? RootStateSet { get; set; }
-    //}
-
-
     public class StateTrigger(string trigger, StateDetail stateDetail)
     {
-        public string StateSetId { get; set; }
+        public string? StateSetId { get; set; }
 
-        public string Trigger { get; set; }
+        public string Trigger { get; set; } = trigger;
 
         public string StateId => StateDetail.Id;
 
         public string StateName => StateDetail.Name;
 
-        public StateDetail StateDetail { get; set; }
+        public StateDetail StateDetail { get; set; } = stateDetail;
     }
 
     public class StateTriggerCollection : Collection<StateTrigger>

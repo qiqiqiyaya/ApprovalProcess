@@ -16,16 +16,24 @@ namespace Ap.Core.Definitions
             Id = Guid.NewGuid().ToString("N");
         }
 
-        public virtual void ExecuteTrigger(StateTrigger trigger)
+        public virtual void ExecuteTrigger(TriggerContext context)
         {
-            if (string.IsNullOrEmpty(trigger.StateSetId)) throw new ArgumentException("StateSetId cannot be null or empty.", nameof(trigger.StateSetId));
-            IStateTrigger set = StateSets[trigger.StateSetId!];
-            set.ExecuteTrigger(trigger);
+            var stateSetId = context.StateTrigger.StateSetId;
+            if (string.IsNullOrEmpty(stateSetId)) throw new ArgumentException("StateSetId cannot be null or empty.", nameof(context.StateTrigger.StateSetId));
+            IStateTrigger set = StateSets[stateSetId];
+            set.ExecuteTrigger(context);
 
             if (IsEnd)
             {
                 // Go directly to the next state
-                Parent.ExecuteTrigger(new StateTrigger() { StateSetId = Parent.Id, Trigger = ApCoreTriggers.Direct });
+                var stateTrigger = new StateTrigger(ApCoreTriggers.Direct, ToDetail())
+                {
+                    StateSetId = Parent.Id
+                };
+                context.StateTrigger = stateTrigger;
+                context.CurrentSet = Parent;
+
+                Parent.ExecuteTrigger(context);
                 foreach (var stateSet in StateSets)
                 {
                     stateSet.Value.Reset();
@@ -54,7 +62,8 @@ namespace Ap.Core.Definitions
 
         public override StateTriggerCollection GetTrigger()
         {
-            return StateSets.Values.SelectMany(s => s.GetTrigger()).ToList();
+            var list = StateSets.Values.SelectMany(s => s.GetTrigger()).ToList();
+            return new StateTriggerCollection(list);
         }
     }
 }
