@@ -1,5 +1,6 @@
 ﻿using Ap.Core.Definitions.Actions;
 using Ap.Core.Pipeline;
+using Ap.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,8 @@ public class EntryContext(IServiceProvider serviceProvider,
     public StateSetBase CurrentSet { get; internal set; } = currentSet;
 
     public StateTrigger StateTrigger { get; internal set; } = stateTrigger;
+
+    public List<string> NextApproverList { get; set; } = new();
 
     public async ValueTask PipelineRunAsync(List<ApAction> actions)
     {

@@ -9,10 +9,6 @@ namespace Ap.Core.Services
     {
         public string FlowId { get; set; }
 
-        public string StateSetId { get; set; }
-
-        public string? ChildStateSetId { get; set; }
-
         public IUser User { get; set; }
 
         public StateTrigger StateTrigger { get; set; }

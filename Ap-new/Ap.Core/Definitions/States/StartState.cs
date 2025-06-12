@@ -8,7 +8,7 @@ public class StartState(string builderId) : StateBase(StartStateName + builderId
 {
     private const string StartStateName = "Start_";
 
-    public IBehaviour FindNext()
+    public IBehaviour GetBehaviour()
     {
         var direct = Transitions.Values.FirstOrDefault(x => x.GetType() == typeof(Direct));
         if (direct == null)

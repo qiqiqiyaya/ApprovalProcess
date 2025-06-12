@@ -3,15 +3,21 @@
 
 namespace Ap.Core.Definitions;
 
-public class TriggerContext(StateTrigger stateTrigger, IServiceProvider serviceProvider)
+public class TriggerContext
 {
+    internal TriggerContext(StateTrigger stateTrigger, IServiceProvider serviceProvider)
+    {
+        ServiceProvider = serviceProvider;
+        StateTrigger = stateTrigger;
+    }
+
     public StateSetBase RootSet { get; internal set; }
 
     public StateSetBase CurrentSet { get; internal set; }
 
-    public IServiceProvider ServiceProvider { get; set; } = serviceProvider;
+    public IServiceProvider ServiceProvider { get; set; }
 
-    public StateTrigger StateTrigger { get; internal set; } = stateTrigger;
+    public StateTrigger StateTrigger { get; internal set; }
 
     public EntryContext CreateEntryContext()
     {

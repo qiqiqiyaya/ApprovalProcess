@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Ap.Core.Definitions;
 
 namespace Ap.Core.Services.Interfaces
 {
 
-    public interface IApproverService
+    public interface IApproverService : IEntryAction
     {
-        ValueTask<List<string>> GetListAsync();
+
     }
 }

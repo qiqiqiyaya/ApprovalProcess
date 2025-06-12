@@ -190,7 +190,7 @@ namespace Ap.Core.Definitions
         protected virtual async ValueTask<IState> StartStateHandle(IState state, TriggerContext context)
         {
             if (state is not StartState startState) return state;
-            var behaviour = startState.FindNext();
+            var behaviour = startState.GetBehaviour();
             await ExitAndEntry(state, behaviour, context);
             return GetState(CurrentState);
         }
