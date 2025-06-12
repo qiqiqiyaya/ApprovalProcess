@@ -4,6 +4,7 @@ using Ap.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ap.Core.Definitions
 {
@@ -33,9 +34,9 @@ namespace Ap.Core.Definitions
             return new StateTriggerCollection(triggers);
         }
 
-        public void Entry()
+        public async ValueTask Entry(EntryContext context)
         {
-
+            await context.PipelineRunAsync(ActionConfiguration.EntryTypes);
         }
 
         public void Exit()

@@ -12,4 +12,10 @@ public class TriggerContext(StateTrigger stateTrigger, IServiceProvider serviceP
     public IServiceProvider ServiceProvider { get; set; } = serviceProvider;
 
     public StateTrigger StateTrigger { get; internal set; } = stateTrigger;
+
+    public EntryContext CreateEntryContext()
+    {
+        var context = new EntryContext(ServiceProvider, RootSet, CurrentSet, StateTrigger);
+        return context;
+    }
 }

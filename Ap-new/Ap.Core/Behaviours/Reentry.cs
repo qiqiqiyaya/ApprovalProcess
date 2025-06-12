@@ -7,10 +7,7 @@ namespace Ap.Core.Behaviours
     {
         public override ValueTask ExecuteAsync(TriggerContext context)
         {
-            context.CurrentSet.Exit();
-
-            context.CurrentSet.Entry();
-            return base.ExecuteAsync(context);
+            return new ValueTask();
         }
     }
 }

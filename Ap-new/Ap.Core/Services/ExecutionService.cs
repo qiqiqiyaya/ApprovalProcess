@@ -33,7 +33,7 @@ namespace Ap.Core.Services
 
             var context = new TriggerContext(parameter.StateTrigger, _serviceProvider);
             // 触发
-            set.ExecuteTrigger(context);
+            await set.ExecuteTrigger(context);
         }
     }
 }

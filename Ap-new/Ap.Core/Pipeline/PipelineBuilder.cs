@@ -1,15 +1,14 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Ap.Core.Pipeline
 {
     internal class PipelineBuilder<TContext>(string pipelineName) : IPipelineBuilder<TContext>
     {
-        private readonly List<Type> _pipeTypes = new List<Type>();
-        private readonly Dictionary<Type, object[]> _pipeParameters = new Dictionary<Type, object[]>();
+        private readonly List<TypeMap> _pipes = new();
         private readonly Type _pipeType = typeof(IPipe<TContext>);
 
         public string PipelineName { get; set; } = pipelineName;
@@ -17,7 +16,7 @@ namespace Ap.Core.Pipeline
         public IPipelineBuilder<TContext> Use<TPipe>()
             where TPipe : IPipe<TContext>
         {
-            _pipeTypes.Add(typeof(TPipe));
+            _pipes.Add(new TypeMap(typeof(TPipe)));
             return this;
         }
 
@@ -25,7 +24,7 @@ namespace Ap.Core.Pipeline
         {
             if (pipeType.GetInterfaces().Any(x => x == _pipeType))
             {
-                _pipeTypes.Add(pipeType);
+                _pipes.Add(new TypeMap(pipeType));
                 return this;
             }
 
@@ -36,9 +35,7 @@ namespace Ap.Core.Pipeline
         {
             if (pipeType.GetInterfaces().Any(x => x == _pipeType))
             {
-                _pipeTypes.Add(pipeType);
-                if (parameters.Length > 0) _pipeParameters.Add(pipeType, parameters);
-
+                _pipes.Add(new TypeMap(pipeType, parameters));
                 return this;
             }
 
@@ -49,25 +46,25 @@ namespace Ap.Core.Pipeline
         {
             List<IPipe<TContext>> list = new List<IPipe<TContext>>();
 
-            for (int index = _pipeTypes.Count - 1; index > -1; index--)
+            for (int index = _pipes.Count - 1; index > -1; index--)
             {
-                var type = _pipeTypes[index];
+                var map = _pipes[index];
                 IPipe<TContext> pipe;
 
-                if (_pipeParameters.TryGetValue(type, out object[] values))
+                if (map.Parameters.Length > 0)
                 {
-                    pipe = (IPipe<TContext>)ActivatorUtilities.CreateInstance(serviceProvider, type, values);
+                    pipe = (IPipe<TContext>)ActivatorUtilities.CreateInstance(serviceProvider, map.Type, map.Parameters);
                 }
                 else
                 {
-                    pipe = (IPipe<TContext>)ActivatorUtilities.CreateInstance(serviceProvider, type);
+                    pipe = (IPipe<TContext>)ActivatorUtilities.CreateInstance(serviceProvider, map.Type);
                 }
 
                 list.Add(pipe);
             }
 
             list.Reverse();
-            return PipelineBuilder<TContext>.Build(list);
+            return Build(list);
         }
 
         private static Func<TContext, ValueTask> Build(IList<IPipe<TContext>> pipes)
@@ -79,6 +76,7 @@ namespace Ap.Core.Pipeline
                 var convertedPipe = Convert(pipe);
                 nextPipeline = convertedPipe(nextPipeline);
             }
+
             return nextPipeline;
         }
 
@@ -98,6 +96,18 @@ namespace Ap.Core.Pipeline
             //	return new ValueTask();
             //}
             return pipe.InvokeAsync(context, next);
+        }
+
+        private record TypeMap(Type Type, object[] Parameters)
+        {
+            public TypeMap(Type type) : this(type, [])
+            {
+
+            }
+
+            public Type Type { get; set; } = Type;
+
+            public object[] Parameters { get; set; } = Parameters;
         }
     }
 }

@@ -16,6 +16,16 @@ namespace ApTest.FlowTest
 
             builder.Name = FlowName;
 
+            builder.ConfigureEntry("edit", context =>
+            {
+
+            });
+
+            builder.ConfigureEntry("edit", context =>
+            {
+
+            });
+
             return builder;
         }
     }

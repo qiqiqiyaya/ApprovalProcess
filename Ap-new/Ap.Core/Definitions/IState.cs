@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Ap.Core.Behaviours;
 using Ap.Core.Definitions.Actions;
 
@@ -17,7 +18,7 @@ namespace Ap.Core.Definitions
 
         void AddTransition(IBehaviour behaviour);
 
-        void Entry();
+        ValueTask Entry(EntryContext context);
 
         void Exit();
 

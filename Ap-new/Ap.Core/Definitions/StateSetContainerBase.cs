@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ap.Core.Definitions
 {
@@ -16,12 +17,12 @@ namespace Ap.Core.Definitions
             Id = Guid.NewGuid().ToString("N");
         }
 
-        public virtual void ExecuteTrigger(TriggerContext context)
+        public virtual async ValueTask ExecuteTrigger(TriggerContext context)
         {
             var stateSetId = context.StateTrigger.StateSetId;
             if (string.IsNullOrEmpty(stateSetId)) throw new ArgumentException("StateSetId cannot be null or empty.", nameof(context.StateTrigger.StateSetId));
-            IStateTrigger set = StateSets[stateSetId];
-            set.ExecuteTrigger(context);
+            IStateTrigger set = StateSets[stateSetId!];
+            await set.ExecuteTrigger(context);
 
             if (IsEnd)
             {
@@ -33,7 +34,7 @@ namespace Ap.Core.Definitions
                 context.StateTrigger = stateTrigger;
                 context.CurrentSet = Parent;
 
-                Parent.ExecuteTrigger(context);
+                await Parent.ExecuteTrigger(context);
                 foreach (var stateSet in StateSets)
                 {
                     stateSet.Value.Reset();

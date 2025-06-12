@@ -1,48 +1,23 @@
-﻿using System;
+﻿using Ap.Core.Definitions.Actions;
+using System;
 using System.Collections.Generic;
 
 namespace Ap.Core.Pipeline
 {
-    public class PipelineProvider(
-        IServiceProvider serviceProvider,
-        Dictionary<string, object> pipelineBuilders)
-        : IPipelineProvider
+    public class PipelineProvider(IServiceProvider serviceProvider) : IPipelineProvider
     {
-        public IPipeline<TContext> GetPipeline<TContext>(string pipeLineName)
+        public IPipeline<TContext> GetPipeline<TContext>(List<ApAction> actions)
         {
-            if (pipelineBuilders.TryGetValue(pipeLineName, out var value))
-            {
-                if (value is IPipelineBuilder<TContext> builder)
-                {
-                    var func = builder.Build(serviceProvider);
+            IPipelineBuilder<TContext> builder = new PipelineBuilder<TContext>(Guid.NewGuid().ToString("N"));
 
-                    IPipeline<TContext> pipeline = new Pipeline<TContext>(func);
-                    return pipeline;
-                }
+            foreach (var map in actions)
+            {
+                builder.Use(map.Type, map.Parameters);
             }
 
-            throw new ArgumentException("The specified name does not match pipeline execution context type.", nameof(pipeLineName));
+            var func = builder.Build(serviceProvider);
+            IPipeline<TContext> pipeline = new Pipeline<TContext>(func);
+            return pipeline;
         }
-
-        //public IPipeline<TContext> GetPipeline<TContext>(List<ExecutableActionMap> maps, string pipeLineName = "fdsfds")
-        //{
-        //    IPipelineBuilder<TContext> builder = new PipelineBuilder<TContext>(pipeLineName);
-
-        //    foreach (var map in maps)
-        //    {
-        //        if (map.Action.Configuration == null)
-        //        {
-        //            builder.Use(map.Type);
-        //        }
-        //        else
-        //        {
-        //            builder.Use(map.Type, map.Action.Configuration);
-        //        }
-        //    }
-
-        //    var func = builder.Build(serviceProvider);
-        //    IPipeline<TContext> pipeline = new Pipeline<TContext>(func);
-        //    return pipeline;
-        //}
     }
 }

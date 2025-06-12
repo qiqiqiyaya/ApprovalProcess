@@ -331,24 +331,33 @@ namespace Ap.Core.Builders
 
 
         #region Entry
-        public void ConfigureEntry<TEntryAction>(string name)
+        public void ConfigureEntry<TEntryAction>(string stateName)
             where TEntryAction : IEntryAction
         {
-            ConfigureEntry(name, new ApAction(typeof(TEntryAction)));
+            ConfigureEntry(stateName, new ApAction(typeof(TEntryAction)));
         }
 
-        public void ConfigureEntry(string name, Func<EntryContext, ValueTask> entryAction)
+        public void ConfigureEntry(string stateName, Func<EntryContext, ValueTask> entryAction)
         {
-            ConfigureEntry(name, new ApAction(typeof(GeneralEntryAction), entryAction));
+            ConfigureEntry(stateName, new ApAction(typeof(GeneralEntryAction), entryAction));
         }
 
-        public void ConfigureEntry<TEntryAction>(string name, params object[] parameters)
+        public void ConfigureEntry(string stateName, Action<EntryContext> entryAction)
+        {
+            ConfigureEntry(stateName, context =>
+            {
+                entryAction(context);
+                return new ValueTask();
+            });
+        }
+
+        public void ConfigureEntry<TEntryAction>(string stateName, params object[] parameters)
             where TEntryAction : IEntryAction
         {
-            ConfigureEntry(name, new ApAction(typeof(TEntryAction), parameters));
+            ConfigureEntry(stateName, new ApAction(typeof(TEntryAction), parameters));
         }
 
-        public void ConfigureEntry(string name, ApAction action)
+        public void ConfigureEntry(string stateName, ApAction action)
         {
             var actionType = typeof(IEntryAction);
             if (action.Type.GetInterfaces().All(type => type != actionType))
@@ -356,7 +365,7 @@ namespace Ap.Core.Builders
                 throw new Exception("the action.Type is not subclass of IEntryAction");
             }
 
-            var state = RootStateLinked.Get(name);
+            var state = RootStateLinked.Get(stateName);
             state.ActionConfiguration.EntryTypes.Add(action);
         }
         #endregion

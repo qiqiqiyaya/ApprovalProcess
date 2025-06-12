@@ -1,5 +1,6 @@
 ﻿using Ap.Core.Builders;
 using Ap.Core.Definitions;
+using Ap.Core.Pipeline;
 using Ap.Core.Services;
 using Ap.Core.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,7 @@ namespace Ap.Core
             services.AddTransient<IFlowService, FlowService>();
             services.AddTransient<IFlowRepository, MemoryFlowRepository>();
             services.AddTransient<IExecutionService, ExecutionService>();
+            services.AddTransient<IPipelineProvider, PipelineProvider>();
         }
     }
 }

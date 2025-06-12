@@ -4,6 +4,7 @@ using Ap.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Ap.Core.Definitions
 {
@@ -116,7 +117,7 @@ namespace Ap.Core.Definitions
             return collection;
         }
 
-        public virtual void ExecuteTrigger(TriggerContext context)
+        public virtual async ValueTask ExecuteTrigger(TriggerContext context)
         {
             context.RootSet = this;
             var state = GetState(CurrentState);
@@ -124,74 +125,73 @@ namespace Ap.Core.Definitions
             switch (state)
             {
                 case IStateSetContainer container:
-                    SetContainerHandle(container, context);
+                    await SetContainerHandle(container, context);
                     break;
                 case IStateSet set:
-                    StateSetHandle(set, context);
+                    await StateSetHandle(set, context);
                     break;
                 default:
-                    ExitAndEntry(state, context);
+                    await ExitAndEntry(state, context);
                     break;
             }
         }
 
-        protected virtual void ExitAndEntry(IState state, TriggerContext context)
+        protected virtual async ValueTask ExitAndEntry(IState state, TriggerContext context)
         {
-            var res = StartStateHandle(state, context);
+            var res = await StartStateHandle(state, context);
 
             var behaviour = res.Transitions[context.StateTrigger.Trigger];
-            ExitAndEntry(res, behaviour, context);
+            await ExitAndEntry(res, behaviour, context);
 
             EndStateHandle();
         }
 
-        protected virtual void ExitAndEntry(IState state, IBehaviour behaviour, TriggerContext context)
+        protected virtual async ValueTask ExitAndEntry(IState state, IBehaviour behaviour, TriggerContext context)
         {
             state.Exit();
             context.CurrentSet = this;
-            behaviour.ExecuteAsync(context);
+            await behaviour.ExecuteAsync(context);
 
             if (IsJumpOut(behaviour.Destination))
             {
                 Reset();
-                return;
             }
 
             var nextState = GetState(CurrentState);
-            nextState.Entry();
+            await nextState.Entry(context.CreateEntryContext());
         }
 
-        protected virtual void StateSetHandle(IStateSet set, TriggerContext context)
+        protected virtual async ValueTask StateSetHandle(IStateSet set, TriggerContext context)
         {
             if (!set.IsEnd)
             {
-                set.ExecuteTrigger(context);
+                await set.ExecuteTrigger(context);
             }
             else
             {
                 // if it ends, jump out
-                ExitAndEntry(set, context);
+                await ExitAndEntry(set, context);
             }
         }
 
-        protected virtual void SetContainerHandle(IStateSetContainer container, TriggerContext context)
+        protected virtual async ValueTask SetContainerHandle(IStateSetContainer container, TriggerContext context)
         {
             if (!container.IsEnd)
             {
-                container.ExecuteTrigger(context);
+                await container.ExecuteTrigger(context);
             }
             else
             {
                 // if it ends, jump out
-                ExitAndEntry(container, context);
+                await ExitAndEntry(container, context);
             }
         }
 
-        protected virtual IState StartStateHandle(IState state, TriggerContext context)
+        protected virtual async ValueTask<IState> StartStateHandle(IState state, TriggerContext context)
         {
             if (state is not StartState startState) return state;
             var behaviour = startState.FindNext();
-            ExitAndEntry(state, behaviour, context);
+            await ExitAndEntry(state, behaviour, context);
             return GetState(CurrentState);
         }
 

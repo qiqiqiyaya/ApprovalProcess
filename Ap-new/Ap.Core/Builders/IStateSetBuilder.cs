@@ -55,13 +55,15 @@ namespace Ap.Core.Builders
         bool IsConfigured(string state);
 
 
-        void ConfigureEntry<TEntryAction>(string name) where TEntryAction : IEntryAction;
+        void ConfigureEntry<TEntryAction>(string stateName) where TEntryAction : IEntryAction;
 
-        void ConfigureEntry(string name, Func<EntryContext, ValueTask> entryAction);
+        void ConfigureEntry(string stateName, Func<EntryContext, ValueTask> entryAction);
 
-        void ConfigureEntry<TEntryAction>(string name, params object[] parameters) where TEntryAction : IEntryAction;
+        void ConfigureEntry(string stateName, Action<EntryContext> entryAction);
 
-        void ConfigureEntry(string name, ApAction action);
+        void ConfigureEntry<TEntryAction>(string stateName, params object[] parameters) where TEntryAction : IEntryAction;
+
+        void ConfigureEntry(string stateName, ApAction action);
 
         void ConfigureExit<TExitAction>(string name) where TExitAction : IExitAction;
 

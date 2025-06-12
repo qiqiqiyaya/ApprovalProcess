@@ -1,12 +1,12 @@
 ﻿using Ap.Core.Behaviours;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ap.Core.Definitions
 {
     public class IfContainer : StateSetContainerBase
     {
-        private readonly StateSetBase _parent;
         private readonly Func<bool> _action;
 
         public const string TrueState = "@true";
@@ -15,17 +15,16 @@ namespace Ap.Core.Definitions
         public IfContainer(string name, StateSetBase parent,
             Func<bool> action, IStateSet @true, IStateSet @false) : base(name, parent)
         {
-            _parent = parent;
             _action = action ?? throw new ArgumentNullException(nameof(action));
 
             StateSets.Add(TrueState, @true ?? throw new ArgumentNullException(nameof(@true)));
             StateSets.Add(FalseState, @false ?? throw new ArgumentNullException(nameof(@false)));
         }
 
-        public override void ExecuteTrigger(TriggerContext context)
+        public override async ValueTask ExecuteTrigger(TriggerContext context)
         {
             IStateSet set = GetStateSet();
-            set.ExecuteTrigger(context);
+            await set.ExecuteTrigger(context);
 
             if (IsEnd)
             {
@@ -37,7 +36,7 @@ namespace Ap.Core.Definitions
                 context.StateTrigger = stateTrigger;
                 context.CurrentSet = Parent;
 
-                _parent.ExecuteTrigger(context);
+                await Parent.ExecuteTrigger(context);
                 set.Reset();
             }
         }
