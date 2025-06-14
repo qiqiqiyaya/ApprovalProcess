@@ -1,4 +1,5 @@
 ﻿using Ap.Core.Behaviours;
+using Ap.Core.Configurations;
 using Ap.Core.Definitions.Actions;
 using Ap.Core.Exceptions;
 using System;
@@ -25,7 +26,7 @@ namespace Ap.Core.Definitions
 
         public Dictionary<string, IBehaviour> Transitions { get; } = new();
 
-        public ActionConfiguration ActionConfiguration { get; } = new();
+        public StateConfiguration StateConfiguration { get; } = new();
 
         public virtual StateTriggerCollection GetTrigger()
         {
@@ -36,7 +37,14 @@ namespace Ap.Core.Definitions
 
         public async ValueTask Entry(EntryContext context)
         {
-            await context.PipelineRunAsync(ActionConfiguration.EntryTypes);
+            var assignApprover = StateConfiguration.AssignApproverServiceType ?? context.RootSetConfiguration.AssignApproverServiceType;
+            if (assignApprover == null)
+            {
+                throw new ApException("There is no AssignApproverServiceType.");
+            }
+
+            var actions = new List<ApAction>(StateConfiguration.EntryTypes) { new(assignApprover) };
+            await context.PipelineRunAsync(actions);
         }
 
         public void Exit()
@@ -65,7 +73,7 @@ namespace Ap.Core.Definitions
 
         public StateDetail ToDetail()
         {
-            return new StateDetail(Id, Name, ToTransition());
+            return new StateDetail(Id, Name);
         }
 
         public override string ToString()

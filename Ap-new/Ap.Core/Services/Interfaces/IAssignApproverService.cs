@@ -3,7 +3,7 @@
 namespace Ap.Core.Services.Interfaces
 {
 
-    public interface IApproverService : IEntryAction
+    public interface IAssignApproverService : IEntryAction
     {
 
     }

@@ -31,10 +31,13 @@ namespace ApTest.FlowTest
             await executionService.InvokeAsync(new ExecutionParameter()
             {
                 FlowId = flow.Id,
-                StateSetId = flow.StateSetId,
                 StateTrigger = trigger,
                 User = user,
             });
+
+
         }
+
+
     }
 }

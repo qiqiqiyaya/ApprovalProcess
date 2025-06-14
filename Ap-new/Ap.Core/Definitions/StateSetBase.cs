@@ -1,15 +1,17 @@
 ﻿using Ap.Core.Behaviours;
+using Ap.Core.Configurations;
 using Ap.Core.Definitions.States;
 using Ap.Core.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Definitions
 {
     public abstract class StateSetBase : StateBase, IStateSet
     {
+        public const string StateSetBaseNamePrefix = "StateSetBase_";
+
         public string InitialState { get; }
 
         public string CurrentState { get; set; }
@@ -18,7 +20,7 @@ namespace Ap.Core.Definitions
 
         public virtual IState CurrentStateNode => GetState(CurrentState);
 
-        public Dictionary<string, IState> StateConfiguration { get; } = new();
+        public Dictionary<string, IState> StateDictionary { get; } = new();
 
         public StateLinkedList LinkedList { get; }
 
@@ -26,30 +28,7 @@ namespace Ap.Core.Definitions
 
         public virtual bool IsEnd => GetState(CurrentState) is EndState;
 
-        public const string StateSetBaseNamePrefix = "StateSetBase_";
-
-        //public IState GetStartNode
-        //{
-        //    get
-        //    {
-        //        if (IsInitial) return LinkedList.First.Value;
-        //        if (IsEnd) return LinkedList.Last.Value;
-        //        var node = GetState(CurrentState);
-
-        //        switch (node)
-        //        {
-        //            case IStateSetContainer container:
-        //                SetContainerHandle(container, trigger);
-        //                break;
-        //            case IStateSet set:
-        //                StateSetHandle(set, trigger);
-        //                break;
-        //            default:
-        //                ExitAndEntry(state, trigger);
-        //                break;
-        //        }
-        //    }
-        //}
+        public virtual StateSetConfiguration StateSetConfiguration { get; } = new();
 
         protected StateSetBase(IState state, StateLinkedList rootLinkedList)
             : this(state, rootLinkedList, Guid.NewGuid().ToString("N"))
@@ -62,22 +41,22 @@ namespace Ap.Core.Definitions
         {
             Id = id;
 
-            StateConfiguration.Add(state.Name, state);
+            StateDictionary.Add(state.Name, state);
             InitialState = state.Name;
             CurrentState = state.Name;
 
-            LinkedList = new(StateConfiguration.Values);
+            LinkedList = new(StateDictionary.Values);
             RootLinkedList = rootLinkedList;
         }
 
-        public void Configure(IState state)
+        public void AddState(IState state)
         {
-            if (StateConfiguration.ContainsKey(state.Name))
+            if (StateDictionary.ContainsKey(state.Name))
             {
                 throw new ApAlreadyExistsException<StateSetDetail>($"State {state.Name} already exists in the state set.", CreateStateSetDetail());
             }
 
-            StateConfiguration.Add(state.Name, state);
+            StateDictionary.Add(state.Name, state);
             LinkedList.AddLast(state);
         }
 
@@ -88,7 +67,7 @@ namespace Ap.Core.Definitions
 
         public IState GetState(string state)
         {
-            if (StateConfiguration.TryGetValue(state, out var result))
+            if (StateDictionary.TryGetValue(state, out var result))
             {
                 return result;
             }
@@ -120,6 +99,7 @@ namespace Ap.Core.Definitions
         public virtual async ValueTask ExecuteTrigger(TriggerContext context)
         {
             context.RootSet = this;
+            context.RootSetConfiguration = StateSetConfiguration;
             var state = GetState(CurrentState);
 
             switch (state)
@@ -224,7 +204,7 @@ namespace Ap.Core.Definitions
                 Name = Name,
                 InitialState = InitialState,
                 CurrentState = CurrentState,
-                StateConfiguration = new Dictionary<string, IState>(StateConfiguration),
+                StateConfiguration = new Dictionary<string, IState>(StateDictionary),
                 LinkedList = LinkedList,
                 RootLinkedList = RootLinkedList
             };

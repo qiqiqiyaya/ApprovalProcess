@@ -15,10 +15,9 @@ namespace Ap.Core
             var options = new ApCoreOptions();
             action(options);
 
-            foreach (var apCoreOption in options.ApproverConfigurations)
+            foreach (var apCoreOption in options.PreBuilders)
             {
-                services.AddTransient(apCoreOption.ApproverServiceType);
-                services.AddTransient(apCoreOption.PerBiulderType);
+                services.AddTransient(apCoreOption);
             }
 
             services.AddSingleton(options);

@@ -1,7 +1,5 @@
 ﻿using Ap.Core;
 using Ap.Core.Builders;
-using Ap.Core.Services;
-using Ap.Core.Services.Interfaces;
 using ApTest.FlowTest;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,27 +14,11 @@ namespace ApTest
             var service = new ServiceCollection();
             service.AddApCore(options =>
             {
-                options.AddApproverConfig<FlowPreBuilder, FlowApproverService>();
+                options.AddFlow<FlowPreBuilder>();
             });
             _provider = service.BuildServiceProvider();
-            Configure();
-        }
-
-        private void Configure()
-        {
-            var options = GetService<ApCoreOptions>();
-            var builderProvider = GetService<IStateSetBuilderProvider>();
-            var approverConfigService = GetService<IStateSetService>();
-
-            // 预构建
-            foreach (var configuration in options.ApproverConfigurations)
-            {
-                var preBuilder = (IPreBuilder)_provider.GetRequiredService(configuration.PerBiulderType);
-                var stateSetBuilder = preBuilder.Build(builderProvider);
-
-                var stateSet = stateSetBuilder.Build();
-                approverConfigService.Add(new StateSetConfig(configuration, stateSet));
-            }
+            var config = new ApCoreConfigure(_provider);
+            config.Configure();
         }
 
         protected IStateSetBuilderProvider StateSetBuilderProvider => GetService<IStateSetBuilderProvider>();

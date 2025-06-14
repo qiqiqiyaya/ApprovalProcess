@@ -10,6 +10,7 @@ namespace ApTest.FlowTest
         {
             var builder = builderProvider.Create("edit");
 
+            builder.Id = "1";
             builder.Then("FirstApprove")
                 .Then("SecondApprove")
                 .Then("ThirdApprove");
@@ -25,6 +26,9 @@ namespace ApTest.FlowTest
             {
 
             });
+
+            builder.AssignApproverService<FlowAssignApproverService>();
+            //builder.AssignApproverService<FlowAssignApproverService>("edit");
 
             return builder;
         }

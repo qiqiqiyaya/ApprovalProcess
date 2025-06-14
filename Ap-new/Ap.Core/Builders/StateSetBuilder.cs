@@ -3,12 +3,13 @@ using Ap.Core.Definitions;
 using Ap.Core.Definitions.Actions;
 using Ap.Core.Definitions.States;
 using Ap.Core.Exceptions;
+using Ap.Core.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Ap.Core.Builders
 {
@@ -208,7 +209,7 @@ namespace Ap.Core.Builders
 
         public void Complete()
         {
-            var last = StateLinked.OriginLast;
+            var last = StateLinked.OriginLast.Value;
             if (last is EndState) return;
 
             var result = new EndState(Id);
@@ -330,6 +331,46 @@ namespace Ap.Core.Builders
         }
 
 
+        #region AssignApprover Service
+        /// <summary>
+        /// for all
+        /// </summary>
+        /// <typeparam name="TAssignApproverService"></typeparam>
+        public void AssignApproverService<TAssignApproverService>()
+            where TAssignApproverService : IAssignApproverService
+        {
+            var type = typeof(TAssignApproverService);
+            CheckAssignApproverService(type);
+
+            _sm.StateSetConfiguration.AssignApproverServiceType = typeof(TAssignApproverService);
+        }
+
+        /// <summary>
+        /// just for specify state
+        /// </summary>
+        /// <typeparam name="TAssignApproverService"></typeparam>
+        /// <param name="stateName"></param>
+        public void AssignApproverService<TAssignApproverService>(string stateName)
+            where TAssignApproverService : IAssignApproverService
+        {
+            var type = typeof(TAssignApproverService);
+            CheckAssignApproverService(type);
+
+            var state = RootStateLinked.Get(stateName);
+            state.StateConfiguration.AssignApproverServiceType = type;
+        }
+
+        private void CheckAssignApproverService(Type assignApproverService)
+        {
+            var actionType = typeof(IAssignApproverService);
+            if (assignApproverService.GetInterfaces().All(type => type != actionType))
+            {
+                throw new Exception("the action.Type is not subclass of IAssignApproverService");
+            }
+        }
+
+        #endregion
+
         #region Entry
         public void ConfigureEntry<TEntryAction>(string stateName)
             where TEntryAction : IEntryAction
@@ -366,7 +407,7 @@ namespace Ap.Core.Builders
             }
 
             var state = RootStateLinked.Get(stateName);
-            state.ActionConfiguration.EntryTypes.Add(action);
+            state.StateConfiguration.EntryTypes.Add(action);
         }
         #endregion
 
@@ -375,14 +416,14 @@ namespace Ap.Core.Builders
             where TExitAction : IExitAction
         {
             var state = RootStateLinked.Get(name);
-            state.ActionConfiguration.ExitTypes.Add(new ApAction(typeof(TExitAction)));
+            state.StateConfiguration.ExitTypes.Add(new ApAction(typeof(TExitAction)));
         }
 
         public void ConfigureExit<TExitAction>(string name, params object[] parameters)
             where TExitAction : IExitAction
         {
             var state = RootStateLinked.Get(name);
-            state.ActionConfiguration.ExitTypes.Add(new ApAction(typeof(TExitAction), parameters));
+            state.StateConfiguration.ExitTypes.Add(new ApAction(typeof(TExitAction), parameters));
         }
 
         public void ConfigureExit(string name, ApAction action)
@@ -393,7 +434,7 @@ namespace Ap.Core.Builders
             }
 
             var state = RootStateLinked.Get(name);
-            state.ActionConfiguration.ExitTypes.Add(action);
+            state.StateConfiguration.ExitTypes.Add(action);
         }
         #endregion
 
@@ -409,7 +450,7 @@ namespace Ap.Core.Builders
 
             foreach (var node in StateLinked.Skip(1))
             {
-                _sm.Configure(node);
+                _sm.AddState(node);
             }
 
             _sm.Name = Name;

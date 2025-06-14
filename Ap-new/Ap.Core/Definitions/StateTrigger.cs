@@ -9,10 +9,6 @@ namespace Ap.Core.Definitions
 
         public string Trigger { get; set; } = trigger;
 
-        public string StateId => StateDetail.Id;
-
-        public string StateName => StateDetail.Name;
-
         public StateDetail StateDetail { get; set; } = stateDetail;
     }
 }

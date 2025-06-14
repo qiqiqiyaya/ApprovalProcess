@@ -18,7 +18,7 @@ namespace Ap.Core.Definitions
 
         public StateTrigger? Get(string stateName)
         {
-            return this.FirstOrDefault(x => x.StateName == stateName);
+            return this.FirstOrDefault(x => x.StateDetail.Name == stateName);
         }
     }
 }

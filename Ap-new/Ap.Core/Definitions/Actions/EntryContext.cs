@@ -1,27 +1,14 @@
 ﻿using Ap.Core.Definitions.Actions;
 using Ap.Core.Pipeline;
-using Ap.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Definitions;
 
-public class EntryContext(IServiceProvider serviceProvider,
-    StateSetBase rootSet,
-    StateSetBase currentSet,
-    StateTrigger stateTrigger)
+public class EntryContext : BaseContext
 {
-    public IServiceProvider ServiceProvider { get; set; } = serviceProvider;
-
-    public Dictionary<string, object> Properties { get; set; } = new();
-
-    public StateSetBase RootSet { get; internal set; } = rootSet;
-
-    public StateSetBase CurrentSet { get; internal set; } = currentSet;
-
-    public StateTrigger StateTrigger { get; internal set; } = stateTrigger;
+    internal EntryContext() { }
 
     public List<string> NextApproverList { get; set; } = new();
 

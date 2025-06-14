@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ap.Core.Behaviours;
-using Ap.Core.Definitions.Actions;
+using Ap.Core.Configurations;
 
 namespace Ap.Core.Definitions
 {
@@ -14,7 +14,7 @@ namespace Ap.Core.Definitions
         /// </summary>
         Dictionary<string, IBehaviour> Transitions { get; }
 
-        ActionConfiguration ActionConfiguration { get; }
+        StateConfiguration StateConfiguration { get; }
 
         void AddTransition(IBehaviour behaviour);
 

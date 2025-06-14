@@ -21,7 +21,7 @@ namespace Ap.Core.Definitions
         /// <summary>
         /// Dictionary
         /// </summary>
-        Dictionary<string, IState> StateConfiguration { get; }
+        Dictionary<string, IState> StateDictionary { get; }
 
         StateLinkedList LinkedList { get; }
 
@@ -29,7 +29,7 @@ namespace Ap.Core.Definitions
 
         bool IsEnd { get; }
 
-        void Configure(IState state);
+        void AddState(IState state);
 
         void Recover(string stateName);
 

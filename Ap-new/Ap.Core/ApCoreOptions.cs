@@ -1,23 +1,17 @@
 ﻿using Ap.Core.Builders;
-using Ap.Core.Configurations;
-using Ap.Core.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace Ap.Core
 {
     public class ApCoreOptions
     {
-        public List<ApproverConfiguration> ApproverConfigurations = new List<ApproverConfiguration>();
+        internal List<Type> PreBuilders = new();
 
-        public void AddApproverConfig<TPreBuilder, TApproverService>()
-            where TPreBuilder : IPreBuilder, new()
-            where TApproverService : IApproverService
+        public void AddFlow<TPreBuilder>()
+            where TPreBuilder : IPreBuilder
         {
-            ApproverConfigurations.Add(new ApproverConfiguration()
-            {
-                ApproverServiceType = typeof(TApproverService),
-                PerBiulderType = typeof(TPreBuilder)
-            });
+            PreBuilders.Add(typeof(TPreBuilder));
         }
     }
 }

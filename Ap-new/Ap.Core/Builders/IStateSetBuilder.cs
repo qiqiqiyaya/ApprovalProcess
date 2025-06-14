@@ -1,5 +1,6 @@
 ﻿using Ap.Core.Definitions;
 using Ap.Core.Definitions.Actions;
+using Ap.Core.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace Ap.Core.Builders
         /// </summary>
         public string Name { get; set; }
 
-        string Id { get; }
+        string Id { get; set; }
 
         StateLinkedList StateLinked { get; }
 
@@ -54,6 +55,11 @@ namespace Ap.Core.Builders
         /// <returns></returns>
         bool IsConfigured(string state);
 
+        public void AssignApproverService<TAssignApproverService>()
+            where TAssignApproverService : IAssignApproverService;
+
+        public void AssignApproverService<TAssignApproverService>(string stateName)
+            where TAssignApproverService : IAssignApproverService;
 
         void ConfigureEntry<TEntryAction>(string stateName) where TEntryAction : IEntryAction;
 

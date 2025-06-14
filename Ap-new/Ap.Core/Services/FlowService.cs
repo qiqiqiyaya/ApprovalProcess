@@ -1,7 +1,6 @@
 ﻿using Ap.Core.Definitions;
 using Ap.Core.Services.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Services
@@ -12,7 +11,9 @@ namespace Ap.Core.Services
         private readonly IServiceProvider _provider;
         private readonly IFlowRepository _flowRepository;
 
-        public FlowService(IStateSetService stateSetService, IServiceProvider provider, IFlowRepository flowRepository)
+        public FlowService(IStateSetService stateSetService,
+            IServiceProvider provider,
+            IFlowRepository flowRepository)
         {
             _configService = stateSetService;
             _provider = provider;

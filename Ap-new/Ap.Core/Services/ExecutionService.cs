@@ -26,7 +26,7 @@ namespace Ap.Core.Services
             var flow = await _flowService.GetAsync(parameter.FlowId);
 
             // 状态机
-            var set = await _stateSetService.GetByIdAsync(parameter.StateSetId);
+            var set = await _stateSetService.GetByIdAsync(flow.StateSetId);
 
             // 恢复状态机状态
             set.Recover(flow.StateName);
