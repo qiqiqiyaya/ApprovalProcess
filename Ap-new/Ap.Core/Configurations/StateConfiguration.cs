@@ -1,6 +1,5 @@
 ﻿using Ap.Core.Definitions.Actions;
-using Ap.Core.Services.Interfaces;
-using System;
+using Ap.Core.Services;
 using System.Collections.Generic;
 
 namespace Ap.Core.Configurations
@@ -12,9 +11,9 @@ namespace Ap.Core.Configurations
         public List<ApAction> ExitTypes { get; } = new();
 
         /// <summary>
-        /// 获取下级审批人服务
-        /// <see cref="IAssignApproverService"/>
+        /// Obtain services from subordinate approvers
+        /// <see cref="AssignApproverService"/>
         /// </summary>
-        public Type? AssignApproverServiceType { get; internal set; }
+        public ApAction? AssignApprover { get; internal set; }
     }
 }

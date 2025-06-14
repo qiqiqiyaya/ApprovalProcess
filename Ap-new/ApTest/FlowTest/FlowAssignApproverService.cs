@@ -1,21 +1,21 @@
 ﻿using Ap.Core.Definitions;
-using Ap.Core.Services.Interfaces;
+using Ap.Core.Services;
 
 namespace ApTest.FlowTest
 {
-    public class FlowAssignApproverService : IAssignApproverService
+    public class FlowAssignApproverService : AssignApproverService
     {
-        public ValueTask InvokeAsync(EntryContext context, Func<EntryContext, ValueTask> next)
+        public override ValueTask<List<string>> InvokeAsync(EntryContext context)
         {
-            return next(context);
+            return new ValueTask<List<string>>(new List<string>());
         }
     }
 
-    public class FlowAssignApproverService111 : IAssignApproverService
+    public class FlowAssignApproverService111 : AssignApproverService
     {
-        public ValueTask InvokeAsync(EntryContext context, Func<EntryContext, ValueTask> next)
+        public override ValueTask<List<string>> InvokeAsync(EntryContext context)
         {
-            return next(context);
+            return new ValueTask<List<string>>(new List<string>());
         }
     }
 }

@@ -35,19 +35,17 @@ namespace Ap.Core.Definitions
             return new StateTriggerCollection(triggers);
         }
 
-        public async ValueTask Entry(EntryContext context)
+        public virtual async ValueTask Entry(EntryContext context)
         {
-            var assignApprover = StateConfiguration.AssignApproverServiceType ?? context.RootSetConfiguration.AssignApproverServiceType;
-            if (assignApprover == null)
-            {
-                throw new ApException("There is no AssignApproverServiceType.");
-            }
+            List<ApAction> actions = [.. StateConfiguration.EntryTypes];
 
-            var actions = new List<ApAction>(StateConfiguration.EntryTypes) { new(assignApprover) };
-            await context.PipelineRunAsync(actions);
+            var assignApprover = StateConfiguration.AssignApprover ?? context.RootSetConfiguration.AssignApprover;
+            if (assignApprover != null) actions.Add(assignApprover);
+
+            await context.ActionRunAsync(actions);
         }
 
-        public void Exit()
+        public virtual void Exit()
         {
 
         }

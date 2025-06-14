@@ -3,7 +3,7 @@ using Ap.Core.Definitions;
 using Ap.Core.Definitions.Actions;
 using Ap.Core.Definitions.States;
 using Ap.Core.Exceptions;
-using Ap.Core.Services.Interfaces;
+using Ap.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -337,12 +337,16 @@ namespace Ap.Core.Builders
         /// </summary>
         /// <typeparam name="TAssignApproverService"></typeparam>
         public void AssignApproverService<TAssignApproverService>()
-            where TAssignApproverService : IAssignApproverService
+            where TAssignApproverService : AssignApproverService
         {
             var type = typeof(TAssignApproverService);
             CheckAssignApproverService(type);
+            _sm.StateSetConfiguration.AssignApprover = new ApAction(typeof(TAssignApproverService));
+        }
 
-            _sm.StateSetConfiguration.AssignApproverServiceType = typeof(TAssignApproverService);
+        public void AssignApproverService(Func<EntryContext, ValueTask<List<string>>> assignAction)
+        {
+            _sm.StateSetConfiguration.AssignApprover = new ApAction(typeof(SimpleAssignApproverService), assignAction);
         }
 
         /// <summary>
@@ -351,19 +355,25 @@ namespace Ap.Core.Builders
         /// <typeparam name="TAssignApproverService"></typeparam>
         /// <param name="stateName"></param>
         public void AssignApproverService<TAssignApproverService>(string stateName)
-            where TAssignApproverService : IAssignApproverService
+            where TAssignApproverService : AssignApproverService
         {
             var type = typeof(TAssignApproverService);
             CheckAssignApproverService(type);
 
             var state = RootStateLinked.Get(stateName);
-            state.StateConfiguration.AssignApproverServiceType = type;
+            state.StateConfiguration.AssignApprover = new ApAction(type);
+        }
+
+        public void AssignApproverService(string stateName, Func<EntryContext, ValueTask<List<string>>> assignAction)
+        {
+            var state = RootStateLinked.Get(stateName);
+            state.StateConfiguration.AssignApprover = new ApAction(typeof(SimpleAssignApproverService), assignAction);
         }
 
         private void CheckAssignApproverService(Type assignApproverService)
         {
-            var actionType = typeof(IAssignApproverService);
-            if (assignApproverService.GetInterfaces().All(type => type != actionType))
+            var actionType = typeof(AssignApproverService);
+            if (!assignApproverService.IsSubclassOf(actionType))
             {
                 throw new Exception("the action.Type is not subclass of IAssignApproverService");
             }

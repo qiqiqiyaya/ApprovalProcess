@@ -27,8 +27,18 @@ namespace ApTest.FlowTest
 
             });
 
-            builder.AssignApproverService<FlowAssignApproverService>();
-            //builder.AssignApproverService<FlowAssignApproverService>("edit");
+            builder.AssignApproverService("FirstApprove", context =>
+            {
+                return new ValueTask<List<string>>(new List<string>() { "11" });
+            });
+            builder.AssignApproverService("SecondApprove", context =>
+            {
+                return new ValueTask<List<string>>(new List<string>() { "22" });
+            });
+            builder.AssignApproverService("ThirdApprove", context =>
+            {
+                return new ValueTask<List<string>>(new List<string>() { "33" });
+            });
 
             return builder;
         }

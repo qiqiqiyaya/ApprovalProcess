@@ -34,10 +34,6 @@ namespace ApTest.FlowTest
                 StateTrigger = trigger,
                 User = user,
             });
-
-
         }
-
-
     }
 }

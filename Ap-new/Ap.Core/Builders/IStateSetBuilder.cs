@@ -1,7 +1,8 @@
 ﻿using Ap.Core.Definitions;
 using Ap.Core.Definitions.Actions;
-using Ap.Core.Services.Interfaces;
+using Ap.Core.Services;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Builders
@@ -55,11 +56,14 @@ namespace Ap.Core.Builders
         /// <returns></returns>
         bool IsConfigured(string state);
 
-        public void AssignApproverService<TAssignApproverService>()
-            where TAssignApproverService : IAssignApproverService;
+        void AssignApproverService<TAssignApproverService>()
+           where TAssignApproverService : AssignApproverService;
+        void AssignApproverService(Func<EntryContext, ValueTask<List<string>>> assignAction);
 
-        public void AssignApproverService<TAssignApproverService>(string stateName)
-            where TAssignApproverService : IAssignApproverService;
+        void AssignApproverService<TAssignApproverService>(string stateName)
+           where TAssignApproverService : AssignApproverService;
+
+        void AssignApproverService(string stateName, Func<EntryContext, ValueTask<List<string>>> assignAction);
 
         void ConfigureEntry<TEntryAction>(string stateName) where TEntryAction : IEntryAction;
 
