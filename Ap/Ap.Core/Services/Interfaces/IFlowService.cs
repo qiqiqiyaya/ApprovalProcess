@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Ap.Core.Definitions;
+﻿using Ap.Core.Definitions;
+using Ap.Core.Services.Models;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Services.Interfaces

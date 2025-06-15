@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Ap.Core.Services.Models;
+using System.Threading.Tasks;
 
 namespace Ap.Core.Services.Interfaces
 {

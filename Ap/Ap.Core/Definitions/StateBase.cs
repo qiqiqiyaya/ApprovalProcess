@@ -45,7 +45,7 @@ namespace Ap.Core.Definitions
             await context.ActionRunAsync(actions);
         }
 
-        public virtual void Exit()
+        public virtual void Exit(ExitContext context)
         {
 
         }

@@ -9,7 +9,7 @@ public class EntryContext : BaseContext
 {
     internal EntryContext() { }
 
-    public List<string> NextApproverList { get; internal set; } = new();
+    public List<string> NextApproverList { get; } = new();
 
     public async ValueTask ActionRunAsync(List<ApAction> actions)
     {

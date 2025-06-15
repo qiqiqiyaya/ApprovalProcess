@@ -31,7 +31,7 @@ namespace Ap.Core.Services
             // 恢复状态机状态
             set.Recover(flow.StateName);
 
-            var context = new TriggerContext(parameter.StateTrigger, _serviceProvider);
+            var context = new TriggerContext(_serviceProvider, parameter.StateTrigger, flow);
             // 触发
             await set.ExecuteTrigger(context);
         }

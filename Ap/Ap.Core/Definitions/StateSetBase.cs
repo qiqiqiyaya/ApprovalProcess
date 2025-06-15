@@ -128,8 +128,10 @@ namespace Ap.Core.Definitions
 
         protected virtual async ValueTask ExitAndEntry(IState state, IBehaviour behaviour, TriggerContext context)
         {
-            state.Exit();
             context.CurrentSet = this;
+            context.State = state;
+
+            state.Exit(context.CreateExitContext());
             await behaviour.ExecuteAsync(context);
 
             if (IsJumpOut(behaviour.Destination))
@@ -138,6 +140,7 @@ namespace Ap.Core.Definitions
             }
 
             var nextState = GetState(CurrentState);
+            context.State = nextState;
             await nextState.Entry(context.CreateEntryContext());
         }
 
@@ -171,7 +174,7 @@ namespace Ap.Core.Definitions
         {
             if (state is not StartState startState) return state;
             context.CurrentSet = this;
-            await startState.Entry(context.CreateEntryContext());
+            await startState.Entry(context.CreateExitContext());
 
             var behaviour = startState.GetBehaviour();
             await ExitAndEntry(state, behaviour, context);

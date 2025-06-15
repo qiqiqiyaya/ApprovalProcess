@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Ap.Core.Services
+namespace Ap.Core.Services.Models
 {
     public class Flow
     {
@@ -16,16 +16,5 @@ namespace Ap.Core.Services
         public DateTime CreateTime { get; set; }
 
         public virtual List<NextApprover> Approvers { get; set; }
-    }
-
-    public class NextApprover
-    {
-        public string Id { get; set; }
-
-        public string FlowId { get; set; }
-
-        public string ObjectId { get; set; }
-
-        public DateTime CreateTime { get; set; }
     }
 }
