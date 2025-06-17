@@ -1,15 +1,14 @@
-﻿using Ap.Core.Behaviours;
+﻿using Ap.Core.Actions;
+using Ap.Core.Behaviours;
 using Ap.Core.Definitions;
 using Ap.Core.Definitions.Actions;
 using Ap.Core.Definitions.States;
 using Ap.Core.Exceptions;
-using Ap.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
 
 namespace Ap.Core.Builders
 {
@@ -336,17 +335,17 @@ namespace Ap.Core.Builders
         /// for all
         /// </summary>
         /// <typeparam name="TAssignApproverService"></typeparam>
-        public void AssignApproverService<TAssignApproverService>()
-            where TAssignApproverService : AssignApproverService
+        public void AssignApprover<TAssignApproverService>()
+            where TAssignApproverService : AssignApprover
         {
             var type = typeof(TAssignApproverService);
             CheckAssignApproverService(type);
             _sm.StateSetConfiguration.AssignApprover = new ApAction(typeof(TAssignApproverService));
         }
 
-        public void AssignApproverService(Func<EntryContext, ValueTask<List<string>>> assignAction)
+        public void AssignApprover(Func<EntryContext, ValueTask<List<string>>> assignAction)
         {
-            _sm.StateSetConfiguration.AssignApprover = new ApAction(typeof(SimpleAssignApproverService), assignAction);
+            _sm.StateSetConfiguration.AssignApprover = new ApAction(typeof(SimpleAssignApprover), assignAction);
         }
 
         /// <summary>
@@ -354,8 +353,8 @@ namespace Ap.Core.Builders
         /// </summary>
         /// <typeparam name="TAssignApproverService"></typeparam>
         /// <param name="stateName"></param>
-        public void AssignApproverService<TAssignApproverService>(string stateName)
-            where TAssignApproverService : AssignApproverService
+        public void AssignApprover<TAssignApproverService>(string stateName)
+            where TAssignApproverService : AssignApprover
         {
             var type = typeof(TAssignApproverService);
             CheckAssignApproverService(type);
@@ -364,15 +363,15 @@ namespace Ap.Core.Builders
             state.StateConfiguration.AssignApprover = new ApAction(type);
         }
 
-        public void AssignApproverService(string stateName, Func<EntryContext, ValueTask<List<string>>> assignAction)
+        public void AssignApprover(string stateName, Func<EntryContext, ValueTask<List<string>>> assignAction)
         {
             var state = RootStateLinked.Get(stateName);
-            state.StateConfiguration.AssignApprover = new ApAction(typeof(SimpleAssignApproverService), assignAction);
+            state.StateConfiguration.AssignApprover = new ApAction(typeof(SimpleAssignApprover), assignAction);
         }
 
         private void CheckAssignApproverService(Type assignApproverService)
         {
-            var actionType = typeof(AssignApproverService);
+            var actionType = typeof(AssignApprover);
             if (!assignApproverService.IsSubclassOf(actionType))
             {
                 throw new Exception("the action.Type is not subclass of IAssignApproverService");
@@ -382,33 +381,33 @@ namespace Ap.Core.Builders
         #endregion
 
         #region Entry
-        public void ConfigureEntry<TEntryAction>(string stateName)
+        public void EntryAction<TEntryAction>(string stateName)
             where TEntryAction : IEntryAction
         {
-            ConfigureEntry(stateName, new ApAction(typeof(TEntryAction)));
+            EntryAction(stateName, new ApAction(typeof(TEntryAction)));
         }
 
-        public void ConfigureEntry(string stateName, Func<EntryContext, ValueTask> entryAction)
+        public void EntryAction(string stateName, Func<EntryContext, ValueTask> entryAction)
         {
-            ConfigureEntry(stateName, new ApAction(typeof(GeneralEntryAction), entryAction));
+            EntryAction(stateName, new ApAction(typeof(GeneralEntryAction), entryAction));
         }
 
-        public void ConfigureEntry(string stateName, Action<EntryContext> entryAction)
+        public void EntryAction(string stateName, Action<EntryContext> entryAction)
         {
-            ConfigureEntry(stateName, context =>
+            EntryAction(stateName, context =>
             {
                 entryAction(context);
                 return new ValueTask();
             });
         }
 
-        public void ConfigureEntry<TEntryAction>(string stateName, params object[] parameters)
+        public void EntryAction<TEntryAction>(string stateName, params object[] parameters)
             where TEntryAction : IEntryAction
         {
-            ConfigureEntry(stateName, new ApAction(typeof(TEntryAction), parameters));
+            EntryAction(stateName, new ApAction(typeof(TEntryAction), parameters));
         }
 
-        public void ConfigureEntry(string stateName, ApAction action)
+        public void EntryAction(string stateName, ApAction action)
         {
             var actionType = typeof(IEntryAction);
             if (action.Type.GetInterfaces().All(type => type != actionType))
@@ -422,21 +421,21 @@ namespace Ap.Core.Builders
         #endregion
 
         #region Exit
-        public void ConfigureExit<TExitAction>(string name)
+        public void ExitAction<TExitAction>(string name)
             where TExitAction : IExitAction
         {
             var state = RootStateLinked.Get(name);
             state.StateConfiguration.ExitTypes.Add(new ApAction(typeof(TExitAction)));
         }
 
-        public void ConfigureExit<TExitAction>(string name, params object[] parameters)
+        public void ExitAction<TExitAction>(string name, params object[] parameters)
             where TExitAction : IExitAction
         {
             var state = RootStateLinked.Get(name);
             state.StateConfiguration.ExitTypes.Add(new ApAction(typeof(TExitAction), parameters));
         }
 
-        public void ConfigureExit(string name, ApAction action)
+        public void ExitAction(string name, ApAction action)
         {
             if (!action.Type.IsSubclassOf(typeof(IExitAction)))
             {
@@ -455,6 +454,7 @@ namespace Ap.Core.Builders
                 throw new ArgumentNullException($"State set is empty");
             }
 
+            InternalCommonActions();
             Complete();
             JumpAction.ForEach(s => s());
 
@@ -465,6 +465,15 @@ namespace Ap.Core.Builders
 
             _sm.Name = Name;
             return _sm;
+        }
+
+        private void InternalCommonActions()
+        {
+            _sm.StateSetConfiguration.CommonEntryTypes.Add(new ApAction(typeof(ExceptionHandler)));
+            _sm.StateSetConfiguration.CommonEntryTypes.Add(new ApAction(typeof(ModifyExecutionFlow)));
+
+            _sm.StateSetConfiguration.CommonExitTypes.Add(new ApAction(typeof(ExceptionHandler)));
+            _sm.StateSetConfiguration.CommonExitTypes.Add(new ApAction(typeof(TriggerFlowRecord)));
         }
 
         /// <summary>

@@ -24,4 +24,9 @@ public class StartState(string builderId) : StateBase(StartStateName + builderId
     {
         return new ValueTask();
     }
+
+    public override ValueTask Exit(ExitContext context)
+    {
+        return new ValueTask();
+    }
 }

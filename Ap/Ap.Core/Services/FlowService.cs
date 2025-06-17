@@ -1,76 +1,77 @@
 ﻿using Ap.Core.Definitions;
+using Ap.Core.Models;
 using Ap.Core.Services.Interfaces;
-using Ap.Core.Services.Models;
 using System;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Services
 {
-	public class FlowService : IFlowService
-	{
-		private readonly IStateSetService _configService;
-		private readonly IServiceProvider _provider;
-		private readonly IFlowRepository _flowRepository;
+    public class FlowService : IFlowService
+    {
+        private readonly IStateSetService _stateSetService;
+        private readonly IExecutionFlowRepository _executionFlowRepository;
+        private readonly IFlowRecordRepository _flowRecordRepository;
 
-		public FlowService(IStateSetService stateSetService,
-			IServiceProvider provider,
-			IFlowRepository flowRepository)
-		{
-			_configService = stateSetService;
-			_provider = provider;
-			_flowRepository = flowRepository;
-		}
+        public FlowService(IStateSetService stateSetService,
+            IExecutionFlowRepository executionFlowRepository,
+            IFlowRecordRepository flowRecordRepository)
+        {
+            _stateSetService = stateSetService;
+            _executionFlowRepository = executionFlowRepository;
+            _flowRecordRepository = flowRecordRepository;
+        }
 
-		public async ValueTask<Flow> GetAsync(string id)
-		{
-			var flow = await _flowRepository.GetAsync(id);
-			return flow;
-		}
+        public async ValueTask<Flow> GetAsync(string id)
+        {
+            var flow = await _executionFlowRepository.GetAsync(id);
+            return flow;
+        }
 
-		public async ValueTask<Flow> CreateAsync(IUser user, IStateSet set)
-		{
-			var flow = new Flow
-			{
-				Id = Guid.NewGuid().ToString("N"),
-				UserId = user.Id,
-				StateSetId = set.Id,
-				StateName = set.InitialState,
-				CreateTime = DateTime.Now
-			};
+        public async ValueTask<Flow> CreateAsync(IUser user, string rootStateSetId)
+        {
+            var set = await _stateSetService.GetByIdAsync(rootStateSetId);
+            return await CreateAsync(user, set);
+        }
 
-			//var configuration = await _configService.GetAsync(model.StateSet.Id);
-			//var approverService = (_provider.GetRequiredService(configuration.ServiceType) as IApproverService)!;
+        public async ValueTask<Flow> CreateAsync(IUser user, IStateSet set)
+        {
+            var flow = new ExecutionFlow()
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                RootStateSetId = set.Id,
+                CurrentStateSetId = set.Id,
+                StateName = set.CurrentState,
+                StateId = set.Id,
+                ExecutorId = user.Id,
+                CreateTime = DateTime.Now
+            };
 
-			//var approverList = await approverService.GetListAsync();
-			//flow.Approvers = approverList.Select(s => new NextApprover()
-			//{
-			//    CreateTime = DateTime.Now,
-			//    FlowId = flow.Id,
-			//    Id = Guid.NewGuid().ToString("N"),
-			//    ObjectId = s
-			//}).ToList();
+            await _executionFlowRepository.CreateAsync(flow);
+            return flow;
+        }
 
-			await _flowRepository.CreateAsync(flow);
-			return flow;
-		}
+        public async ValueTask UpdateAsync(ExecutionFlow flow)
+        {
+            await _executionFlowRepository.UpdateAsync(flow);
+        }
 
-		public async ValueTask UpdateAsync(Flow flow)
-		{
+        public async ValueTask AddRecordAsync(FlowRecord record)
+        {
+            await _flowRecordRepository.InsertAsync(record);
+        }
 
-		}
+        public async ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow)
+        {
+            var set = await _stateSetService.GetByIdAsync(flow.RootStateSetId);
+            set.Recover(flow.StateName);
 
-		public async ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow)
-		{
-			var set = await _configService.GetByIdAsync(flow.StateSetId);
-			set.Recover(flow.StateName);
+            return set.GetTrigger();
+        }
 
-			return set.GetTrigger();
-		}
-
-		public async ValueTask<StateTriggerCollection> GetActionsAsync(string id)
-		{
-			var flow = await _flowRepository.GetAsync(id);
-			return await GetTriggerAsync(flow);
-		}
-	}
+        public async ValueTask<StateTriggerCollection> GetActionsAsync(string id)
+        {
+            var flow = await _executionFlowRepository.GetAsync(id);
+            return await GetTriggerAsync(flow);
+        }
+    }
 }

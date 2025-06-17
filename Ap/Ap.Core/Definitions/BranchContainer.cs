@@ -27,7 +27,7 @@ namespace Ap.Core.Definitions
                     StateSetId = Parent.Id
                 };
                 context.StateTrigger = stateTrigger;
-                context.CurrentSet = Parent;
+                context.CurrentStateSet = Parent;
 
                 await Parent.ExecuteTrigger(context);
                 foreach (var stateSet in StateSets)

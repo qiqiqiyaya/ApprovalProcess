@@ -1,6 +1,6 @@
 ﻿using Ap.Core.Definitions.Actions;
-using Ap.Core.Services;
 using System.Collections.Generic;
+using Ap.Core.Actions;
 
 namespace Ap.Core.Configurations
 {
@@ -12,7 +12,7 @@ namespace Ap.Core.Configurations
 
         /// <summary>
         /// Obtain services from subordinate approvers
-        /// <see cref="AssignApproverService"/>
+        /// <see cref="Actions.AssignApprover"/>
         /// </summary>
         public ApAction? AssignApprover { get; internal set; }
     }

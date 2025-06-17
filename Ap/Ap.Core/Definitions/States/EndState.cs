@@ -10,4 +10,9 @@ public class EndState(string builderId) : StateBase(EndStateName + builderId)
     {
         return new ValueTask();
     }
+
+    public override ValueTask Exit(ExitContext context)
+    {
+        return new ValueTask();
+    }
 }

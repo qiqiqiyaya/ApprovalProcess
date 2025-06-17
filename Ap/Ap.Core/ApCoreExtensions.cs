@@ -28,9 +28,12 @@ namespace Ap.Core
 
             services.AddTransient<IStateSetService, MemoryStateSetService>();
             services.AddTransient<IFlowService, FlowService>();
-            services.AddTransient<IFlowRepository, MemoryFlowRepository>();
+            services.AddTransient<IExecutionFlowRepository, MemoryExecutionFlowRepository>();
             services.AddTransient<IExecutionService, ExecutionService>();
             services.AddTransient<IPipelineProvider, PipelineProvider>();
+
+
+            services.AddTransient<IFlowRecordRepository, MemoryFlowRecordRepository>();
         }
     }
 }

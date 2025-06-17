@@ -98,7 +98,7 @@ namespace Ap.Core.Definitions
 
 		public virtual async ValueTask ExecuteTrigger(TriggerContext context)
 		{
-			context.RootSet = this;
+			context.RootStateSet = this;
 			context.RootSetConfiguration = StateSetConfiguration;
 			var state = GetState(CurrentState);
 
@@ -128,7 +128,7 @@ namespace Ap.Core.Definitions
 
 		protected virtual async ValueTask ExitAndEntry(IState state, IBehaviour behaviour, TriggerContext context)
 		{
-			context.CurrentSet = this;
+			context.CurrentStateSet = this;
 			context.State = state;
 
 			await state.Exit(context.CreateExitContext());
@@ -173,7 +173,7 @@ namespace Ap.Core.Definitions
 		protected virtual async ValueTask<IState> StartStateHandle(IState state, TriggerContext context)
 		{
 			if (state is not StartState startState) return state;
-			context.CurrentSet = this;
+			context.CurrentStateSet = this;
 			await startState.Entry(context.CreateEntryContext());
 
 			var behaviour = startState.GetBehaviour();

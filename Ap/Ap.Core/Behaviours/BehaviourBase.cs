@@ -11,7 +11,7 @@ namespace Ap.Core.Behaviours
 
         public virtual ValueTask ExecuteAsync(TriggerContext context)
         {
-            context.CurrentSet.CurrentState = Destination;
+            context.CurrentStateSet.CurrentState = Destination;
             return new ValueTask();
         }
 

@@ -1,6 +1,6 @@
 ﻿using Ap.Core.Configurations;
+using Ap.Core.Models;
 using Ap.Core.Services.Interfaces;
-using Ap.Core.Services.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -10,26 +10,26 @@ namespace Ap.Core.Definitions;
 
 public abstract class BaseContext
 {
-	public IServiceProvider ServiceProvider { get; set; }
+    public IServiceProvider ServiceProvider { get; set; }
 
-	public StateTrigger StateTrigger { get; internal set; }
+    public StateTrigger StateTrigger { get; internal set; }
 
-	public Flow Flow { get; internal set; }
+    public Flow Flow { get; internal set; }
 
-	public IUser User { get; set; }
+    public IUser Executor { get; set; }
 
-	public StateSetBase RootSet { get; internal set; }
+    public StateSetBase RootStateSet { get; internal set; }
 
-	public StateSetBase CurrentSet { get; internal set; }
+    public StateSetBase CurrentStateSet { get; internal set; }
 
-	public Dictionary<string, object> Properties { get; set; } = new();
+    public Dictionary<string, object> Properties { get; set; } = new();
 
-	public StateSetConfiguration RootSetConfiguration { get; internal set; }
+    public StateSetConfiguration RootSetConfiguration { get; internal set; }
 
-	public IState State { get; internal set; }
+    public IState State { get; internal set; }
 
-	public T GetRequiredService<T>() where T : notnull
-	{
-		return ServiceProvider.GetRequiredService<T>();
-	}
+    public T GetRequiredService<T>() where T : notnull
+    {
+        return ServiceProvider.GetRequiredService<T>();
+    }
 }

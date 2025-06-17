@@ -1,20 +1,18 @@
-﻿using Ap.Core.Definitions;
-using Ap.Core.Definitions.Actions;
-using Ap.Core.Services;
+﻿using Ap.Core.Definitions.Actions;
+using System.Collections.Generic;
 
 namespace Ap.Core.Configurations
 {
-	public class StateSetConfiguration
-	{
-		/// <summary>
-		/// Obtain services from subordinate approvers
-		/// <see cref="AssignApproverService"/>
-		/// </summary>
-		public ApAction? AssignApprover { get; internal set; }
+    public class StateSetConfiguration
+    {
+        /// <summary>
+        /// Obtain services from subordinate approvers
+        /// <see cref="Actions.AssignApprover"/>
+        /// </summary>
+        public ApAction? AssignApprover { get; internal set; }
 
-		/// <summary>
-		/// the action to update the flow , default is <see cref="UpdateFlowAction"/>
-		/// </summary>
-		public ApAction? UpdateFlow { get; set; }
-	}
+        public List<ApAction> CommonEntryTypes { get; set; } = new List<ApAction>();
+
+        public List<ApAction> CommonExitTypes { get; set; } = new List<ApAction>();
+    }
 }

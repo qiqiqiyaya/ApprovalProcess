@@ -1,6 +1,6 @@
-﻿using Ap.Core.Definitions;
+﻿using Ap.Core.Actions;
+using Ap.Core.Definitions;
 using Ap.Core.Definitions.Actions;
-using Ap.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -56,30 +56,30 @@ namespace Ap.Core.Builders
         /// <returns></returns>
         bool IsConfigured(string state);
 
-        void AssignApproverService<TAssignApproverService>()
-           where TAssignApproverService : AssignApproverService;
-        void AssignApproverService(Func<EntryContext, ValueTask<List<string>>> assignAction);
+        void AssignApprover<TAssignApproverService>()
+           where TAssignApproverService : AssignApprover;
+        void AssignApprover(Func<EntryContext, ValueTask<List<string>>> assignAction);
 
-        void AssignApproverService<TAssignApproverService>(string stateName)
-           where TAssignApproverService : AssignApproverService;
+        void AssignApprover<TAssignApproverService>(string stateName)
+           where TAssignApproverService : AssignApprover;
 
-        void AssignApproverService(string stateName, Func<EntryContext, ValueTask<List<string>>> assignAction);
+        void AssignApprover(string stateName, Func<EntryContext, ValueTask<List<string>>> assignAction);
 
-        void ConfigureEntry<TEntryAction>(string stateName) where TEntryAction : IEntryAction;
+        void EntryAction<TEntryAction>(string stateName) where TEntryAction : IEntryAction;
 
-        void ConfigureEntry(string stateName, Func<EntryContext, ValueTask> entryAction);
+        void EntryAction(string stateName, Func<EntryContext, ValueTask> entryAction);
 
-        void ConfigureEntry(string stateName, Action<EntryContext> entryAction);
+        void EntryAction(string stateName, Action<EntryContext> entryAction);
 
-        void ConfigureEntry<TEntryAction>(string stateName, params object[] parameters) where TEntryAction : IEntryAction;
+        void EntryAction<TEntryAction>(string stateName, params object[] parameters) where TEntryAction : IEntryAction;
 
-        void ConfigureEntry(string stateName, ApAction action);
+        void EntryAction(string stateName, ApAction action);
 
-        void ConfigureExit<TExitAction>(string name) where TExitAction : IExitAction;
+        void ExitAction<TExitAction>(string name) where TExitAction : IExitAction;
 
-        void ConfigureExit<TExitAction>(string name, params object[] parameters) where TExitAction : IExitAction;
+        void ExitAction<TExitAction>(string name, params object[] parameters) where TExitAction : IExitAction;
 
-        void ConfigureExit(string name, ApAction action);
+        void ExitAction(string name, ApAction action);
 
         IStateSet Build();
     }

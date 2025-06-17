@@ -7,7 +7,7 @@ namespace Ap.Core.Behaviours
     {
         public override ValueTask ExecuteAsync(TriggerContext context)
         {
-            context.RootSet.CurrentState = destination;
+            context.RootStateSet.CurrentState = destination;
             return new ValueTask();
         }
     }

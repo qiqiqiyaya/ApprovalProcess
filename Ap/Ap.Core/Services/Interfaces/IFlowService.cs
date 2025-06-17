@@ -1,17 +1,21 @@
 ﻿using Ap.Core.Definitions;
-using Ap.Core.Services.Models;
+using Ap.Core.Models;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Services.Interfaces
 {
-	public interface IFlowService
-	{
-		ValueTask<Flow> GetAsync(string id);
+    public interface IFlowService
+    {
+        ValueTask<Flow> GetAsync(string id);
 
-		ValueTask<Flow> CreateAsync(IUser user, IStateSet set);
+        ValueTask<Flow> CreateAsync(IUser user, string rootStateSetId);
 
-		ValueTask UpdateAsync(Flow flow);
+        ValueTask<Flow> CreateAsync(IUser user, IStateSet set);
 
-		ValueTask<StateTriggerCollection> GetActionsAsync(string id);
-	}
+        ValueTask UpdateAsync(ExecutionFlow flow);
+
+        ValueTask AddRecordAsync(FlowRecord record);
+
+        ValueTask<StateTriggerCollection> GetActionsAsync(string id);
+    }
 }

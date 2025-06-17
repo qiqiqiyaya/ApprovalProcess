@@ -6,12 +6,12 @@ namespace Ap.Core.Definitions
 {
     public class StateTriggerCollection : Collection<StateTrigger>
     {
-        public StateTriggerCollection()
+        internal StateTriggerCollection()
         {
 
         }
 
-        public StateTriggerCollection(IList<StateTrigger> list) : base(list)
+        internal StateTriggerCollection(IList<StateTrigger> list) : base(list)
         {
 
         }
