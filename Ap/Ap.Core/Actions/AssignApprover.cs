@@ -24,4 +24,7 @@ namespace Ap.Core.Actions
             return assignAction(context);
         }
     }
+
+    public class DefaultAssignApprover()
+        : SimpleAssignApprover(context => new ValueTask<List<string>>([context.Executor.Id]));
 }

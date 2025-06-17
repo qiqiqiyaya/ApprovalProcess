@@ -11,12 +11,12 @@ namespace Ap.Core.Models
             Id = Guid.NewGuid().ToString("N");
 
             FlowId = flow.Id;
-            flow.StateTrigger = flow.StateTrigger;
-            flow.StateId = flow.StateId;
-            flow.StateName = flow.StateName;
-            flow.RootStateSetId = flow.RootStateSetId;
-            flow.CurrentStateSetId = flow.CurrentStateSetId;
-            flow.ExecutorId = flow.ExecutorId;
+            StateTrigger = flow.StateTrigger;
+            StateId = flow.StateId;
+            StateName = flow.StateName;
+            RootStateSetId = flow.RootStateSetId;
+            CurrentStateSetId = flow.CurrentStateSetId;
+            ExecutorId = flow.ExecutorId;
             UpdateTime = DateTime.UtcNow;
 
             Approvers = flow.Approvers.ConvertAll(a => new NextApproverRecord
