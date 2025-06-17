@@ -20,7 +20,7 @@ namespace Ap.Core.Definitions
 
         ValueTask Entry(EntryContext context);
 
-        void Exit(ExitContext context);
+        ValueTask Exit(ExitContext context);
 
         StateTriggerCollection GetTrigger();
 
