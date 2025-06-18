@@ -8,17 +8,20 @@ namespace Ap.Core.Services
 {
     public class FlowService : IFlowService
     {
-        private readonly IStateSetService _stateSetService;
+        private readonly IStateSetRepository _stateSetRepository;
         private readonly IExecutionFlowRepository _executionFlowRepository;
         private readonly IFlowRecordRepository _flowRecordRepository;
+        private readonly IServiceProvider _serviceProvider;
 
-        public FlowService(IStateSetService stateSetService,
+        public FlowService(IStateSetRepository stateSetRepository,
             IExecutionFlowRepository executionFlowRepository,
-            IFlowRecordRepository flowRecordRepository)
+            IFlowRecordRepository flowRecordRepository,
+            IServiceProvider serviceProvider)
         {
-            _stateSetService = stateSetService;
+            _stateSetRepository = stateSetRepository;
             _executionFlowRepository = executionFlowRepository;
             _flowRecordRepository = flowRecordRepository;
+            _serviceProvider = serviceProvider;
         }
 
         public async ValueTask<Flow> GetAsync(string id)
@@ -29,7 +32,7 @@ namespace Ap.Core.Services
 
         public async ValueTask<Flow> CreateAsync(IUser user, string rootStateSetId)
         {
-            var set = await _stateSetService.GetByIdAsync(rootStateSetId);
+            var set = await _stateSetRepository.GetByIdAsync(rootStateSetId);
             return await CreateAsync(user, set);
         }
 
@@ -47,6 +50,7 @@ namespace Ap.Core.Services
             };
 
             await _executionFlowRepository.CreateAsync(flow);
+
             return flow;
         }
 
@@ -60,18 +64,22 @@ namespace Ap.Core.Services
             await _flowRecordRepository.InsertAsync(record);
         }
 
-        public async ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow)
-        {
-            var set = await _stateSetService.GetByIdAsync(flow.RootStateSetId);
-            set.Recover(flow.StateName);
-
-            return set.GetTrigger();
-        }
-
         public async ValueTask<StateTriggerCollection> GetActionsAsync(string id)
         {
             var flow = await _executionFlowRepository.GetAsync(id);
             return await GetTriggerAsync(flow);
+        }
+
+        public async ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow)
+        {
+            var set = await _stateSetRepository.GetByIdAsync(flow.RootStateSetId);
+            return GetTrigger(flow, set);
+        }
+
+        protected StateTriggerCollection GetTrigger(Flow flow, IStateSet stateSet)
+        {
+            stateSet.Recover(flow.StateName);
+            return stateSet.GetTrigger();
         }
     }
 }

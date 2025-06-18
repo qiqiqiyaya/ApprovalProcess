@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Ap.Core.Services
 {
-    public class MemoryStateSetService : IStateSetService
+    public class MemoryStateSetRepository : IStateSetRepository
     {
         private static readonly List<IStateSet> Configurations = new();
 
-        public MemoryStateSetService() { }
+        public MemoryStateSetRepository() { }
 
         public ValueTask Add(IStateSet configuration)
         {

@@ -1,5 +1,4 @@
 ﻿using Ap.Core.Models;
-using Ap.Core.Services;
 using Ap.Core.Services.Interfaces;
 
 namespace ApTest.FlowTest
@@ -8,12 +7,11 @@ namespace ApTest.FlowTest
     {
         public async Task<Flow> CreateFlowAsync(IUser user, string flowName)
         {
-            var flowService = GetService<IFlowService>();
-            var stateSetService = GetService<IStateSetService>();
+            var flowManager = GetService<IFlowManager>();
+            var stateSetService = GetService<IStateSetRepository>();
 
             var stateSet = await stateSetService.GetByNameAsync(flowName);
-            var flow = await flowService.CreateAsync(user, stateSet);
-
+            var flow = await flowManager.CreateAsync(user, stateSet);
             return flow;
         }
 
@@ -29,12 +27,7 @@ namespace ApTest.FlowTest
             var trigger = actions[0];
 
             var executionService = GetService<IExecutionService>();
-            await executionService.InvokeAsync(new ExecutionParameter()
-            {
-                FlowId = flow.Id,
-                StateTrigger = trigger,
-                User = user,
-            });
+            await executionService.InvokeAsync(user, flow, trigger);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Ap.Core
 
                 var options = newProvider.GetRequiredService<ApCoreOptions>();
                 var builderProvider = newProvider.GetRequiredService<IStateSetBuilderProvider>();
-                var stateSetService = newProvider.GetRequiredService<IStateSetService>();
+                var stateSetService = newProvider.GetRequiredService<IStateSetRepository>();
 
                 // pre build
                 foreach (var type in options.PreBuilders)

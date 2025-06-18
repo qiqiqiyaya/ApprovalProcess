@@ -6,7 +6,7 @@ namespace Ap.Core.Models
 {
     public class FlowRecord : Flow
     {
-        public FlowRecord(Flow flow)
+        public FlowRecord(ExecutionFlow flow)
         {
             Id = Guid.NewGuid().ToString("N");
 
@@ -18,6 +18,7 @@ namespace Ap.Core.Models
             CurrentStateSetId = flow.CurrentStateSetId;
             ExecutorId = flow.ExecutorId;
             UpdateTime = DateTime.UtcNow;
+            CreateTime = flow.CreateTime;
 
             Approvers = flow.Approvers.ConvertAll(a => new NextApproverRecord
             {

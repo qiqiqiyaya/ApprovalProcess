@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Ap.Core.Services.Interfaces
 {
-    public interface IStateSetService
+    public interface IStateSetRepository
     {
         ValueTask Add(IStateSet configuration);
 

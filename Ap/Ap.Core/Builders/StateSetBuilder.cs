@@ -90,7 +90,6 @@ namespace Ap.Core.Builders
                 StateLinked = new StateLinkedList();
             }
 
-            Start();
             Start(name, action);
             _sm = new StateMachine(StateLinked.OriginFirst.Value, RootStateLinked, id);
             Name = _sm.Name;
@@ -103,7 +102,7 @@ namespace Ap.Core.Builders
             StateSetBuilderProvider = creator(serviceProvider, RootStateLinked);
         }
 
-        private void Start()
+        private TBuilder Start()
         {
             var result = new StartState(Id);
             AddTransition = destination =>
@@ -112,12 +111,14 @@ namespace Ap.Core.Builders
             };
 
             StateLinked.AddFirst(result);
+            return (this as TBuilder)!;
         }
 
-        private void Start(string name, Action<IState, string>? action = null)
+        private TBuilder Start(string name, Action<IState, string>? action = null)
         {
             CheckState(name);
 
+            Start();
             var result = new StateRepresentation(name);
             AddTransition(name);
             AddTransition = destination =>
@@ -132,6 +133,7 @@ namespace Ap.Core.Builders
                 }
             };
             StateLinked.AddLast(result);
+            return (this as TBuilder)!;
         }
 
         public TBuilder Then(string name)
