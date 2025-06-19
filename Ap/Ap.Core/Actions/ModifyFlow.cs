@@ -10,11 +10,11 @@ namespace Ap.Core.Actions;
 /// <summary>
 /// Updates the flow state and approvers.
 /// </summary>
-public class ModifyExecutionFlow : IEntryAction
+public class ModifyFlow : IEntryAction
 {
     public async ValueTask InvokeAsync(EntryContext context, Func<EntryContext, ValueTask> next)
     {
-        var flow = new ExecutionFlow();
+        var flow = new Flow();
         flow.Id = context.Flow.Id;
         flow.RootStateSetId = context.RootStateSet.Id;
         flow.CurrentStateSetId = context.CurrentStateSet.Id;
@@ -23,7 +23,7 @@ public class ModifyExecutionFlow : IEntryAction
         flow.StateTrigger = context.StateTrigger.Trigger;
         flow.ExecutorId = context.Executor.Id;
         flow.CreateTime = DateTime.UtcNow;
-        flow.Approvers.Clear();
+        flow.NextExecutors.Clear();
 
         context.Flow = flow;
 
@@ -34,9 +34,9 @@ public class ModifyExecutionFlow : IEntryAction
             throw new ApException("No approvers assigned for the flow.");
         }
 
-        flow.Approvers = context.NextApproverList.ConvertAll(s =>
+        flow.NextExecutors = context.NextApproverList.ConvertAll(s =>
         {
-            var np = new ExecutionNextApprover
+            var np = new NextExecutor
             {
                 Id = Guid.NewGuid().ToString("N"),
                 ObjectId = s,

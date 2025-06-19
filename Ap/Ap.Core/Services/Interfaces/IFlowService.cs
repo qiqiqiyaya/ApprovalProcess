@@ -12,7 +12,7 @@ namespace Ap.Core.Services.Interfaces
 
         ValueTask<Flow> CreateAsync(IUser user, IStateSet set);
 
-        ValueTask UpdateAsync(ExecutionFlow flow);
+        ValueTask UpdateAsync(Flow flow);
 
         ValueTask AddRecordAsync(FlowRecord record);
 

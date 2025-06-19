@@ -472,7 +472,7 @@ namespace Ap.Core.Builders
         private void InternalCommonActions()
         {
             _sm.StateSetConfiguration.CommonEntryTypes.Add(new ApAction(typeof(ExceptionHandler)));
-            _sm.StateSetConfiguration.CommonEntryTypes.Add(new ApAction(typeof(ModifyExecutionFlow)));
+            _sm.StateSetConfiguration.CommonEntryTypes.Add(new ApAction(typeof(ModifyFlow)));
 
             _sm.StateSetConfiguration.CommonExitTypes.Add(new ApAction(typeof(ExceptionHandler)));
             _sm.StateSetConfiguration.CommonExitTypes.Add(new ApAction(typeof(TriggerFlowRecord)));

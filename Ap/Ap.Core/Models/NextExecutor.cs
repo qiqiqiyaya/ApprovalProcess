@@ -3,7 +3,7 @@
 
 namespace Ap.Core.Models
 {
-    public abstract class NextApprover
+    public class NextExecutor
     {
         public string Id { get; set; }
 

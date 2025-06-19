@@ -38,7 +38,7 @@ namespace Ap.Core.Services
 
         public async ValueTask<Flow> CreateAsync(IUser user, IStateSet set)
         {
-            var flow = new ExecutionFlow()
+            var flow = new Flow()
             {
                 Id = Guid.NewGuid().ToString("N"),
                 RootStateSetId = set.Id,
@@ -54,7 +54,7 @@ namespace Ap.Core.Services
             return flow;
         }
 
-        public async ValueTask UpdateAsync(ExecutionFlow flow)
+        public async ValueTask UpdateAsync(Flow flow)
         {
             await _executionFlowRepository.UpdateAsync(flow);
         }

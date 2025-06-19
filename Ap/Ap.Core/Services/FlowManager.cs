@@ -13,7 +13,8 @@ namespace Ap.Core.Services
 
         public FlowManager(IFlowService flowService,
             IExecutionService executionService,
-            IStateSetRepository stateSetRepository)
+            IStateSetRepository stateSetRepository,
+            IUserFlowRepository userFlowRepository)
         {
             _flowService = flowService;
             _executionService = executionService;

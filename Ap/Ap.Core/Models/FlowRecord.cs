@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 namespace Ap.Core.Models
 {
     public class FlowRecord : Flow
     {
-        public FlowRecord(ExecutionFlow flow)
+        public FlowRecord(Flow flow)
         {
             Id = Guid.NewGuid().ToString("N");
 
@@ -19,21 +18,12 @@ namespace Ap.Core.Models
             ExecutorId = flow.ExecutorId;
             UpdateTime = DateTime.UtcNow;
             CreateTime = flow.CreateTime;
-
-            Approvers = flow.Approvers.ConvertAll(a => new NextApproverRecord
-            {
-                Id = a.Id,
-                ObjectId = a.ObjectId,
-                FlowId = flow.Id,
-                CreateTime = a.CreateTime
-            });
+            NextExecutors = [.. flow.NextExecutors];
         }
 
         public string FlowId { get; set; }
 
         public DateTime UpdateTime { get; set; }
-
-        public new List<NextApproverRecord> Approvers { get; set; }
     }
 
 

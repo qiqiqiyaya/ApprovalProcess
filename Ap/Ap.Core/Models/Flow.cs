@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Ap.Core.Models
 {
-    public abstract class Flow
+    public class Flow
     {
         public string Id { get; set; }
 
@@ -26,7 +26,7 @@ namespace Ap.Core.Models
 
         public DateTime CreateTime { get; set; }
 
-        public virtual List<NextApprover> Approvers { get; set; } = new();
+        public List<NextExecutor> NextExecutors { get; set; } = new();
     }
 
 
