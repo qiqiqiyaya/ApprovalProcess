@@ -8,17 +8,9 @@ namespace Ap.Core.Services
 {
     public class ExecutionService(
         IStateSetRepository stateSetRepository,
-        IExecutionFlowRepository executionFlowRepository,
         IServiceProvider serviceProvider)
         : IExecutionService
     {
-        public async ValueTask InvokeAsync(IUser user, string flowId, StateTrigger stateTrigger)
-        {
-            // 流程
-            var flow = await executionFlowRepository.GetAsync(flowId);
-            await InvokeAsync(user, flow, stateTrigger);
-        }
-
         public async ValueTask InvokeAsync(IUser user, Flow flow, StateTrigger stateTrigger)
         {
             // 状态机
@@ -37,6 +29,18 @@ namespace Ap.Core.Services
 
             // 触发
             await set.ExecuteTrigger(context);
+        }
+
+        public async ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow)
+        {
+            var set = await stateSetRepository.GetByIdAsync(flow.RootStateSetId);
+            return GetTrigger(flow, set);
+        }
+
+        protected StateTriggerCollection GetTrigger(Flow flow, IStateSet stateSet)
+        {
+            stateSet.Recover(flow.StateName);
+            return stateSet.GetTrigger();
         }
     }
 }

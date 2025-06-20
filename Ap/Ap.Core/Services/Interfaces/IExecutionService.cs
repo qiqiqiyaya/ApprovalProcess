@@ -6,10 +6,10 @@ namespace Ap.Core.Services.Interfaces
 {
     public interface IExecutionService
     {
-        ValueTask InvokeAsync(IUser user, string flowId, StateTrigger stateTrigger);
-
         ValueTask InvokeAsync(IUser user, Flow flow, StateTrigger stateTrigger);
 
         ValueTask InvokeAsync(IUser user, Flow flow, StateTrigger stateTrigger, IStateSet set);
+
+        ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow);
     }
 }

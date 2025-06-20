@@ -1,8 +1,8 @@
 ﻿using Ap.Core.Services.Interfaces;
 
-namespace ApTest.FlowTest
+namespace ApTest
 {
-    public class FlowUser : IUser
+    public class TestUser : IUser
     {
         public string Id { get; set; } = "1";
     }

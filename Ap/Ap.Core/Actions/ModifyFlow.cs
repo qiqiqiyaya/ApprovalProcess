@@ -17,12 +17,13 @@ public class ModifyFlow : IEntryAction
         var flow = new Flow();
         flow.Id = context.Flow.Id;
         flow.RootStateSetId = context.RootStateSet.Id;
-        flow.CurrentStateSetId = context.CurrentStateSet.Id;
+        flow.StateSetId = context.CurrentStateSet.Id;
         flow.StateName = context.State.Name;
         flow.StateId = context.StateTrigger.StateDetail.Id;
-        flow.StateTrigger = context.StateTrigger.Trigger;
+        flow.LastExecTrigger = context.StateTrigger.Trigger;
         flow.ExecutorId = context.Executor.Id;
         flow.CreateTime = DateTime.UtcNow;
+        flow.FlowStatus = FlowStatus.Running;
         flow.NextExecutors.Clear();
 
         context.Flow = flow;
@@ -46,6 +47,6 @@ public class ModifyFlow : IEntryAction
             return np;
         });
 
-        await context.GetRequiredService<IFlowService>().UpdateAsync(flow);
+        await context.GetRequiredService<IFlowManager>().UpdateFlowAsync(flow);
     }
 }

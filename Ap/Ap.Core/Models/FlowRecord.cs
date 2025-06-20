@@ -10,11 +10,11 @@ namespace Ap.Core.Models
             Id = Guid.NewGuid().ToString("N");
 
             FlowId = flow.Id;
-            StateTrigger = flow.StateTrigger;
+            LastExecTrigger = flow.LastExecTrigger;
             StateId = flow.StateId;
             StateName = flow.StateName;
             RootStateSetId = flow.RootStateSetId;
-            CurrentStateSetId = flow.CurrentStateSetId;
+            StateSetId = flow.StateSetId;
             ExecutorId = flow.ExecutorId;
             UpdateTime = DateTime.UtcNow;
             CreateTime = flow.CreateTime;

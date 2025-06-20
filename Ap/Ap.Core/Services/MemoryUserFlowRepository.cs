@@ -7,20 +7,40 @@ namespace Ap.Core.Services
 {
     public class MemoryUserFlowRepository : IUserFlowRepository
     {
-        private static readonly List<UserFlow> _userFlows = new();
-
-        public MemoryUserFlowRepository() { }
+        private static readonly List<UserFlow> Flows = new();
 
         public ValueTask<UserFlow> CreateAsync(UserFlow userFlow)
         {
-            _userFlows.Add(userFlow);
+            Flows.Add(userFlow);
             return new ValueTask<UserFlow>(userFlow);
         }
 
-        public ValueTask<UserFlow> CreateAsync(string userId)
+        public async ValueTask UpdateAsync(UserFlow userFlow)
         {
-            var uf = _userFlows.Find(x => x.UserId == userId);
-            return new ValueTask<UserFlow>(uf);
+            var uf = await GetByIdAsync(userFlow.UserId);
+            Flows.Remove(uf);
+            Flows.Add(userFlow);
+        }
+
+        public async ValueTask UpdateAsync(Flow flow)
+        {
+            var uf = await GetByFlowIdAsync(flow.Id);
+            uf.Flow = flow;
+        }
+
+        public ValueTask<UserFlow> GetByIdAsync(string userId)
+        {
+            return new ValueTask<UserFlow>(Flows.Find(x => x.UserId == userId));
+        }
+
+        public ValueTask<UserFlow> GetByFlowIdAsync(string flowId)
+        {
+            return new ValueTask<UserFlow>(Flows.Find(x => x.FlowId == flowId));
+        }
+
+        public ValueTask<Flow> GetFlowAsync(string flowId)
+        {
+            return new ValueTask<Flow>(Flows.Find(x => x.FlowId == flowId).Flow);
         }
     }
 }

@@ -11,23 +11,38 @@ namespace Ap.Core.Models
 
         public string RootStateSetId { get; set; }
 
-        public string CurrentStateSetId { get; set; }
+        public string StateSetId { get; set; }
 
         public string StateName { get; set; }
 
         public string StateId { get; set; }
 
-        public string? StateTrigger { get; set; }
+        /// <summary>
+        /// The last trigger that executed the flow.
+        /// </summary>
+        public string? LastExecTrigger { get; set; }
 
         /// <summary>
         /// The ID of the executor who triggered the flow. see <see cref="IUser.Id"/> for more details.
         /// </summary>
         public string ExecutorId { get; set; }
 
+        public FlowStatus FlowStatus { get; set; } = FlowStatus.Initial;
+
         public DateTime CreateTime { get; set; }
 
+        /// <summary>
+        /// List of next executors for the flow. These are the users who will be responsible for the next steps in the flow.
+        /// </summary>
         public List<NextExecutor> NextExecutors { get; set; } = new();
     }
 
+    public enum FlowStatus
+    {
+        Initial = 0,
+        Start = 1,
+        Running = 2,
+        End = 3,
+    }
 
 }
