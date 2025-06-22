@@ -7,7 +7,7 @@ namespace Ap.Core.Services
 {
     public class MemoryFlowRecordRepository : IFlowRecordRepository
     {
-        private static readonly Dictionary<string, List<FlowRecord>> Flows = new Dictionary<string, List<FlowRecord>>();
+        private static readonly Dictionary<string, List<FlowRecord>> Flows = new();
 
         public ValueTask<FlowRecord> InsertAsync(FlowRecord record)
         {
@@ -18,6 +18,15 @@ namespace Ap.Core.Services
 
             Flows[record.FlowId].Add(record);
             return new ValueTask<FlowRecord>(record);
+        }
+
+        public ValueTask<List<FlowRecord>> GetListAsync(string flowId)
+        {
+            if (Flows.TryGetValue(flowId, out var records))
+            {
+                return new ValueTask<List<FlowRecord>>(records);
+            }
+            return new ValueTask<List<FlowRecord>>(new List<FlowRecord>());
         }
     }
 }

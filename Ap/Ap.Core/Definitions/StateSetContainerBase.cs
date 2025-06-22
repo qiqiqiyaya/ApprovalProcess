@@ -17,11 +17,19 @@ namespace Ap.Core.Definitions
             Id = Guid.NewGuid().ToString("N");
         }
 
+        protected StateLinkedList RootLinkedList => Parent.RootLinkedList;
+
+        public Dictionary<string, IStateSet> StateSets { get; } = new();
+
+        public virtual bool IsEnd => CheckIsEnding();
+
         public virtual async ValueTask ExecuteTrigger(TriggerContext context)
         {
             var stateSetId = context.StateTrigger.StateSetId;
             if (string.IsNullOrEmpty(stateSetId)) throw new ArgumentException("StateSetId cannot be null or empty.", nameof(context.StateTrigger.StateSetId));
-            IStateTrigger set = StateSets[stateSetId!];
+            IStateSet set = StateSets[stateSetId!];
+            set.ServiceProvider = ServiceProvider;
+
             await set.ExecuteTrigger(context);
 
             if (IsEnd)
@@ -42,10 +50,6 @@ namespace Ap.Core.Definitions
             }
         }
 
-        public Dictionary<string, IStateSet> StateSets { get; } = new();
-
-        public virtual bool IsEnd => CheckIsEnding();
-
         /// <summary>
         /// Check if the state is configured in any state set (including children state set).
         /// </summary>
@@ -61,10 +65,24 @@ namespace Ap.Core.Definitions
             return StateSets.Values.All(s => s.IsEnd);
         }
 
-        public override StateTriggerCollection GetTrigger()
+        public override async ValueTask<StateTriggerCollection> GetTrigger()
         {
-            var list = StateSets.Values.SelectMany(s => s.GetTrigger()).ToList();
-            return new StateTriggerCollection(list);
+            if (IsEnd)
+            {
+                return new StateTriggerCollection();
+            }
+
+            StateTriggerCollection collection = new StateTriggerCollection();
+            foreach (var item in StateSets.Values)
+            {
+                var list = await item.GetTrigger();
+                foreach (var value in list)
+                {
+                    collection.Add(value);
+                }
+            }
+
+            return collection;
         }
     }
 }

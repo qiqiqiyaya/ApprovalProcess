@@ -27,7 +27,7 @@ namespace Ap.Core.Models
         /// </summary>
         public string ExecutorId { get; set; }
 
-        public FlowStatus FlowStatus { get; set; } = FlowStatus.Initial;
+        public FlowStatus FlowStatus { get; set; }
 
         public DateTime CreateTime { get; set; }
 
@@ -39,8 +39,7 @@ namespace Ap.Core.Models
 
     public enum FlowStatus
     {
-        Initial = 0,
-        Start = 1,
+        Initial = 1,
         Running = 2,
         End = 3,
     }

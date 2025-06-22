@@ -218,30 +218,40 @@ namespace Ap.Core.Builders
             AddTransition(result.Name);
         }
 
-        public TBuilder If(Func<bool> action, string @true, string @false)
-        {
-            CheckState(@true);
-            CheckState(@false);
-
-            return If(action,
-            provider => (TBuilder)provider.Create(@true, (result, destination) =>
-                {
-                    var first = RootStateLinked.FirstState;
-                    result.AddTransition(new Approve(destination));
-                    result.AddTransition(new Reject(first.Name));
-                }),
-                provider => (TBuilder)provider.Create(@false, (result, destination) =>
-                {
-                    var first = RootStateLinked.FirstState;
-                    result.AddTransition(new Approve(destination));
-                    result.AddTransition(new Reject(first.Name));
-                }));
-        }
-
-        public TBuilder If(Func<bool> action,
+        #region If
+        public TBuilder If(Func<PredicateContext, bool> predicate,
             Func<IfBuilderProvider, TBuilder> @true,
             Func<IfBuilderProvider, TBuilder> @false)
         {
+            return If(context => new ValueTask<bool>(predicate(context)), @true, @false);
+        }
+
+        public TBuilder If(Func<PredicateContext, ValueTask<bool>> predicate,
+            Func<IfBuilderProvider, TBuilder> @true,
+            Func<IfBuilderProvider, TBuilder> @false)
+        {
+            var apAction = new ApAction(typeof(IfFunction), predicate);
+            return If(apAction, @true, @false);
+        }
+
+        public TBuilder If<TIIfPredicate>(
+            Func<IfBuilderProvider, TBuilder> @true,
+            Func<IfBuilderProvider, TBuilder> @false)
+            where TIIfPredicate : IIfPredicate
+        {
+            return If(new ApAction(typeof(TIIfPredicate)), @true, @false);
+        }
+
+        public TBuilder If(ApAction apAction,
+            Func<IfBuilderProvider, TBuilder> @true,
+            Func<IfBuilderProvider, TBuilder> @false)
+        {
+            var actionType = typeof(IIfPredicate);
+            if (apAction.Type.GetInterfaces().All(x => x != actionType))
+            {
+                throw new Exception("the action.Type is not subclass of IIfPredicate");
+            }
+
             var trueBuilder = (IStateSetBuilder<TBuilder>)@true
                 .Invoke(new IfBuilderProvider(StateSetBuilderProvider, RootStateLinked));
             var falseBuilder = (IStateSetBuilder<TBuilder>)@false
@@ -249,7 +259,7 @@ namespace Ap.Core.Builders
 
             trueBuilder.Complete();
 
-            var sm = new IfContainer(Id, _sm, action, trueBuilder.Build(), falseBuilder.Build());
+            var sm = new IfContainer(Id, _sm, apAction, trueBuilder.Build(), falseBuilder.Build());
 
             AddTransition(sm.Name);
             AddTransition = destination =>
@@ -259,6 +269,7 @@ namespace Ap.Core.Builders
             StateLinked.AddLast(sm);
             return (this as TBuilder)!;
         }
+        #endregion
 
         /// <summary>
         /// Jumps to a specified state in the current set, cannot jump to child or parent level

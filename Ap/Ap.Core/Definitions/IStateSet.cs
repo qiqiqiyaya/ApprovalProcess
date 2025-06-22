@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Definitions
@@ -32,7 +33,7 @@ namespace Ap.Core.Definitions
 
         void AddState(IState state);
 
-        void Recover(string stateName);
+        void Recover(IServiceProvider serviceProvider, string stateName);
 
         /// <summary>
         /// reset ot initial state

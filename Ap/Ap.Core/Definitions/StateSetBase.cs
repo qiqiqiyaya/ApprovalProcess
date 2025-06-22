@@ -60,8 +60,23 @@ namespace Ap.Core.Definitions
             LinkedList.AddLast(state);
         }
 
-        public void Recover(string stateName)
+        public void Recover(IServiceProvider serviceProvider, string stateName)
         {
+            ServiceProvider = serviceProvider;
+
+
+            switch (state)
+            {
+                case IStateSetContainer container:
+                    await SetContainerHandle(container, context);
+                    break;
+                case IStateSet set:
+                    await StateSetHandle(set, context);
+                    break;
+                default:
+                    await ExitAndEntry(state, context);
+                    break;
+            }
             CurrentState = stateName;
         }
 
@@ -80,13 +95,15 @@ namespace Ap.Core.Definitions
             throw new ApNotFindException<StateSetDetail>($"State {state} not found in the state set.", CreateStateSetDetail());
         }
 
-        public override StateTriggerCollection GetTrigger()
+        public override async ValueTask<StateTriggerCollection> GetTrigger()
         {
+            if (IsEnd) return new StateTriggerCollection();
             var state = GetState(CurrentState);
+            state.ServiceProvider = ServiceProvider;
 
             // state is never EndState
             // state is StartState ， skip it
-            var collection = state.GetTrigger();
+            var collection = await state.GetTrigger();
             //var collection = state is StartState ? LinkedList.FirstState.GetTrigger() : state.GetTrigger();
 
             foreach (var stateTrigger in collection)
@@ -107,6 +124,7 @@ namespace Ap.Core.Definitions
         {
             context.RootStateSet = this;
             context.RootSetConfiguration = StateSetConfiguration;
+            context.ServiceProvider = ServiceProvider;
 
             if (IsInitial)
             {
@@ -188,6 +206,7 @@ namespace Ap.Core.Definitions
         {
             if (state is not StartState startState) return state;
             context.CurrentStateSet = this;
+            context.State = state;
             await startState.Entry(context.CreateEntryContext());
 
             var behaviour = startState.GetBehaviour();
@@ -197,7 +216,12 @@ namespace Ap.Core.Definitions
 
         protected virtual async ValueTask EndStateHandle(TriggerContext context)
         {
-            if (GetState(CurrentState) is EndState endState) await endState.Exit(context.CreateExitContext());
+            if (GetState(CurrentState) is EndState endState)
+            {
+                context.CurrentStateSet = this;
+                context.State = endState;
+                await endState.Exit(context.CreateExitContext());
+            }
         }
 
         /// <summary>
@@ -205,6 +229,10 @@ namespace Ap.Core.Definitions
         /// </summary>
         public virtual void Reset()
         {
+            if (!IsEnd)
+            {
+                throw new InvalidOperationException("Cannot reset a state set that is not in an end state.");
+            }
             CurrentState = InitialState;
         }
 

@@ -21,11 +21,14 @@ namespace Ap.Core.Services
         public async ValueTask InvokeAsync(IUser user, Flow flow, StateTrigger stateTrigger, IStateSet set)
         {
             // 恢复状态机状态
-            set.Recover(flow.StateName);
-            var context = new TriggerContext(serviceProvider,
-                stateTrigger,
-                flow,
-                user);
+            set.Recover(serviceProvider, flow.StateName);
+
+            // 同步流程状态
+            if (set.IsEnd) flow.FlowStatus = FlowStatus.End;
+            else if (set.IsInitial) flow.FlowStatus = FlowStatus.Initial;
+            else flow.FlowStatus = FlowStatus.Running;
+
+            var context = new TriggerContext(stateTrigger, flow, user);
 
             // 触发
             await set.ExecuteTrigger(context);
@@ -34,12 +37,12 @@ namespace Ap.Core.Services
         public async ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow)
         {
             var set = await stateSetRepository.GetByIdAsync(flow.RootStateSetId);
-            return GetTrigger(flow, set);
+            return await GetTrigger(flow, set);
         }
 
-        protected StateTriggerCollection GetTrigger(Flow flow, IStateSet stateSet)
+        protected ValueTask<StateTriggerCollection> GetTrigger(Flow flow, IStateSet stateSet)
         {
-            stateSet.Recover(flow.StateName);
+            stateSet.Recover(serviceProvider, flow.StateName);
             return stateSet.GetTrigger();
         }
     }

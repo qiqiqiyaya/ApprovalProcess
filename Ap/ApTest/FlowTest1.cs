@@ -60,25 +60,29 @@ namespace ApTest
             return uf;
         }
 
+        private async Task ExecFlow(IUser user, string flowId)
+        {
+            var flowManager = GetService<IFlowManager>();
+            var executionService = GetService<IExecutionService>();
+            var flow = await flowManager.GetFlowAsync(flowId);
+            var actions = await executionService.GetTriggerAsync(flow);
+            var trigger = actions[0];
+            await executionService.InvokeAsync(user, flow, trigger);
+        }
+
         [Fact]
         public async Task CreateTest()
         {
-            var executionService = GetService<IExecutionService>();
-
             var user = new TestUser();
             var uf = await CreateFlowAsync(user, FlowPreBuilder.FlowName);
 
-            var actions = await executionService.GetTriggerAsync(uf.Flow);
-            var trigger = actions[0];
-            await executionService.InvokeAsync(user, uf.Flow, trigger);
+            await ExecFlow(user, uf.FlowId);
+            await ExecFlow(user, uf.FlowId);
+            await ExecFlow(user, uf.FlowId);
+            await ExecFlow(user, uf.FlowId);
 
-            actions = await executionService.GetTriggerAsync(uf.Flow);
-            trigger = actions[0];
-            await executionService.InvokeAsync(user, uf.Flow, trigger);
-
-            actions = await executionService.GetTriggerAsync(uf.Flow);
-            trigger = actions[0];
-            await executionService.InvokeAsync(user, uf.Flow, trigger);
+            var recordRepository = GetService<IFlowRecordRepository>();
+            var list = await recordRepository.GetListAsync(uf.FlowId);
         }
     }
 }

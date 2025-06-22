@@ -1,6 +1,7 @@
 ﻿using Ap.Core.Definitions;
 using Ap.Core.Services.Interfaces;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,9 +13,14 @@ namespace Ap.Core.Services
 
         public MemoryStateSetRepository() { }
 
-        public ValueTask Add(IStateSet configuration)
+        public ValueTask Add(IStateSet set)
         {
-            Configurations.Add(configuration);
+            if (Configurations.Any(x => x.Name == set.Name))
+            {
+                throw new DuplicateNameException(set.Name);
+            }
+
+            Configurations.Add(set);
             return new ValueTask();
         }
 

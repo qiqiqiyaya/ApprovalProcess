@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ap.Core.Behaviours;
 using Ap.Core.Configurations;
@@ -16,13 +17,15 @@ namespace Ap.Core.Definitions
 
         StateConfiguration StateConfiguration { get; }
 
+        internal IServiceProvider ServiceProvider { get; set; }
+
         void AddTransition(IBehaviour behaviour);
 
         ValueTask Entry(EntryContext context);
 
         ValueTask Exit(ExitContext context);
 
-        StateTriggerCollection GetTrigger();
+        ValueTask<StateTriggerCollection> GetTrigger();
 
         StateDetail ToDetail();
     }

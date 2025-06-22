@@ -1,6 +1,5 @@
 ﻿using Ap.Core.Behaviours;
 using Ap.Core.Configurations;
-using Ap.Core.Definitions.Actions;
 using Ap.Core.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -28,11 +27,13 @@ namespace Ap.Core.Definitions
 
         public StateConfiguration StateConfiguration { get; } = new();
 
-        public virtual StateTriggerCollection GetTrigger()
+        public IServiceProvider ServiceProvider { get; set; }
+
+        public virtual ValueTask<StateTriggerCollection> GetTrigger()
         {
             var detail = ToDetail();
             var triggers = Transitions.Keys.Select(s => new StateTrigger(s, detail)).ToList();
-            return new StateTriggerCollection(triggers);
+            return new ValueTask<StateTriggerCollection>(new StateTriggerCollection(triggers));
         }
 
         public virtual async ValueTask Entry(EntryContext context)

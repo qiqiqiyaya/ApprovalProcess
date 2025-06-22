@@ -1,6 +1,5 @@
 ﻿using Ap.Core.Models;
 using Ap.Core.Services.Interfaces;
-using System;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -8,12 +7,10 @@ namespace Ap.Core.Definitions;
 
 public class TriggerContext : BaseContext
 {
-    internal TriggerContext(IServiceProvider serviceProvider,
-        StateTrigger stateTrigger,
+    internal TriggerContext(StateTrigger stateTrigger,
         Flow flow,
         IUser executor)
     {
-        ServiceProvider = serviceProvider;
         StateTrigger = stateTrigger;
         Flow = flow;
         Executor = executor;

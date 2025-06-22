@@ -23,7 +23,7 @@ public class ModifyFlow : IEntryAction
         flow.LastExecTrigger = context.StateTrigger.Trigger;
         flow.ExecutorId = context.Executor.Id;
         flow.CreateTime = DateTime.UtcNow;
-        flow.FlowStatus = FlowStatus.Running;
+        flow.FlowStatus = context.Flow.FlowStatus;
         flow.NextExecutors.Clear();
 
         context.Flow = flow;

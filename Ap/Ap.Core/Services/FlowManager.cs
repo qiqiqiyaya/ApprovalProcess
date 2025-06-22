@@ -2,6 +2,7 @@
 using Ap.Core.Models;
 using Ap.Core.Services.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Services
@@ -47,14 +48,25 @@ namespace Ap.Core.Services
                 StateName = set.CurrentState,
                 StateId = set.Id,
                 ExecutorId = user.Id,
-                CreateTime = DateTime.Now
+                CreateTime = DateTime.Now,
+                FlowStatus = FlowStatus.Initial
             };
+
+            flow.NextExecutors =
+            [
+                new()
+                {
+                    CreateTime = DateTime.UtcNow,
+                    ObjectId = user.Id,
+                    FlowId = flow.Id,
+                    Id = Guid.NewGuid().ToString("N"),
+                }
+            ];
 
             var userFlow = new UserFlow(flow, user);
             await _userFlowRepository.CreateAsync(userFlow);
 
             var triggers = await _executionService.GetTriggerAsync(flow);
-            flow.FlowStatus = FlowStatus.Start;
             await _executionService.InvokeAsync(user, flow, triggers[0]);
 
             return userFlow;

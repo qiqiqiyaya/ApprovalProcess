@@ -39,11 +39,21 @@ namespace Ap.Core.Builders
 
         void Complete();
 
-        TStateSetBuilder If(Func<bool> action, string @true, string @false);
+        TStateSetBuilder If(Func<PredicateContext, bool> predicate,
+           Func<IfBuilderProvider, TStateSetBuilder> @true,
+           Func<IfBuilderProvider, TStateSetBuilder> @false);
 
-        TStateSetBuilder If(Func<bool> action,
+        TStateSetBuilder If(Func<PredicateContext, ValueTask<bool>> predicate,
             Func<IfBuilderProvider, TStateSetBuilder> @true,
             Func<IfBuilderProvider, TStateSetBuilder> @false);
+        TStateSetBuilder If<TIIfPredicate>(
+            Func<IfBuilderProvider, TStateSetBuilder> @true,
+            Func<IfBuilderProvider, TStateSetBuilder> @false)
+            where TIIfPredicate : IIfPredicate;
+
+        TStateSetBuilder If(ApAction apAction,
+                    Func<IfBuilderProvider, TStateSetBuilder> @true,
+                    Func<IfBuilderProvider, TStateSetBuilder> @false);
 
         TStateSetBuilder Jump(string name, string destination);
 

@@ -14,6 +14,7 @@ namespace ApTest
             service.AddApCore(options =>
             {
                 options.AddFlow<FlowPreBuilder>();
+                options.AddFlow<IfFlowPreBuilder>();
             });
             _provider = service.BuildServiceProvider();
             var config = new ApCoreConfigure(_provider);

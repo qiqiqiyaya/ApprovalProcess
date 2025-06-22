@@ -1,21 +1,24 @@
 ﻿using Ap.Core.Behaviours;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Ap.Core.Definitions.Actions;
 
 namespace Ap.Core.Definitions
 {
     public class IfContainer : StateSetContainerBase
     {
-        private readonly Func<bool> _action;
+        private readonly ApAction? _predicate;
+        private bool _isEnd;
 
         public const string TrueState = "@true";
         public const string FalseState = "@false";
 
         public IfContainer(string name, StateSetBase parent,
-            Func<bool> action, IStateSet @true, IStateSet @false) : base(name, parent)
+            ApAction predicate, IStateSet @true, IStateSet @false) : base(name, parent)
         {
-            _action = action ?? throw new ArgumentNullException(nameof(action));
+            _predicate = predicate;
 
             StateSets.Add(TrueState, @true ?? throw new ArgumentNullException(nameof(@true)));
             StateSets.Add(FalseState, @false ?? throw new ArgumentNullException(nameof(@false)));
@@ -23,10 +26,12 @@ namespace Ap.Core.Definitions
 
         public override async ValueTask ExecuteTrigger(TriggerContext context)
         {
-            IStateSet set = GetStateSet();
+            IStateSet set = await GetStateSet();
+            set.ServiceProvider = ServiceProvider;
             await set.ExecuteTrigger(context);
 
-            if (IsEnd)
+            _isEnd = set.IsEnd;
+            if (_isEnd)
             {
                 // Go directly to the next state
                 var stateTrigger = new StateTrigger(ApCoreTriggers.Direct, ToDetail())
@@ -41,9 +46,9 @@ namespace Ap.Core.Definitions
             }
         }
 
-        public override bool IsEnd => GetStateSet().IsEnd;
+        public override bool IsEnd => _isEnd;
 
-        private IStateSet GetStateSet()
+        private async ValueTask<IStateSet> GetStateSet()
         {
             var trueSet = StateSets[TrueState];
             var falseSet = StateSets[FalseState];
@@ -51,20 +56,26 @@ namespace Ap.Core.Definitions
             IStateSet set;
             if (trueSet.IsInitial && falseSet.IsInitial)
             {
-                set = _action() ? trueSet : falseSet;
+                if (_predicate != null)
+                {
+                    var func = (IfFunction)ActivatorUtilities.CreateInstance(ServiceProvider, _predicate.Type, _predicate.Parameters);
+                    set = await func.InvokeAsync(new PredicateContext(ServiceProvider)) ? trueSet : falseSet;
+                    return set;
+                }
             }
             else
             {
                 set = StateSets.First(s => !s.Value.IsInitial).Value;
+                return set;
             }
 
-            return set;
+            throw new InvalidOperationException("Can't get right IStateSet");
         }
 
-        public override StateTriggerCollection GetTrigger()
+        public override async ValueTask<StateTriggerCollection> GetTrigger()
         {
-            IStateSet set = GetStateSet();
-            return set.GetTrigger();
+            IStateSet set = await GetStateSet();
+            return await set.GetTrigger();
         }
     }
 }

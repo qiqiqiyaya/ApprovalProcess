@@ -5,7 +5,7 @@ namespace Ap.Core.Services.Interfaces
 {
     public interface IStateSetRepository
     {
-        ValueTask Add(IStateSet configuration);
+        ValueTask Add(IStateSet set);
 
         ValueTask<IStateSet> GetByIdAsync(string stateSetId);
 

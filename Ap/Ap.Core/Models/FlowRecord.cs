@@ -5,6 +5,11 @@ namespace Ap.Core.Models
 {
     public class FlowRecord : Flow
     {
+        internal FlowRecord()
+        {
+
+        }
+
         public FlowRecord(Flow flow)
         {
             Id = Guid.NewGuid().ToString("N");
@@ -18,6 +23,7 @@ namespace Ap.Core.Models
             ExecutorId = flow.ExecutorId;
             UpdateTime = DateTime.UtcNow;
             CreateTime = flow.CreateTime;
+            FlowStatus = flow.FlowStatus;
             NextExecutors = [.. flow.NextExecutors];
         }
 
