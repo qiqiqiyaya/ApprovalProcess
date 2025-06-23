@@ -2,7 +2,6 @@
 using Ap.Core.Behaviours;
 using Ap.Core.Definitions;
 using Ap.Core.Definitions.Actions;
-using Ap.Core.Definitions.States;
 using Ap.Core.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -102,24 +101,9 @@ namespace Ap.Core.Builders
             StateSetBuilderProvider = creator(serviceProvider, RootStateLinked);
         }
 
-        private TBuilder Start()
+        private void Start(string name, Action<IState, string>? action = null)
         {
-            var result = new StartState(Id);
-            AddTransition = destination =>
-            {
-                result.AddTransition(new Direct(destination));
-            };
-
-            StateLinked.AddFirst(result);
-            return (this as TBuilder)!;
-        }
-
-        private TBuilder Start(string name, Action<IState, string>? action = null)
-        {
-            CheckState(name);
-
-            Start();
-            var result = new StateRepresentation(name);
+            var result = new StateRepresentation(name, StateType.Start);
             AddTransition(name);
             AddTransition = destination =>
             {
@@ -133,7 +117,6 @@ namespace Ap.Core.Builders
                 }
             };
             StateLinked.AddLast(result);
-            return (this as TBuilder)!;
         }
 
         public TBuilder Then(string name)
@@ -211,11 +194,8 @@ namespace Ap.Core.Builders
         public void Complete()
         {
             var last = StateLinked.OriginLast.Value;
-            if (last is EndState) return;
-
-            var result = new EndState(Id);
-            StateLinked.AddLast(result);
-            AddTransition(result.Name);
+            if (last.StateType == StateType.End) return;
+            last.StateType = StateType.End;
         }
 
         #region If

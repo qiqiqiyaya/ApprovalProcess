@@ -10,18 +10,34 @@ namespace Ap.Core.Definitions
 {
     public abstract class StateBase : NodeBase, IState
     {
-        protected StateBase(string name) : this(name, Guid.NewGuid().ToString("N"))
+        protected StateBase(string name)
+            : this(name, Guid.NewGuid().ToString("N"))
         {
 
         }
 
         protected StateBase(string name, string id)
+            : this(name, id, StateType.General)
+
+        {
+
+        }
+        protected StateBase(string name, StateType stateType)
+            : this(name, Guid.NewGuid().ToString("N"), stateType)
+        {
+
+        }
+
+        protected StateBase(string name, string id, StateType stateType)
         {
             Name = name;
             Id = id;
+            StateType = stateType;
         }
 
         public string Name { get; internal set; }
+
+        public StateType StateType { get; set; }
 
         public Dictionary<string, IBehaviour> Transitions { get; } = new();
 

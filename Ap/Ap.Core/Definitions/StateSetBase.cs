@@ -1,6 +1,5 @@
 ﻿using Ap.Core.Behaviours;
 using Ap.Core.Configurations;
-using Ap.Core.Definitions.States;
 using Ap.Core.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -27,7 +26,7 @@ namespace Ap.Core.Definitions
 
         public StateLinkedList RootLinkedList { get; }
 
-        public virtual bool IsEnd => GetState(CurrentState) is EndState;
+        public virtual bool IsEnd => GetState(CurrentState).StateType == StateType.End;
 
         public virtual StateSetConfiguration StateSetConfiguration { get; } = new();
 
@@ -219,16 +218,13 @@ namespace Ap.Core.Definitions
             }
         }
 
-        protected virtual async ValueTask<IState> StartStateHandle(IState state, TriggerContext context)
+        protected virtual async ValueTask StartStateHandle(IState state, TriggerContext context)
         {
-            if (state is not StartState startState) return state;
+            if (state.StateType != StateType.Start) return;
+
             context.CurrentStateSet = this;
             context.State = state;
-            await startState.Entry(context.CreateEntryContext());
-
-            var behaviour = startState.GetBehaviour();
-            await ExitAndEntry(state, behaviour, context);
-            return GetState(CurrentState);
+            await state.Entry(context.CreateEntryContext());
         }
 
         protected virtual async ValueTask EndStateHandle(TriggerContext context)

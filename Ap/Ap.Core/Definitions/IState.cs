@@ -10,6 +10,8 @@ namespace Ap.Core.Definitions
     {
         string Name { get; }
 
+        StateType StateType { get; set; }
+
         /// <summary>
         /// Transition to
         /// </summary>
