@@ -4,6 +4,7 @@ using Ap.Core.Definitions.States;
 using Ap.Core.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Definitions
@@ -64,21 +65,37 @@ namespace Ap.Core.Definitions
         {
             ServiceProvider = serviceProvider;
 
+            var level = RootLinkedList.GetStateLevel(stateName);
+            var first = level.First();
+            CurrentState = first.Name;
+            level.Remove(first);
 
+            Recover(CurrentStateNode, level);
+        }
+
+        public void Recover(IServiceProvider serviceProvider, string stateName, List<IState> level)
+        {
+            ServiceProvider = serviceProvider;
+            CurrentState = stateName;
+            Recover(CurrentStateNode, level);
+        }
+
+        private void Recover(IState state, List<IState> level)
+        {
+            if (level.Count == 0) return;
+            var firstState = level.First();
+            level.Remove(firstState);
             switch (state)
             {
-                case IStateSetContainer container:
-                    await SetContainerHandle(container, context);
-                    break;
                 case IStateSet set:
-                    await StateSetHandle(set, context);
+                    set.Recover(ServiceProvider, firstState.Name, level);
                     break;
-                default:
-                    await ExitAndEntry(state, context);
+                case IStateSetContainer container:
+                    container.StateSets[firstState.Name].Recover(ServiceProvider, firstState.Name, level);
                     break;
             }
-            CurrentState = stateName;
         }
+
 
         public IState GetState(string state)
         {

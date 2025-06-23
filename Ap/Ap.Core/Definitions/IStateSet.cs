@@ -35,6 +35,8 @@ namespace Ap.Core.Definitions
 
         void Recover(IServiceProvider serviceProvider, string stateName);
 
+        void Recover(IServiceProvider serviceProvider, string stateName, List<IState> level);
+
         /// <summary>
         /// reset ot initial state
         /// </summary>
