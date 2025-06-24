@@ -39,9 +39,11 @@ namespace Ap.Core.Models
 
     public enum FlowStatus
     {
-        Initial = 1,
+        Start = 1,
         Running = 2,
         End = 3,
+        Initial = 0,
+        Completed = 4
     }
 
 }

@@ -13,11 +13,12 @@ namespace Ap.Core.Behaviours
     {
         public override ValueTask ExecuteAsync(TriggerContext context)
         {
-            var firstState = context.CurrentStateSet.RootLinkedList.FirstState;
+            var firstState = context.CurrentStateSet.RootLinkedList.First;
+            var state = firstState.Value;
 
-            if (Destination != firstState.Name)
+            if (Destination != state.Name)
             {
-                throw new InvalidOperationException($"Reject behaviour can only be used to return to the first state: {firstState.Name}, but was given: {Destination}");
+                throw new InvalidOperationException($"Reject behaviour can only be used to return to the first state: {state.Name}, but was given: {Destination}");
             }
 
             context.RootStateSet.CurrentState = Destination;

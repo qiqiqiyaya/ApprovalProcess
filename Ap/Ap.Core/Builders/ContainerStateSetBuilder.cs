@@ -43,7 +43,7 @@ namespace Ap.Core.Builders
                         throw new ArgumentException($"Destination state '{destination}' is not configured in the state set.", nameof(destination));
                     }
 
-                    var first = RootStateLinked.FirstState;
+                    var first = RootStateLinked.First.Value;
                     stateNode.AddTransition(new JumpOut(ApCoreTriggers.Jump, destination));
                     stateNode.AddTransition(new Approve(next));
                     stateNode.AddTransition(new Reject(first.Name));

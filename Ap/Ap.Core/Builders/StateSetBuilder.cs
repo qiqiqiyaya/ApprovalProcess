@@ -90,7 +90,7 @@ namespace Ap.Core.Builders
             }
 
             Start(name, action);
-            _sm = new StateMachine(StateLinked.OriginFirst.Value, RootStateLinked, id);
+            _sm = new StateMachine(StateLinked.First.Value, RootStateLinked, id);
             Name = _sm.Name;
         }
 
@@ -128,7 +128,7 @@ namespace Ap.Core.Builders
             AddTransition(name);
             AddTransition = destination =>
             {
-                var first = RootStateLinked.FirstState;
+                var first = RootStateLinked.First.Value;
                 result.AddTransition(new Approve(destination));
                 result.AddTransition(new Reject(first.Name));
             };
@@ -146,7 +146,7 @@ namespace Ap.Core.Builders
             {
                 AddTransition = destination =>
                 {
-                    var first = RootStateLinked.FirstState;
+                    var first = RootStateLinked.First.Value;
                     result.AddTransition(new Approve(destination));
                     result.AddTransition(new Reject(first.Name));
                 };
@@ -193,9 +193,9 @@ namespace Ap.Core.Builders
 
         public void Complete()
         {
-            var last = StateLinked.OriginLast.Value;
-            if (last.StateType == StateType.End) return;
-            last.StateType = StateType.End;
+            var last = StateLinked.Last.Value;
+            if (last.StateType == StateType.General) last.StateType = StateType.End;
+            else if (last.StateType == StateType.Start) last.StateType = StateType.SingleState;
         }
 
         #region If
@@ -272,7 +272,7 @@ namespace Ap.Core.Builders
                         throw new ArgumentException($"Destination state '{destination}' is not configured in the state set.", nameof(destination));
                     }
 
-                    var first = RootStateLinked.FirstState;
+                    var first = RootStateLinked.First.Value;
                     stateNode.AddTransition(new Jump(destination));
                     stateNode.AddTransition(new Approve(next));
                     stateNode.AddTransition(new Reject(first.Name));
@@ -457,6 +457,7 @@ namespace Ap.Core.Builders
             }
 
             _sm.Name = Name;
+            _sm.Id = Id;
             return _sm;
         }
 

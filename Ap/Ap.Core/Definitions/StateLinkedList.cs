@@ -1,5 +1,4 @@
-﻿using Ap.Core.Builders;
-using Ap.Core.Exceptions;
+﻿using Ap.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 
@@ -12,50 +11,6 @@ namespace Ap.Core.Definitions
         internal StateLinkedList(IEnumerable<IState> collection) : base(collection)
         {
 
-        }
-
-        public new LinkedListNode<IState> Last
-        {
-            get
-            {
-                if (Count < 3)
-                {
-                    throw new InvalidOperationException($"Please use {nameof(StateSetBuilder)} to create a state");
-                }
-
-                return base.Last.Previous!;
-            }
-        }
-
-        public LinkedListNode<IState> OriginLast => base.Last;
-
-
-        public new LinkedListNode<IState> First
-        {
-            get
-            {
-                if (Count < 2)
-                {
-                    throw new InvalidOperationException($"Please use {nameof(StateSetBuilder)} to create a state");
-                }
-
-                return base.First!.Next!;
-            }
-        }
-
-        public IState FirstState => First.Value;
-
-        public LinkedListNode<IState> OriginFirst
-        {
-            get
-            {
-                if (Count < 2)
-                {
-                    throw new InvalidOperationException($"Please use {nameof(StateSetBuilder)} to create a state");
-                }
-
-                return base.First!;
-            }
         }
 
         public bool Has(string stateName)

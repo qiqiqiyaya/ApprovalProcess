@@ -54,7 +54,7 @@ namespace Ap.Core.Definitions
             var falseSet = StateSets[FalseState];
 
             IStateSet set;
-            if (trueSet.IsInitial && falseSet.IsInitial)
+            if (trueSet.IsStart && falseSet.IsStart)
             {
                 if (_predicate != null)
                 {
@@ -65,7 +65,7 @@ namespace Ap.Core.Definitions
             }
             else
             {
-                set = StateSets.First(s => !s.Value.IsInitial).Value;
+                set = StateSets.First(s => !s.Value.IsStart).Value;
                 return set;
             }
 

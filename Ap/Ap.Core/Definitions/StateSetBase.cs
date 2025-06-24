@@ -16,7 +16,7 @@ namespace Ap.Core.Definitions
 
         public string CurrentState { get; set; }
 
-        public virtual bool IsInitial => CurrentState == InitialState;
+        public virtual bool IsStart => GetState(CurrentState).StateType == StateType.Start;
 
         public virtual IState CurrentStateNode => GetState(CurrentState);
 
@@ -115,7 +115,6 @@ namespace Ap.Core.Definitions
         {
             if (IsEnd) return new StateTriggerCollection();
             var state = GetState(CurrentState);
-            state.ServiceProvider = ServiceProvider;
 
             // state is never EndState
             // state is StartState ， skip it
@@ -130,25 +129,19 @@ namespace Ap.Core.Definitions
             return collection;
         }
 
-        public virtual async ValueTask ExecuteInitialTrigger(TriggerContext context)
-        {
-            var state = GetState(CurrentState);
-            await StartStateHandle(state, context);
-        }
-
         public virtual async ValueTask ExecuteTrigger(TriggerContext context)
         {
             context.RootStateSet = this;
             context.RootSetConfiguration = StateSetConfiguration;
             context.ServiceProvider = ServiceProvider;
 
-            if (IsInitial)
+            var state = GetState(CurrentState);
+
+            if (state.StateType == StateType.Initial)
             {
-                await ExecuteInitialTrigger(context);
+                await EntryStartState(state, context);
                 return;
             }
-
-            var state = GetState(CurrentState);
 
             switch (state)
             {
@@ -159,6 +152,12 @@ namespace Ap.Core.Definitions
                     await StateSetHandle(set, context);
                     break;
                 default:
+                    if (state.StateType == StateType.End)
+                    {
+                        await ExitEndState(state, context);
+                        return;
+                    }
+
                     await ExitAndEntry(state, context);
                     break;
             }
@@ -171,7 +170,7 @@ namespace Ap.Core.Definitions
             var behaviour = state.Transitions[context.StateTrigger.Trigger];
             await ExitAndEntry(state, behaviour, context);
 
-            await EndStateHandle(context);
+            //await ExitEndState(context);
         }
 
         protected virtual async ValueTask ExitAndEntry(IState state, IBehaviour behaviour, TriggerContext context)
@@ -218,23 +217,20 @@ namespace Ap.Core.Definitions
             }
         }
 
-        protected virtual async ValueTask StartStateHandle(IState state, TriggerContext context)
+        protected virtual async ValueTask EntryStartState(IState state, TriggerContext context)
         {
-            if (state.StateType != StateType.Start) return;
-
+            state.StateType = StateType.Start;
             context.CurrentStateSet = this;
             context.State = state;
             await state.Entry(context.CreateEntryContext());
         }
 
-        protected virtual async ValueTask EndStateHandle(TriggerContext context)
+        protected virtual async ValueTask ExitEndState(IState state, TriggerContext context)
         {
-            if (GetState(CurrentState) is EndState endState)
-            {
-                context.CurrentStateSet = this;
-                context.State = endState;
-                await endState.Exit(context.CreateExitContext());
-            }
+            state.StateType = StateType.Completed;
+            context.CurrentStateSet = this;
+            context.State = state;
+            await state.Exit(context.CreateExitContext());
         }
 
         /// <summary>

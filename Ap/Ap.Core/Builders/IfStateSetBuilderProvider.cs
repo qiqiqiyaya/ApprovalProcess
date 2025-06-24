@@ -10,7 +10,7 @@ namespace Ap.Core.Builders
         {
             return builderProvider.Create(state, (result, destination) =>
             {
-                var first = rootStateLinked.FirstState;
+                var first = rootStateLinked.First.Value;
                 result.AddTransition(new Approve(destination));
                 result.AddTransition(new Reject(first.Name));
             });

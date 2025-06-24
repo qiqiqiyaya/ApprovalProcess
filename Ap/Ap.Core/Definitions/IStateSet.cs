@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Ap.Core.Definitions
 {
@@ -16,7 +15,7 @@ namespace Ap.Core.Definitions
 
         string CurrentState { get; }
 
-        bool IsInitial { get; }
+        bool IsStart { get; }
 
         IState CurrentStateNode { get; }
 

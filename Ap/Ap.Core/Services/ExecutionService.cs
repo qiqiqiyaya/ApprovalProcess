@@ -23,15 +23,20 @@ namespace Ap.Core.Services
             // 恢复状态机状态
             set.Recover(serviceProvider, flow.StateName);
 
-            // 同步流程状态
-            if (set.IsEnd) flow.FlowStatus = FlowStatus.End;
-            else if (set.IsInitial) flow.FlowStatus = FlowStatus.Initial;
-            else flow.FlowStatus = FlowStatus.Running;
+            if (flow.FlowStatus == FlowStatus.Initial)
+            {
+                flow.FlowStatus = FlowStatus.Start;
+                // entry start
+            }
 
             var context = new TriggerContext(stateTrigger, flow, user);
-
             // 触发
             await set.ExecuteTrigger(context);
+
+            if (flow.FlowStatus == FlowStatus.End)
+            {
+
+            }
         }
 
         public async ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow)

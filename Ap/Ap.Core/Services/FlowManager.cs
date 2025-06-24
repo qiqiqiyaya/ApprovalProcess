@@ -49,7 +49,7 @@ namespace Ap.Core.Services
                 StateId = set.Id,
                 ExecutorId = user.Id,
                 CreateTime = DateTime.Now,
-                FlowStatus = FlowStatus.Initial
+                FlowStatus = FlowStatus.Start
             };
 
             flow.NextExecutors =

@@ -42,7 +42,7 @@ namespace Ap.Core.Builders
                     var builder = new ContainerStateSetBuilder(state, id, RootStateLinked,
                         (result, destination) =>
                         {
-                            var first = RootStateLinked.FirstState;
+                            var first = RootStateLinked.First.Value;
                             result.AddTransition(new Approve(destination));
                             result.AddTransition(new Reject(first.Name));
                         });
