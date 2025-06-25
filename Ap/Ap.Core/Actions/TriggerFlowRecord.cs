@@ -18,30 +18,7 @@ namespace Ap.Core.Actions
 
         protected virtual async ValueTask Create(BaseContext context)
         {
-            FlowRecord record;
-            if (context.CurrentStateSet.IsEnd)
-            {
-                record = new FlowRecord
-                {
-                    Id = Guid.NewGuid().ToString("N"),
-                    FlowId = context.Flow.Id,
-                    RootStateSetId = context.RootStateSet.Id,
-                    StateSetId = context.CurrentStateSet.Id,
-                    StateName = context.State.Name,
-                    StateId = context.StateTrigger.StateDetail.Id,
-                    LastExecTrigger = context.StateTrigger.Trigger,
-                    ExecutorId = context.Executor.Id,
-                    CreateTime = context.Flow.CreateTime,
-                    FlowStatus = FlowStatus.End,
-                    UpdateTime = DateTime.UtcNow
-                };
-                record.NextExecutors.Clear();
-            }
-            else
-            {
-                record = new FlowRecord(context.Flow);
-            }
-
+            var record = new FlowRecord(context.Flow);
             await context.GetRequiredService<IFlowManager>().AddRecordAsync(record);
         }
     }

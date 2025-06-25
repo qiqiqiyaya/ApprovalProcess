@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Ap.Core.Services.Interfaces;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
@@ -7,7 +8,7 @@ namespace Ap.Core.Models
 {
     public class UserFlow
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string UserId { get; set; }
 
@@ -15,11 +16,13 @@ namespace Ap.Core.Models
 
         public DateTime CreateTime { get; set; }
 
-        public Flow Flow { get; set; }
+        public Flow ExecutionFlow { get; set; }
+
+        public List<FlowRecord> History { get; set; }
 
         public UserFlow(Flow flow, IUser user)
         {
-            Flow = flow ?? throw new ArgumentNullException(nameof(flow));
+            ExecutionFlow = flow ?? throw new ArgumentNullException(nameof(flow));
             UserId = user?.Id ?? throw new ArgumentNullException(nameof(user));
             FlowId = flow.Id;
             CreateTime = DateTime.Now;

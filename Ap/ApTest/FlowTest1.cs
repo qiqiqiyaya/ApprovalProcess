@@ -55,8 +55,6 @@ namespace ApTest
 
             var stateSet = await stateSetService.GetByNameAsync(flowName);
             var uf = await flowManager.CreateUserFlowAsync(user, stateSet);
-
-            Assert.Equal(uf.Flow.StateName, "edit");
             return uf;
         }
 

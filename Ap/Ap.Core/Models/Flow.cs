@@ -41,7 +41,7 @@ namespace Ap.Core.Models
     {
         Initial = 1,
         Running = 2,
-        End = 3,
+        Completed = 3,
     }
 
 }

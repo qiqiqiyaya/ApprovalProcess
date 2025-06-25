@@ -23,6 +23,10 @@ namespace Ap.Core.Definitions
 
         public virtual bool IsEnd => CheckIsEnding();
 
+        public abstract ValueTask InitialEntry(TriggerContext context);
+
+        public abstract ValueTask CompletedExit(TriggerContext context);
+
         public virtual async ValueTask ExecuteTrigger(TriggerContext context)
         {
             var stateSetId = context.StateTrigger.StateSetId;

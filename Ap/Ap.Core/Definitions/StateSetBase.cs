@@ -120,8 +120,8 @@ namespace Ap.Core.Definitions
 
             // state is never EndState
             // state is StartState ， skip it
-            var collection = await state.GetTrigger();
-            //var collection = state is StartState ? LinkedList.FirstState.GetTrigger() : state.GetTrigger();
+            //var collection = await state.GetTrigger();
+            var collection = state is StartState ? await LinkedList.FirstState.GetTrigger() : await state.GetTrigger();
 
             foreach (var stateTrigger in collection)
             {
@@ -131,26 +131,13 @@ namespace Ap.Core.Definitions
             return collection;
         }
 
-        public virtual async ValueTask ExecuteInitialTrigger(TriggerContext context)
-        {
-            var state = GetState(CurrentState);
-            await StartStateHandle(state, context);
-        }
-
         public virtual async ValueTask ExecuteTrigger(TriggerContext context)
         {
             context.RootStateSet = this;
             context.RootSetConfiguration = StateSetConfiguration;
             context.ServiceProvider = ServiceProvider;
 
-            if (IsInitial)
-            {
-                await ExecuteInitialTrigger(context);
-                return;
-            }
-
             var state = GetState(CurrentState);
-
             switch (state)
             {
                 case IStateSetContainer container:
@@ -172,7 +159,7 @@ namespace Ap.Core.Definitions
             var behaviour = state.Transitions[context.StateTrigger.Trigger];
             await ExitAndEntry(state, behaviour, context);
 
-            await EndStateHandle(context);
+            //await EndStateHandle(context);
         }
 
         protected virtual async ValueTask ExitAndEntry(IState state, IBehaviour behaviour, TriggerContext context)
@@ -219,26 +206,37 @@ namespace Ap.Core.Definitions
             }
         }
 
-        protected virtual async ValueTask<IState> StartStateHandle(IState state, TriggerContext context)
+        public virtual async ValueTask InitialEntry(TriggerContext context)
         {
-            if (state is not StartState startState) return state;
+            context.RootStateSet = this;
+            context.RootSetConfiguration = StateSetConfiguration;
+            context.ServiceProvider = ServiceProvider;
             context.CurrentStateSet = this;
-            context.State = state;
-            await startState.Entry(context.CreateEntryContext());
 
-            var behaviour = startState.GetBehaviour();
+            var state = (GetState(CurrentState) as StartState)!;
+            var collection = await state.GetTrigger();
+            var stateTrigger = collection.First();
+            stateTrigger.StateSetId = Id;
+            context.StateTrigger = stateTrigger;
+            context.State = state;
+
+            await state.Entry(context.CreateEntryContext());
+            var behaviour = state.GetBehaviour();
+
             await ExitAndEntry(state, behaviour, context);
-            return GetState(CurrentState);
         }
 
-        protected virtual async ValueTask EndStateHandle(TriggerContext context)
+        public virtual async ValueTask CompletedExit(TriggerContext context)
         {
-            if (GetState(CurrentState) is EndState endState)
-            {
-                context.CurrentStateSet = this;
-                context.State = endState;
-                await endState.Exit(context.CreateExitContext());
-            }
+            context.RootStateSet = this;
+            context.RootSetConfiguration = StateSetConfiguration;
+            context.ServiceProvider = ServiceProvider;
+            context.CurrentStateSet = this;
+
+            var state = (GetState(CurrentState) as EndState)!;
+            context.State = state;
+
+            await state.Exit(context.CreateExitContext());
         }
 
         /// <summary>

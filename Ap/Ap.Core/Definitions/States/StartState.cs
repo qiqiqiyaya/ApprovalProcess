@@ -1,11 +1,7 @@
 ﻿using Ap.Core.Behaviours;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Ap.Core.Actions;
-using Ap.Core.Definitions.Actions;
-using Ap.Core.Configurations;
 
 namespace Ap.Core.Definitions.States;
 
@@ -24,13 +20,8 @@ public class StartState(string builderId) : StateBase(StartStateName + builderId
         return direct;
     }
 
-    //public override async ValueTask Entry(EntryContext context)
-    //{
-    //    await context.ActionRunAsync(StateConfiguration);
-    //}
-
-    //public override ValueTask Exit(ExitContext context)
-    //{
-    //    return new ValueTask();
-    //}
+    public override ValueTask Entry(EntryContext context)
+    {
+        return new ValueTask();
+    }
 }

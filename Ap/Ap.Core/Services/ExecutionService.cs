@@ -8,7 +8,8 @@ namespace Ap.Core.Services
 {
     public class ExecutionService(
         IStateSetRepository stateSetRepository,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IFlowManager flowManager)
         : IExecutionService
     {
         public async ValueTask InvokeAsync(IUser user, Flow flow, StateTrigger stateTrigger)
@@ -23,15 +24,26 @@ namespace Ap.Core.Services
             // 恢复状态机状态
             set.Recover(serviceProvider, flow.StateName);
 
-            // 同步流程状态
-            if (set.IsEnd) flow.FlowStatus = FlowStatus.End;
-            else if (set.IsInitial) flow.FlowStatus = FlowStatus.Initial;
-            else flow.FlowStatus = FlowStatus.Running;
+            if (set.IsInitial)
+            {
+                var initial = new TriggerContext(flow, user);
+                flow.FlowStatus = FlowStatus.Initial;
+                await set.InitialEntry(initial);
+                flow = await flowManager.GetFlowAsync(flow.Id);
+            }
 
-            var context = new TriggerContext(stateTrigger, flow, user);
-
+            flow.FlowStatus = FlowStatus.Running;
             // 触发
+            var context = new TriggerContext(stateTrigger, flow, user);
             await set.ExecuteTrigger(context);
+
+            if (set.IsEnd)
+            {
+                flow = await flowManager.GetFlowAsync(flow.Id);
+                var end = new TriggerContext(flow, user);
+                flow.FlowStatus = FlowStatus.Completed;
+                await set.CompletedExit(end);
+            }
         }
 
         public async ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow)

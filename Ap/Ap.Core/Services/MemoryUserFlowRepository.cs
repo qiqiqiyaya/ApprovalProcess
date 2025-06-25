@@ -25,7 +25,7 @@ namespace Ap.Core.Services
         public async ValueTask UpdateAsync(Flow flow)
         {
             var uf = await GetByFlowIdAsync(flow.Id);
-            uf.Flow = flow;
+            uf.ExecutionFlow = flow;
         }
 
         public ValueTask<UserFlow> GetByIdAsync(string userId)
@@ -40,7 +40,7 @@ namespace Ap.Core.Services
 
         public ValueTask<Flow> GetFlowAsync(string flowId)
         {
-            return new ValueTask<Flow>(Flows.Find(x => x.FlowId == flowId).Flow);
+            return new ValueTask<Flow>(Flows.Find(x => x.FlowId == flowId).ExecutionFlow);
         }
     }
 }

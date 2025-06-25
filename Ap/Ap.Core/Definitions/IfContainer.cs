@@ -24,6 +24,16 @@ namespace Ap.Core.Definitions
             StateSets.Add(FalseState, @false ?? throw new ArgumentNullException(nameof(@false)));
         }
 
+        public override ValueTask InitialEntry(TriggerContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ValueTask CompletedExit(TriggerContext context)
+        {
+            throw new NotImplementedException();
+        }
+
         public override async ValueTask ExecuteTrigger(TriggerContext context)
         {
             IStateSet set = await GetStateSet();

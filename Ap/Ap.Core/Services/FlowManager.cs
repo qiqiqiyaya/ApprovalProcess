@@ -2,7 +2,6 @@
 using Ap.Core.Models;
 using Ap.Core.Services.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ap.Core.Services
@@ -10,17 +9,14 @@ namespace Ap.Core.Services
     public class FlowManager : IFlowManager
     {
         private readonly IUserFlowRepository _userFlowRepository;
-        private readonly IExecutionService _executionService;
         private readonly IStateSetRepository _stateSetRepository;
         private readonly IFlowRecordRepository _flowRecordRepository;
 
         public FlowManager(
-            IExecutionService executionService,
             IStateSetRepository stateSetRepository,
             IUserFlowRepository userFlowRepository,
             IFlowRecordRepository flowRecordRepository)
         {
-            _executionService = executionService;
             _userFlowRepository = userFlowRepository;
             _stateSetRepository = stateSetRepository;
             _flowRecordRepository = flowRecordRepository;
@@ -64,12 +60,14 @@ namespace Ap.Core.Services
             ];
 
             var userFlow = new UserFlow(flow, user);
+            userFlow.Id = Guid.NewGuid().ToString("N");
             await _userFlowRepository.CreateAsync(userFlow);
-
-            var triggers = await _executionService.GetTriggerAsync(flow);
-            await _executionService.InvokeAsync(user, flow, triggers[0]);
-
             return userFlow;
+        }
+
+        public async ValueTask UserFlowCompletedAsync(string userFlowId)
+        {
+
         }
 
         public async ValueTask UpdateFlowAsync(Flow flow)

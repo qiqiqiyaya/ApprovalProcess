@@ -16,6 +16,13 @@ public class TriggerContext : BaseContext
         Executor = executor;
     }
 
+    internal TriggerContext(Flow flow,
+        IUser executor)
+    {
+        Flow = flow;
+        Executor = executor;
+    }
+
     internal ExitContext CreateExitContext()
     {
         var context = new ExitContext();

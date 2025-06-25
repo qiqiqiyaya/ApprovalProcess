@@ -23,7 +23,8 @@ public class ModifyFlow : IEntryAction
         flow.LastExecTrigger = context.StateTrigger.Trigger;
         flow.ExecutorId = context.Executor.Id;
         flow.CreateTime = DateTime.UtcNow;
-        flow.FlowStatus = context.Flow.FlowStatus;
+
+        flow.FlowStatus = context.CurrentStateSet.IsEnd ? FlowStatus.Completed : context.Flow.FlowStatus;
         flow.NextExecutors.Clear();
 
         context.Flow = flow;
@@ -35,17 +36,20 @@ public class ModifyFlow : IEntryAction
             throw new ApException("No approvers assigned for the flow.");
         }
 
-        flow.NextExecutors = context.NextApproverList.ConvertAll(s =>
+        if (!context.CurrentStateSet.IsEnd)
         {
-            var np = new NextExecutor
+            flow.NextExecutors = context.NextApproverList.ConvertAll(s =>
             {
-                Id = Guid.NewGuid().ToString("N"),
-                ObjectId = s,
-                FlowId = flow.Id,
-                CreateTime = DateTime.UtcNow
-            };
-            return np;
-        });
+                var np = new NextExecutor
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    ObjectId = s,
+                    FlowId = flow.Id,
+                    CreateTime = DateTime.UtcNow
+                };
+                return np;
+            });
+        }
 
         await context.GetRequiredService<IFlowManager>().UpdateFlowAsync(flow);
     }
