@@ -136,13 +136,6 @@ namespace Ap.Core.Definitions
             context.ServiceProvider = ServiceProvider;
 
             var state = GetState(CurrentState);
-
-            if (state.StateType == StateType.Initial)
-            {
-                await EntryStartState(state, context);
-                return;
-            }
-
             switch (state)
             {
                 case IStateSetContainer container:
@@ -152,12 +145,6 @@ namespace Ap.Core.Definitions
                     await StateSetHandle(set, context);
                     break;
                 default:
-                    if (state.StateType == StateType.End)
-                    {
-                        await ExitEndState(state, context);
-                        return;
-                    }
-
                     await ExitAndEntry(state, context);
                     break;
             }
@@ -217,15 +204,20 @@ namespace Ap.Core.Definitions
             }
         }
 
-        protected virtual async ValueTask EntryStartState(IState state, TriggerContext context)
+        public virtual async ValueTask InitialEntry(TriggerContext context)
         {
+            context.RootStateSet = this;
+            context.RootSetConfiguration = StateSetConfiguration;
+            context.ServiceProvider = ServiceProvider;
+
+            var state = GetState(CurrentState);
             state.StateType = StateType.Start;
             context.CurrentStateSet = this;
             context.State = state;
             await state.Entry(context.CreateEntryContext());
         }
 
-        protected virtual async ValueTask ExitEndState(IState state, TriggerContext context)
+        public virtual async ValueTask CompletedExit(IState state, TriggerContext context)
         {
             state.StateType = StateType.Completed;
             context.CurrentStateSet = this;
