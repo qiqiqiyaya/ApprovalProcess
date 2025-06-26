@@ -7,26 +7,26 @@ namespace Ap.Core.Services
 {
     public class MemoryFlowRecordRepository : IFlowRecordRepository
     {
-        private static readonly Dictionary<string, List<FlowRecord>> Flows = new();
+        private static readonly Dictionary<string, List<NodeRecord>> Flows = new();
 
-        public ValueTask<FlowRecord> InsertAsync(FlowRecord record)
+        public ValueTask<NodeRecord> InsertAsync(NodeRecord record)
         {
             if (!Flows.ContainsKey(record.FlowId))
             {
-                Flows[record.FlowId] = new List<FlowRecord>();
+                Flows[record.FlowId] = new List<NodeRecord>();
             }
 
             Flows[record.FlowId].Add(record);
-            return new ValueTask<FlowRecord>(record);
+            return new ValueTask<NodeRecord>(record);
         }
 
-        public ValueTask<List<FlowRecord>> GetListAsync(string flowId)
+        public ValueTask<List<NodeRecord>> GetListAsync(string flowId)
         {
             if (Flows.TryGetValue(flowId, out var records))
             {
-                return new ValueTask<List<FlowRecord>>(records);
+                return new ValueTask<List<NodeRecord>>(records);
             }
-            return new ValueTask<List<FlowRecord>>(new List<FlowRecord>());
+            return new ValueTask<List<NodeRecord>>(new List<NodeRecord>());
         }
     }
 }

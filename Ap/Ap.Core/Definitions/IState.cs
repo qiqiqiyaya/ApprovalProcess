@@ -6,8 +6,10 @@ using Ap.Core.Configurations;
 
 namespace Ap.Core.Definitions
 {
-    public interface IState : INode
+    public interface IState
     {
+        string Id { get; }
+
         string Name { get; }
 
         /// <summary>

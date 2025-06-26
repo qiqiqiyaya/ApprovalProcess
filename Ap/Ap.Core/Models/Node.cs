@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Ap.Core.Models
 {
-    public class Flow
+    public class Node
     {
         public string Id { get; set; }
 

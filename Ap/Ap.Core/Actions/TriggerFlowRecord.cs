@@ -18,7 +18,7 @@ namespace Ap.Core.Actions
 
         protected virtual async ValueTask Create(BaseContext context)
         {
-            var record = new FlowRecord(context.Flow);
+            var record = new NodeRecord(context.Node);
             await context.GetRequiredService<IFlowManager>().AddRecordAsync(record);
         }
     }

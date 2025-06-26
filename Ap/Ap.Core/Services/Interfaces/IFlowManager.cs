@@ -6,14 +6,14 @@ namespace Ap.Core.Services.Interfaces
 {
     public interface IFlowManager
     {
-        ValueTask<Flow> GetFlowAsync(string flowId);
+        ValueTask<Node> GetFlowAsync(string flowId);
 
-        ValueTask UpdateFlowAsync(Flow flow);
+        ValueTask UpdateFlowAsync(Node node);
 
         ValueTask<UserFlow> CreateUserFlowAsync(IUser user, string rootStateSetId);
 
         ValueTask<UserFlow> CreateUserFlowAsync(IUser user, IStateSet stateSet);
 
-        ValueTask AddRecordAsync(FlowRecord record);
+        ValueTask AddRecordAsync(NodeRecord record);
     }
 }

@@ -22,10 +22,10 @@ namespace Ap.Core.Services
             Flows.Add(userFlow);
         }
 
-        public async ValueTask UpdateAsync(Flow flow)
+        public async ValueTask UpdateAsync(Node node)
         {
-            var uf = await GetByFlowIdAsync(flow.Id);
-            uf.ExecutionFlow = flow;
+            var uf = await GetByFlowIdAsync(node.Id);
+            uf.ExecutionNode = node;
         }
 
         public ValueTask<UserFlow> GetByIdAsync(string userId)
@@ -38,9 +38,9 @@ namespace Ap.Core.Services
             return new ValueTask<UserFlow>(Flows.Find(x => x.FlowId == flowId));
         }
 
-        public ValueTask<Flow> GetFlowAsync(string flowId)
+        public ValueTask<Node> GetFlowAsync(string flowId)
         {
-            return new ValueTask<Flow>(Flows.Find(x => x.FlowId == flowId).ExecutionFlow);
+            return new ValueTask<Node>(Flows.Find(x => x.FlowId == flowId).ExecutionNode);
         }
     }
 }

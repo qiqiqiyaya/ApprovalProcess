@@ -6,8 +6,8 @@ namespace Ap.Core.Services.Interfaces
 {
     public interface IFlowRecordRepository
     {
-        ValueTask<FlowRecord> InsertAsync(FlowRecord record);
+        ValueTask<NodeRecord> InsertAsync(NodeRecord record);
 
-        ValueTask<List<FlowRecord>> GetListAsync(string flowId);
+        ValueTask<List<NodeRecord>> GetListAsync(string flowId);
     }
 }

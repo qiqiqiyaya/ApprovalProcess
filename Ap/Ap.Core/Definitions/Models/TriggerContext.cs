@@ -8,18 +8,18 @@ namespace Ap.Core.Definitions;
 public class TriggerContext : BaseContext
 {
     internal TriggerContext(StateTrigger stateTrigger,
-        Flow flow,
+        Node node,
         IUser executor)
     {
         StateTrigger = stateTrigger;
-        Flow = flow;
+        Node = node;
         Executor = executor;
     }
 
-    internal TriggerContext(Flow flow,
+    internal TriggerContext(Node node,
         IUser executor)
     {
-        Flow = flow;
+        Node = node;
         Executor = executor;
     }
 
@@ -33,7 +33,7 @@ public class TriggerContext : BaseContext
         context.StateTrigger = StateTrigger;
         context.Properties = Properties;
         context.RootSetConfiguration = RootSetConfiguration;
-        context.Flow = Flow;
+        context.Node = Node;
         context.State = State;
         context.Executor = Executor;
 
@@ -50,7 +50,7 @@ public class TriggerContext : BaseContext
         context.StateTrigger = StateTrigger;
         context.Properties = Properties;
         context.RootSetConfiguration = RootSetConfiguration;
-        context.Flow = Flow;
+        context.Node = Node;
         context.State = State;
         context.Executor = Executor;
 

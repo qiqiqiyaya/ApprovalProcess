@@ -14,8 +14,8 @@ public class ModifyFlow : IEntryAction
 {
     public async ValueTask InvokeAsync(EntryContext context, Func<EntryContext, ValueTask> next)
     {
-        var flow = new Flow();
-        flow.Id = context.Flow.Id;
+        var flow = new Node();
+        flow.Id = context.Node.Id;
         flow.RootStateSetId = context.RootStateSet.Id;
         flow.StateSetId = context.CurrentStateSet.Id;
         flow.StateName = context.State.Name;
@@ -24,10 +24,10 @@ public class ModifyFlow : IEntryAction
         flow.ExecutorId = context.Executor.Id;
         flow.CreateTime = DateTime.UtcNow;
 
-        flow.FlowStatus = context.CurrentStateSet.IsEnd ? FlowStatus.Completed : context.Flow.FlowStatus;
+        flow.FlowStatus = context.CurrentStateSet.IsEnd ? FlowStatus.Completed : context.Node.FlowStatus;
         flow.NextExecutors.Clear();
 
-        context.Flow = flow;
+        context.Node = flow;
 
         await next(context);
 

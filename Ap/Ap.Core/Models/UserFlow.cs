@@ -15,13 +15,13 @@ namespace Ap.Core.Models
 
         public DateTime CreateTime { get; set; }
 
-        public Flow ExecutionFlow { get; set; }
+        public Node ExecutionNode { get; set; }
 
-        public UserFlow(Flow flow, IUser user)
+        public UserFlow(Node node, IUser user)
         {
-            ExecutionFlow = flow ?? throw new ArgumentNullException(nameof(flow));
+            ExecutionNode = node ?? throw new ArgumentNullException(nameof(node));
             UserId = user?.Id ?? throw new ArgumentNullException(nameof(user));
-            FlowId = flow.Id;
+            FlowId = node.Id;
             CreateTime = DateTime.Now;
         }
     }

@@ -35,9 +35,9 @@ namespace Ap.Core.Definitions
 
 			if (set.IsInitial)
 			{
-				var initial = new TriggerContext(context.Flow, context.Executor);
+				var initial = new TriggerContext(context.Node, context.Executor);
 				await set.InitialEntry(initial);
-				context.Flow = await initial.FlowRefreshAsync();
+				context.Node = await initial.FlowRefreshAsync();
 			}
 
 			await set.ExecuteTrigger(context);

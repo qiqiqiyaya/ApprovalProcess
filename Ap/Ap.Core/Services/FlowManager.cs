@@ -22,7 +22,7 @@ namespace Ap.Core.Services
 			_flowRecordRepository = flowRecordRepository;
 		}
 
-		public async ValueTask<Flow> GetFlowAsync(string flowId)
+		public async ValueTask<Node> GetFlowAsync(string flowId)
 		{
 			var flow = await _userFlowRepository.GetFlowAsync(flowId);
 			return flow;
@@ -38,7 +38,7 @@ namespace Ap.Core.Services
 		{
 			var node = set.CurrentStateNode;
 
-			var flow = new Flow()
+			var flow = new Node()
 			{
 				Id = Guid.NewGuid().ToString("N"),
 				RootStateSetId = set.Id,
@@ -72,12 +72,12 @@ namespace Ap.Core.Services
 
 		}
 
-		public async ValueTask UpdateFlowAsync(Flow flow)
+		public async ValueTask UpdateFlowAsync(Node node)
 		{
-			await _userFlowRepository.UpdateAsync(flow);
+			await _userFlowRepository.UpdateAsync(node);
 		}
 
-		public async ValueTask AddRecordAsync(FlowRecord record)
+		public async ValueTask AddRecordAsync(NodeRecord record)
 		{
 			await _flowRecordRepository.InsertAsync(record);
 		}

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Ap.Core.Definitions
 {
-    public abstract class StateBase : NodeBase, IState
+    public abstract class StateBase : IState
     {
         protected StateBase(string name) : this(name, Guid.NewGuid().ToString("N"))
         {
@@ -20,6 +20,8 @@ namespace Ap.Core.Definitions
             Name = name;
             Id = id;
         }
+
+        public string Id { get; set; }
 
         public string Name { get; internal set; }
 
