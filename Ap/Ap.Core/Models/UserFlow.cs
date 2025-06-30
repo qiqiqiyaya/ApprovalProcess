@@ -5,24 +5,24 @@ using System;
 
 namespace Ap.Core.Models
 {
-    public class UserFlow
-    {
-        public string Id { get; set; }
+	public class UserFlow
+	{
+		public string Id { get; set; }
 
-        public string UserId { get; set; }
+		public string UserId { get; set; }
 
-        public string FlowId { get; set; }
+		public string FlowId { get; set; }
 
-        public DateTime CreateTime { get; set; }
+		public DateTime CreateTime { get; set; }
 
-        public Node ExecutionNode { get; set; }
+		public Flow Flow { get; set; }
 
-        public UserFlow(Node node, IUser user)
-        {
-            ExecutionNode = node ?? throw new ArgumentNullException(nameof(node));
-            UserId = user?.Id ?? throw new ArgumentNullException(nameof(user));
-            FlowId = node.Id;
-            CreateTime = DateTime.Now;
-        }
-    }
+		public UserFlow(Flow flow, IUser user)
+		{
+			UserId = user.Id;
+			Flow = flow;
+			FlowId = flow.Id;
+			CreateTime = DateTime.Now;
+		}
+	}
 }

@@ -482,10 +482,10 @@ namespace Ap.Core.Builders
 		private void InternalCommonActions()
 		{
 			_sm.StateSetConfiguration.CommonEntryTypes.Add(new ApAction(typeof(ExceptionHandler)));
-			_sm.StateSetConfiguration.CommonEntryTypes.Add(new ApAction(typeof(ModifyFlow)));
+			_sm.StateSetConfiguration.CommonEntryTypes.Add(new ApAction(typeof(EntryExecutableNode)));
 
 			_sm.StateSetConfiguration.CommonExitTypes.Add(new ApAction(typeof(ExceptionHandler)));
-			_sm.StateSetConfiguration.CommonExitTypes.Add(new ApAction(typeof(TriggerFlowRecord)));
+			_sm.StateSetConfiguration.CommonExitTypes.Add(new ApAction(typeof(ExitExecutableNode)));
 		}
 
 		/// <summary>

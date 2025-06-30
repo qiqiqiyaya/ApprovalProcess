@@ -31,8 +31,6 @@ namespace Ap.Core
             services.AddTransient<IExecutionService, ExecutionService>();
             services.AddTransient<IPipelineProvider, PipelineProvider>();
 
-
-            services.AddTransient<IFlowRecordRepository, MemoryFlowRecordRepository>();
             services.AddTransient<IFlowManager, FlowManager>();
         }
     }

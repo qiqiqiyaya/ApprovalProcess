@@ -35,16 +35,16 @@ namespace Ap.Core.Definitions
 
 			if (set.IsInitial)
 			{
-				var initial = new TriggerContext(context.Node, context.Executor);
+				var initial = new TriggerContext(context.Flow, context.Executor);
 				await set.InitialEntry(initial);
-				context.Node = await initial.FlowRefreshAsync();
+				context.Flow = await initial.RefreshAsync();
 			}
 
 			await set.ExecuteTrigger(context);
 
 			if (set.IsEnd)
 			{
-				var newFlow = await context.FlowRefreshAsync();
+				var newFlow = await context.RefreshAsync();
 				var end = new TriggerContext(newFlow, context.Executor);
 				await set.CompletedExit(end);
 			}

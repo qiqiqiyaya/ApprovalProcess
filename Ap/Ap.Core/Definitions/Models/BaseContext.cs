@@ -15,7 +15,7 @@ public abstract class BaseContext
 
 	public StateTrigger StateTrigger { get; internal set; }
 
-	public Node Node { get; internal set; }
+	public Flow Flow { get; internal set; }
 
 	public IUser Executor { get; set; }
 
@@ -38,10 +38,10 @@ public abstract class BaseContext
 	/// this will get the latest flow from the flow manager. Wil update the Flow property.
 	/// </summary>
 	/// <returns></returns>
-	public async ValueTask<Node> FlowRefreshAsync()
+	public async ValueTask<Flow> RefreshAsync()
 	{
 		var flowManager = GetRequiredService<IFlowManager>();
-		Node = await flowManager.GetFlowAsync(Node.Id);
-		return Node;
+		Flow = await flowManager.GetFlowAsync(Flow.Id);
+		return Flow;
 	}
 }

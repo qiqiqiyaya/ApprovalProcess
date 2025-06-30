@@ -9,10 +9,12 @@ namespace Ap.Core.Services.Interfaces
 
         ValueTask UpdateAsync(UserFlow userFlow);
 
-        ValueTask UpdateAsync(Node node);
+        ValueTask UpdateAsync(Flow flow);
 
         ValueTask<UserFlow> GetByIdAsync(string userId);
 
-        ValueTask<Node> GetFlowAsync(string flowId);
+        ValueTask<Flow> GetFlowAsync(string flowId);
+
+        ValueTask<UserFlow> GetByFlowIdAsync(string flowId);
     }
 }

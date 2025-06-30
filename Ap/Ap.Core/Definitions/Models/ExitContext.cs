@@ -1,5 +1,4 @@
-﻿using Ap.Core.Actions;
-using Ap.Core.Configurations;
+﻿using Ap.Core.Configurations;
 using Ap.Core.Definitions.Actions;
 using Ap.Core.Pipeline;
 using System.Collections.Generic;
@@ -9,22 +8,24 @@ namespace Ap.Core.Definitions;
 
 public class ExitContext : BaseContext
 {
-    internal ExitContext() { }
+	public const string ExitActionsProperty = "ExitActions";
 
-    public virtual async ValueTask ActionRunAsync(StateConfiguration stateConfiguration)
-    {
-        List<ApAction> actions = [.. stateConfiguration.ExitTypes];
-        actions.InsertRange(0, RootSetConfiguration.CommonExitTypes);
+	internal ExitContext() { }
 
-        await ActionRunAsync(actions);
-    }
+	public virtual async ValueTask ActionRunAsync(StateConfiguration stateConfiguration)
+	{
+		List<ApAction> actions = [.. stateConfiguration.ExitTypes];
+		actions.InsertRange(0, RootSetConfiguration.CommonExitTypes);
 
-    public async ValueTask ActionRunAsync(List<ApAction> actions)
-    {
-        if (actions.Count == 0) return;
-        var provider = GetRequiredService<IPipelineProvider>();
+		Properties.Add(ExitActionsProperty, actions);
+		await ActionRunAsync(actions);
+	}
 
-        var pipeline = provider.GetPipeline<ExitContext>(actions);
-        await pipeline.RunAsync(this);
-    }
+	public async ValueTask ActionRunAsync(List<ApAction> actions)
+	{
+		if (actions.Count == 0) return;
+
+		var pipeline = GetRequiredService<IPipelineProvider>().GetPipeline<ExitContext>(actions);
+		await pipeline.RunAsync(this);
+	}
 }
