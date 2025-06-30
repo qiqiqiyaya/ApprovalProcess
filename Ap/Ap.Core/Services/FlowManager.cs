@@ -42,8 +42,7 @@ namespace Ap.Core.Services
                 StateSetId = set.Id,
                 StateName = node.Name,
                 StateId = node.Id,
-                CreateTime = DateTime.Now,
-                FlowStatus = FlowStatus.Initial
+                ExecutorId = user.Id
             };
 
             var userFlow = new UserFlow(flow, user);

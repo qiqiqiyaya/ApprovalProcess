@@ -7,11 +7,12 @@ namespace Ap.Core.Models
     {
         public string RootStateSetId { get; set; }
 
-        public List<Node> Nodes { get; set; }
+        public List<Node> Nodes { get; set; } = new List<Node>();
 
-        public FlowStatus FlowStatus { get; set; }
+        public FlowStatus FlowStatus { get; set; } = FlowStatus.Initial;
 
-        private LinkedList<Node>? _nodeLinked;
+        private LinkedList<Node> _nodeLinked;
+
         public LinkedList<Node> NodeLinked
         {
             get
