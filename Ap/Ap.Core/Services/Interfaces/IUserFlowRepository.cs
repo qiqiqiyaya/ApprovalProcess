@@ -16,5 +16,7 @@ namespace Ap.Core.Services.Interfaces
         ValueTask<Flow> GetFlowAsync(string flowId);
 
         ValueTask<UserFlow> GetByFlowIdAsync(string flowId);
+
+        ValueTask AddNodeAsync(Node node);
     }
 }

@@ -42,5 +42,11 @@ namespace Ap.Core.Services
         {
             return new ValueTask<Flow>(Flows.Find(x => x.FlowId == flowId).Flow);
         }
+
+        public async ValueTask AddNodeAsync(Node node)
+        {
+            var flow = await GetFlowAsync(node.FlowId);
+            flow.Nodes.Add(node);
+        }
     }
 }

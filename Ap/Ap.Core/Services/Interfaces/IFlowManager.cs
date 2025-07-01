@@ -15,5 +15,7 @@ namespace Ap.Core.Services.Interfaces
         ValueTask<UserFlow> CreateUserFlowAsync(IUser user, IStateSet stateSet);
 
         ValueTask<UserFlow> GetUserFlow(string flowId);
+
+        ValueTask AddNodeAsync(Node node);
     }
 }

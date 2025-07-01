@@ -16,15 +16,18 @@ public class EntryExecutableNode : IEntryAction
 {
     public async ValueTask InvokeAsync(EntryContext context, Func<EntryContext, ValueTask> next)
     {
-        var node = new Node(context.Flow);
-        node.Id = context.Flow.Id;
-        node.StateName = context.State.Name;
-        node.StateId = context.StateTrigger.StateDetail.Id;
-        node.ExecutorId = context.Executor.Id;
-        node.CreateTime = DateTime.UtcNow;
+        var node = new Node(context.Flow)
+        {
+            Id = Guid.NewGuid().ToString("N"),
+            StateName = context.State.Name,
+            StateId = context.StateTrigger.StateDetail.Id,
+            ExecutorId = context.Executor.Id,
+            StateSetId = context.CurrentStateSet.Id
+        };
 
         var actions = (List<ApAction>)context.Properties[EntryContext.EntryActionsProperty];
         node.Entry(actions);
+        node.IsTriggered = true;
 
         await next(context);
 

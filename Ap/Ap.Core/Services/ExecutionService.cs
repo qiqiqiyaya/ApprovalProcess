@@ -21,41 +21,46 @@ namespace Ap.Core.Services
         public async ValueTask InvokeAsync(IUser user, Flow flow, StateTrigger stateTrigger, IStateSet set)
         {
             var context = new TriggerContext(stateTrigger, flow, user);
+            var stateName = GetStateName(flow, set);
             // 恢复状态机状态
-            set.Recover(serviceProvider, flow.StateName);
+            set.Recover(serviceProvider, stateName);
 
-            if (set.IsInitial)
-            {
-                //var initial = new TriggerContext(flow, user);
-                //flow.FlowStatus = FlowStatus.Initial;
-                await set.InitialEntry(context);
-                //flow = await initial.RefreshAsync();
-
-            }
+            if (set.IsInitial) await set.InitialEntry(context);
 
             flow.FlowStatus = FlowStatus.Running;
             // 触发
             await set.ExecuteTrigger(context);
 
-            if (set.IsEnd)
-            {
-                flow = await context.RefreshAsync();
-                var end = new TriggerContext(flow, user);
-                flow.FlowStatus = FlowStatus.Completed;
-                await set.CompletedExit(end);
-            }
+            if (set.IsEnd) await set.CompletedExit(context);
         }
 
-        public async ValueTask<StateTriggerCollection> GetTriggerAsync(Flow node)
+        public async ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow)
         {
-            var set = await stateSetRepository.GetByIdAsync(node.RootStateSetId);
-            return await GetTrigger(node, set);
+            var set = await stateSetRepository.GetByIdAsync(flow.RootStateSetId);
+            return await GetTrigger(flow, set);
         }
 
-        protected ValueTask<StateTriggerCollection> GetTrigger(Flow node, IStateSet stateSet)
+        protected ValueTask<StateTriggerCollection> GetTrigger(Flow flow, IStateSet stateSet)
         {
-            stateSet.Recover(serviceProvider, node.StateName);
+            var stateName = GetStateName(flow, stateSet);
+
+            stateSet.Recover(serviceProvider, stateName);
             return stateSet.GetTrigger();
+        }
+
+        private string GetStateName(Flow flow, IStateSet stateSet)
+        {
+            string stateName;
+            if (flow.FlowStatus == FlowStatus.Initial)
+            {
+                stateName = stateSet.InitialState;
+            }
+            else
+            {
+                stateName = flow.GetExecutingNode().StateName;
+            }
+
+            return stateName;
         }
     }
 }

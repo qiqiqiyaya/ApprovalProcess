@@ -60,5 +60,11 @@ namespace Ap.Core.Services
         {
             await _userFlowRepository.UpdateAsync(flow);
         }
+
+
+        public async ValueTask AddNodeAsync(Node node)
+        {
+            await _userFlowRepository.AddNodeAsync(node);
+        }
     }
 }

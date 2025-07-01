@@ -133,9 +133,10 @@ namespace Ap.Core.Definitions
 
         public virtual async ValueTask ExecuteTrigger(TriggerContext context)
         {
-            context.RootStateSet = this;
-            context.RootSetConfiguration = StateSetConfiguration;
+            context.RootStateSet ??= this;
+            context.StateSetConfiguration = StateSetConfiguration;
             context.ServiceProvider = ServiceProvider;
+            context.TriggeredTime = DateTime.UtcNow;
 
             var state = GetState(CurrentState);
             switch (state)
@@ -208,36 +209,19 @@ namespace Ap.Core.Definitions
 
         public virtual async ValueTask InitialEntry(TriggerContext context)
         {
-            var initialContext = context.Clone();
-            initialContext.RootStateSet = this;
-            initialContext.RootSetConfiguration = StateSetConfiguration;
-            initialContext.ServiceProvider = ServiceProvider;
-            initialContext.CurrentStateSet = this;
+            context.RootStateSet ??= this;
+            context.StateSetConfiguration = StateSetConfiguration;
+            context.ServiceProvider = ServiceProvider;
+            context.TriggeredTime = DateTime.UtcNow;
 
             var state = (GetState(CurrentState) as StartState)!;
-            var collection = await state.GetTrigger();
-            var stateTrigger = collection.First();
-            stateTrigger.StateSetId = Id;
-            initialContext.StateTrigger = stateTrigger;
-            initialContext.State = state;
-
-            await state.Entry(initialContext.CreateEntryContext());
             var behaviour = state.GetBehaviour();
-
-            await ExitAndEntry(state, behaviour, initialContext);
+            await ExitAndEntry(state, behaviour, context);
         }
 
-        public virtual async ValueTask CompletedExit(TriggerContext context)
+        public virtual ValueTask CompletedExit(TriggerContext context)
         {
-            context.RootStateSet = this;
-            context.RootSetConfiguration = StateSetConfiguration;
-            context.ServiceProvider = ServiceProvider;
-            context.CurrentStateSet = this;
-
-            var state = (GetState(CurrentState) as EndState)!;
-            context.State = state;
-
-            await state.Exit(context.CreateExitContext());
+            return new ValueTask();
         }
 
         /// <summary>

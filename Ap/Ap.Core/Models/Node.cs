@@ -19,7 +19,10 @@ namespace Ap.Core.Models
 
         public Flow Flow { get; set; }
 
-        public bool IsEntry { get; set; }
+        /// <summary>
+        /// Whether triggered
+        /// </summary>
+        public bool IsTriggered { get; internal set; } = false;
 
         /// <summary>
         /// List of next executors for the flow. These are the users who will be responsible for the next steps in the flow.
@@ -32,9 +35,7 @@ namespace Ap.Core.Models
 
         public void Entry(List<ApAction> actions)
         {
-            UpdateTime = DateTime.UtcNow;
-
-            ExitActions = actions.Select(s => new NodeAction()
+            EntryActions = actions.Select(s => new NodeAction()
             {
                 Id = Guid.NewGuid().ToString("N"),
                 ActionName = s.Type.Name,
@@ -44,7 +45,6 @@ namespace Ap.Core.Models
 
         public void Exit(OutputTrigger trigger, List<ApAction> actions)
         {
-            UpdateTime = DateTime.UtcNow;
             OutputTrigger = trigger;
 
             ExitActions = actions.Select(s => new NodeAction()

@@ -1,6 +1,7 @@
 ﻿using Ap.Core.Behaviours;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ap.Core.Definitions.States;
 
@@ -19,8 +20,13 @@ public class StartState(string builderId) : StateBase(StartStateName + builderId
         return direct;
     }
 
-    //public override ValueTask Entry(EntryContext context)
-    //{
-    //	return new ValueTask();
-    //}
+    public override ValueTask Entry(EntryContext context)
+    {
+        return new ValueTask();
+    }
+
+    public override ValueTask Exit(ExitContext context)
+    {
+        return new ValueTask();
+    }
 }

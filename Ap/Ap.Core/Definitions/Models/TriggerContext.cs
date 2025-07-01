@@ -8,66 +8,72 @@ namespace Ap.Core.Definitions;
 
 public class TriggerContext : BaseContext
 {
-	internal TriggerContext(StateTrigger stateTrigger,
-		Flow flow,
-		IUser executor)
-	{
-		StateTrigger = stateTrigger;
-		Flow = flow;
-		Executor = executor;
-	}
+    internal TriggerContext(StateTrigger stateTrigger,
+        Flow flow,
+        IUser executor)
+    {
+        StateTrigger = stateTrigger;
+        Flow = flow;
+        Executor = executor;
+    }
 
-	internal TriggerContext(Flow flow,
-		IUser executor)
-	{
-		Flow = flow;
-		Executor = executor;
-	}
+    internal TriggerContext(Flow flow,
+        IUser executor)
+    {
+        Flow = flow;
+        Executor = executor;
+    }
 
-	internal ExitContext CreateExitContext()
-	{
-		var context = new ExitContext();
-		context.StateTrigger = StateTrigger;
-		context.RootStateSet = RootStateSet;
-		context.CurrentStateSet = CurrentStateSet;
-		context.ServiceProvider = ServiceProvider;
-		context.StateTrigger = StateTrigger;
-		context.Properties = Properties;
-		context.RootSetConfiguration = RootSetConfiguration;
-		context.Flow = Flow;
-		context.State = State;
-		context.Executor = Executor;
+    internal ExitContext CreateExitContext()
+    {
+        var context = new ExitContext
+        {
+            StateTrigger = StateTrigger,
+            RootStateSet = RootStateSet,
+            CurrentStateSet = CurrentStateSet,
+            ServiceProvider = ServiceProvider,
+            TriggeredTime = TriggeredTime
+        };
+        context.StateTrigger = StateTrigger;
+        context.Properties = Properties;
+        context.StateSetConfiguration = StateSetConfiguration;
+        context.Flow = Flow;
+        context.State = State;
+        context.Executor = Executor;
 
-		return context;
-	}
+        return context;
+    }
 
-	internal EntryContext CreateEntryContext()
-	{
-		var context = new EntryContext();
-		context.StateTrigger = StateTrigger;
-		context.RootStateSet = RootStateSet;
-		context.CurrentStateSet = CurrentStateSet;
-		context.ServiceProvider = ServiceProvider;
-		context.StateTrigger = StateTrigger;
-		context.Properties = Properties;
-		context.RootSetConfiguration = RootSetConfiguration;
-		context.Flow = Flow;
-		context.State = State;
-		context.Executor = Executor;
+    internal EntryContext CreateEntryContext()
+    {
+        var context = new EntryContext
+        {
+            StateTrigger = StateTrigger,
+            RootStateSet = RootStateSet,
+            CurrentStateSet = CurrentStateSet,
+            ServiceProvider = ServiceProvider,
+            TriggeredTime = TriggeredTime
+        };
+        context.StateTrigger = StateTrigger;
+        context.Properties = Properties;
+        context.StateSetConfiguration = StateSetConfiguration;
+        context.Flow = Flow;
+        context.State = State;
+        context.Executor = Executor;
 
-		return context;
-	}
+        return context;
+    }
 
-	public TriggerContext Clone()
-	{
-		return new TriggerContext(StateTrigger, Flow, Executor)
-		{
-			ServiceProvider = ServiceProvider,
-			RootStateSet = RootStateSet,
-			CurrentStateSet = CurrentStateSet,
-			Properties = new Dictionary<string, object>(Properties),
-			RootSetConfiguration = RootSetConfiguration,
-			State = State
-		};
-	}
+    public TriggerContext Clone()
+    {
+        return new TriggerContext(StateTrigger, Flow, Executor)
+        {
+            ServiceProvider = ServiceProvider,
+            RootStateSet = RootStateSet,
+            CurrentStateSet = CurrentStateSet,
+            Properties = new Dictionary<string, object>(Properties),
+            StateSetConfiguration = StateSetConfiguration,
+            State = State
+        };
+    }
 }

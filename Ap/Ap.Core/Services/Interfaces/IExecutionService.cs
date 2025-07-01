@@ -10,6 +10,6 @@ namespace Ap.Core.Services.Interfaces
 
         ValueTask InvokeAsync(IUser user, Flow flow, StateTrigger stateTrigger, IStateSet set);
 
-        ValueTask<StateTriggerCollection> GetTriggerAsync(Flow node);
+        ValueTask<StateTriggerCollection> GetTriggerAsync(Flow flow);
     }
 }

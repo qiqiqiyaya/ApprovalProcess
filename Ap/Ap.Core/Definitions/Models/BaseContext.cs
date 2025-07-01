@@ -11,37 +11,42 @@ namespace Ap.Core.Definitions;
 
 public abstract class BaseContext
 {
-	public IServiceProvider ServiceProvider { get; set; }
+    public IServiceProvider ServiceProvider { get; set; }
 
-	public StateTrigger StateTrigger { get; internal set; }
+    public StateTrigger StateTrigger { get; internal set; }
 
-	public Flow Flow { get; internal set; }
+    public Flow Flow { get; internal set; }
 
-	public IUser Executor { get; set; }
+    public IUser Executor { get; set; }
 
-	public StateSetBase RootStateSet { get; internal set; }
+    public StateSetBase RootStateSet { get; internal set; }
 
-	public StateSetBase CurrentStateSet { get; internal set; }
+    public StateSetBase CurrentStateSet { get; internal set; }
 
-	public Dictionary<string, object> Properties { get; set; } = new();
+    public Dictionary<string, object> Properties { get; set; } = new();
 
-	public StateSetConfiguration RootSetConfiguration { get; internal set; }
+    public StateSetConfiguration StateSetConfiguration { get; internal set; }
 
-	public IState State { get; internal set; }
+    public IState State { get; internal set; }
 
-	public T GetRequiredService<T>() where T : notnull
-	{
-		return ServiceProvider.GetRequiredService<T>();
-	}
+    /// <summary>
+    ///  The time when it is triggered
+    /// </summary>
+    public DateTime TriggeredTime { get; set; }
 
-	/// <summary>
-	/// this will get the latest flow from the flow manager. Wil update the Flow property.
-	/// </summary>
-	/// <returns></returns>
-	public async ValueTask<Flow> RefreshAsync()
-	{
-		var flowManager = GetRequiredService<IFlowManager>();
-		Flow = await flowManager.GetFlowAsync(Flow.Id);
-		return Flow;
-	}
+    public T GetRequiredService<T>() where T : notnull
+    {
+        return ServiceProvider.GetRequiredService<T>();
+    }
+
+    /// <summary>
+    /// this will get the latest flow from the flow manager. Wil update the Flow property.
+    /// </summary>
+    /// <returns></returns>
+    public async ValueTask<Flow> RefreshAsync()
+    {
+        var flowManager = GetRequiredService<IFlowManager>();
+        Flow = await flowManager.GetFlowAsync(Flow.Id);
+        return Flow;
+    }
 }
