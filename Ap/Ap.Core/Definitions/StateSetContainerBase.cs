@@ -84,5 +84,10 @@ namespace Ap.Core.Definitions
 
             return collection;
         }
+
+        public override async ValueTask Entry(EntryContext context)
+        {
+            await context.ContainerActionRunAsync(this.StateConfiguration);
+        }
     }
 }

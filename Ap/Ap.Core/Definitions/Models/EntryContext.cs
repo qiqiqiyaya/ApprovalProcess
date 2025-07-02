@@ -2,6 +2,7 @@
 using Ap.Core.Configurations;
 using Ap.Core.Definitions.Actions;
 using Ap.Core.Pipeline;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -17,14 +18,23 @@ public class EntryContext : BaseContext
     public virtual async ValueTask ActionRunAsync(StateConfiguration stateConfiguration)
     {
         List<ApAction> actions = [.. stateConfiguration.EntryTypes];
+        List<ApAction> commons = [.. StateSetConfiguration.CommonEntryTypes];
+        commons.Insert(0, new ApAction(typeof(ExceptionHandler)));
 
         var assignApprover = stateConfiguration.AssignApprover ?? StateSetConfiguration.AssignApprover;
         assignApprover ??= new ApAction(typeof(DefaultAssignApprover));
         actions.Add(assignApprover);
-        actions.InsertRange(0, StateSetConfiguration.CommonEntryTypes);
+        actions.InsertRange(0, commons);
 
         Properties.Remove(EntryActionsProperty);
         Properties.Add(EntryActionsProperty, actions);
+        await ActionRunAsync(actions);
+    }
+
+    internal async ValueTask ContainerActionRunAsync(StateConfiguration stateConfiguration)
+    {
+        List<ApAction> actions = [.. stateConfiguration.EntryTypes];
+        actions.Insert(0, new ApAction(typeof(ExceptionHandler)));
         await ActionRunAsync(actions);
     }
 

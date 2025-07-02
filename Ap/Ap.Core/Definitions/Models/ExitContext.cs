@@ -1,4 +1,5 @@
-﻿using Ap.Core.Configurations;
+﻿using Ap.Core.Actions;
+using Ap.Core.Configurations;
 using Ap.Core.Definitions.Actions;
 using Ap.Core.Pipeline;
 using System.Collections.Generic;
@@ -15,7 +16,10 @@ public class ExitContext : BaseContext
     public virtual async ValueTask ActionRunAsync(StateConfiguration stateConfiguration)
     {
         List<ApAction> actions = [.. stateConfiguration.ExitTypes];
-        actions.InsertRange(0, StateSetConfiguration.CommonExitTypes);
+        List<ApAction> commons = [.. StateSetConfiguration.CommonExitTypes];
+        commons.Insert(0, new ApAction(typeof(ExceptionHandler)));
+
+        actions.InsertRange(0, commons);
 
         Properties.Remove(ExitActionsProperty);
         Properties.Add(ExitActionsProperty, actions);

@@ -22,7 +22,7 @@ namespace Ap.Core.Actions
             };
 
             context.Flow.Nodes.Add(flow);
-            await context.GetRequiredService<IFlowManager>().UpdateFlowAsync(flow);
+            await context.GetRequiredService<IFlowManager>().UpdateFlowAsync(context.Flow);
 
             await next(context);
         }
