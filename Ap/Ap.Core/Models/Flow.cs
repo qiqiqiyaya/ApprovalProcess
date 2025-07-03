@@ -9,15 +9,13 @@ namespace Ap.Core.Models
     {
         public string RootStateSetId { get; set; }
 
-        public List<NodeBase> Nodes { get; set; } = new List<NodeBase>();
+        public List<NodeBase> Nodes { get; set; } = new();
 
         public FlowStatus FlowStatus { get; set; } = FlowStatus.Initial;
 
-        public string? ParentFlowId { get; set; }
-
-        public Node GetExecutingNode()
+        public NodeBase GetExecutingNode()
         {
-            return (Node)Nodes.Single(x => x is Node { IsTriggered: true });
+            return Nodes.Single(x => x.IsTriggered);
         }
     }
 }

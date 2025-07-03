@@ -10,7 +10,7 @@ namespace Ap.Core.Actions
     {
         public async ValueTask InvokeAsync(EntryContext context, Func<EntryContext, ValueTask> next)
         {
-            var flow = new Flow()
+            var container = new FlowContainer()
             {
                 Id = Guid.NewGuid().ToString("N"),
                 RootStateSetId = context.RootStateSet.Id,
@@ -18,10 +18,11 @@ namespace Ap.Core.Actions
                 StateName = context.State.Name,
                 StateId = context.State.Id,
                 ExecutorId = context.Executor.Id,
-                ParentFlowId = context.Flow.Id
+                ParentFlowId = context.Flow.Id,
+                IsTriggered = true
             };
 
-            context.Flow.Nodes.Add(flow);
+            context.Flow.Nodes.Add(container);
             await context.GetRequiredService<IFlowManager>().UpdateFlowAsync(context.Flow);
 
             await next(context);

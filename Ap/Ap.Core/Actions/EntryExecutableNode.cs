@@ -22,7 +22,8 @@ public class EntryExecutableNode : IEntryAction
             StateName = context.State.Name,
             StateId = context.StateTrigger.StateDetail.Id,
             ExecutorId = context.Executor.Id,
-            StateSetId = context.CurrentStateSet.Id
+            StateSetId = context.CurrentStateSet.Id,
+            ParentFlowId = context.Flow.Id
         };
 
         var actions = (List<ApAction>)context.Properties[EntryContext.EntryActionsProperty];

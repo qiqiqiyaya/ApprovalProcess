@@ -19,9 +19,9 @@ public abstract class BaseContext
 
     public IUser Executor { get; set; }
 
-    public StateSetBase RootStateSet { get; internal set; }
+    public IStateSet RootStateSet { get; internal set; }
 
-    public StateSetBase CurrentStateSet { get; internal set; }
+    public IStateSet CurrentStateSet { get; internal set; }
 
     public Dictionary<string, object> Properties { get; set; } = new();
 
@@ -48,5 +48,18 @@ public abstract class BaseContext
         var flowManager = GetRequiredService<IFlowManager>();
         Flow = await flowManager.GetFlowAsync(Flow.Id);
         return Flow;
+    }
+
+    public TriggerContext CreateTriggerContext()
+    {
+        return new TriggerContext(StateTrigger, Flow, Executor)
+        {
+            ServiceProvider = ServiceProvider,
+            RootStateSet = RootStateSet,
+            //CurrentStateSet = CurrentStateSet,
+            //StateSetConfiguration = StateSetConfiguration,
+            //State = State,
+            //TriggeredTime = TriggeredTime
+        };
     }
 }

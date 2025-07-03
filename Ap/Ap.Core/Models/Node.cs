@@ -20,11 +20,6 @@ namespace Ap.Core.Models
         public Flow Flow { get; set; }
 
         /// <summary>
-        /// Whether triggered
-        /// </summary>
-        public bool IsTriggered { get; internal set; } = false;
-
-        /// <summary>
         /// List of next executors for the flow. These are the users who will be responsible for the next steps in the flow.
         /// </summary>
         public List<NextExecutor> NextExecutors { get; set; } = new();

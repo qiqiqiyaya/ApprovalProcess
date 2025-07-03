@@ -120,12 +120,21 @@ namespace Ap.Core.Definitions
 
             // state is never EndState
             // state is StartState ， skip it
-            //var collection = await state.GetTrigger();
-            var collection = state is StartState ? await LinkedList.FirstState.GetTrigger() : await state.GetTrigger();
+            var collection = new StateTriggerCollection();
 
-            foreach (var stateTrigger in collection)
+            switch (state)
             {
-                stateTrigger.StateSetId = Id;
+                case IStateSetContainer:
+                    collection = await state.GetTrigger();
+                    break;
+                case StartState:
+                    collection = await LinkedList.FirstState.GetTrigger();
+
+                    foreach (var stateTrigger in collection)
+                    {
+                        stateTrigger.StateSetId = Id;
+                    }
+                    break;
             }
 
             return collection;
@@ -178,6 +187,7 @@ namespace Ap.Core.Definitions
 
             var nextState = GetState(CurrentState);
             context.State = nextState;
+            nextState.ServiceProvider = ServiceProvider;
             await nextState.Entry(context.CreateEntryContext());
         }
 

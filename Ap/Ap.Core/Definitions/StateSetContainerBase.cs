@@ -87,7 +87,7 @@ namespace Ap.Core.Definitions
 
         public override async ValueTask Entry(EntryContext context)
         {
-            await context.ContainerActionRunAsync(this.StateConfiguration);
+            await context.ContainerActionRunAsync(StateConfiguration);
         }
     }
 }

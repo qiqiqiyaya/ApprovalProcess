@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Ap.Core.Services.Interfaces;
+﻿using Ap.Core.Services.Interfaces;
+using System;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -27,5 +26,11 @@ namespace Ap.Core.Models
         /// </summary>
         public string ExecutorId { get; set; }
 
+        /// <summary>
+        /// Whether triggered
+        /// </summary>
+        public bool IsTriggered { get; internal set; } = false;
+
+        public string? ParentFlowId { get; set; }
     }
 }

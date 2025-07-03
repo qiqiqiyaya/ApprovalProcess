@@ -14,7 +14,7 @@ namespace Ap.Core.Actions
     {
         public virtual async ValueTask InvokeAsync(ExitContext context, Func<ExitContext, ValueTask> next)
         {
-            var node = context.Flow.GetExecutingNode();
+            var node = (Node)context.Flow.GetExecutingNode();
             node.UpdateTime = DateTime.UtcNow;
             var trigger = new OutputTrigger
             {
