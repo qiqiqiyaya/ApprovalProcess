@@ -14,7 +14,7 @@ namespace Ap.Core.Actions
     {
         public virtual async ValueTask InvokeAsync(ExitContext context, Func<ExitContext, ValueTask> next)
         {
-            var node = (Node)context.Flow.GetExecutingNode();
+            var node = (Node)context.GetCurrentFlow().GetTriggeredNode()!;
             node.UpdateTime = DateTime.UtcNow;
             var trigger = new OutputTrigger
             {
@@ -28,7 +28,7 @@ namespace Ap.Core.Actions
             node.ExecutorId = context.Executor.Id;
             node.IsTriggered = false;
 
-            await context.GetRequiredService<IFlowManager>().UpdateFlowAsync(context.Flow);
+            await context.GetRequiredService<IFlowManager>().UpdateFlowAsync(context.RootFlow);
             await next(context);
         }
     }

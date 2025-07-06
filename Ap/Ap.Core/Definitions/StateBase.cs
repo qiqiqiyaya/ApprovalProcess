@@ -40,7 +40,7 @@ namespace Ap.Core.Definitions
 
         public virtual async ValueTask Entry(EntryContext context)
         {
-            await context.ActionRunAsync(StateConfiguration);
+            await context.StateActionRunAsync(StateConfiguration);
         }
 
         public virtual async ValueTask Exit(ExitContext context)

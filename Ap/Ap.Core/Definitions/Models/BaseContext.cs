@@ -4,7 +4,6 @@ using Ap.Core.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 namespace Ap.Core.Definitions;
@@ -15,7 +14,7 @@ public abstract class BaseContext
 
     public StateTrigger StateTrigger { get; internal set; }
 
-    public Flow Flow { get; internal set; }
+    public Flow RootFlow { get; internal set; }
 
     public IUser Executor { get; set; }
 
@@ -25,7 +24,7 @@ public abstract class BaseContext
 
     public Dictionary<string, object> Properties { get; set; } = new();
 
-    public StateSetConfiguration StateSetConfiguration { get; internal set; }
+    public StateSetConfiguration CommonConfiguration { get; internal set; }
 
     public IState State { get; internal set; }
 
@@ -39,27 +38,29 @@ public abstract class BaseContext
         return ServiceProvider.GetRequiredService<T>();
     }
 
-    /// <summary>
-    /// this will get the latest flow from the flow manager. Wil update the Flow property.
-    /// </summary>
-    /// <returns></returns>
-    public async ValueTask<Flow> RefreshAsync()
-    {
-        var flowManager = GetRequiredService<IFlowManager>();
-        Flow = await flowManager.GetFlowAsync(Flow.Id);
-        return Flow;
-    }
+    ///// <summary>
+    ///// this will get the latest flow from the flow manager. Wil update the Flow property.
+    ///// </summary>
+    ///// <returns></returns>
+    //public async ValueTask<Flow> RefreshAsync()
+    //{
+    //	var flowManager = GetRequiredService<IFlowManager>();
+    //	CurrentFlow = await flowManager.GetFlowAsync(CurrentFlow.Id);
+    //	return CurrentFlow;
+    //}
 
     public TriggerContext CreateTriggerContext()
     {
-        return new TriggerContext(StateTrigger, Flow, Executor)
+        return new TriggerContext(StateTrigger, RootFlow, Executor)
         {
             ServiceProvider = ServiceProvider,
             RootStateSet = RootStateSet,
-            //CurrentStateSet = CurrentStateSet,
-            //StateSetConfiguration = StateSetConfiguration,
-            //State = State,
-            //TriggeredTime = TriggeredTime
+            CommonConfiguration = CommonConfiguration,
         };
+    }
+
+    public void AddNode()
+    {
+
     }
 }

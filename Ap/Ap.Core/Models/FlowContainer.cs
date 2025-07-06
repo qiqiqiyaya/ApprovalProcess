@@ -3,10 +3,10 @@
 
 namespace Ap.Core.Models
 {
-    public class FlowContainer : NodeBase
-    {
-        public List<Flow> Flows { get; set; }
+	public class FlowContainer : NodeBase
+	{
+		public List<Flow> Flows { get; set; } = new();
 
-        public string RootStateSetId { get; set; }
-    }
+		public string RootStateSetId { get; set; }
+	}
 }

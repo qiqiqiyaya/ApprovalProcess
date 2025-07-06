@@ -57,7 +57,7 @@ namespace Ap.Core.Services
             }
             else
             {
-                stateName = flow.GetExecutingNode().StateName;
+                stateName = flow.GetTriggeredNode().StateName;
             }
 
             return stateName;

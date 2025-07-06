@@ -9,18 +9,18 @@ namespace Ap.Core.Definitions;
 public class TriggerContext : BaseContext
 {
     internal TriggerContext(StateTrigger stateTrigger,
-        Flow flow,
+        Flow rootFlow,
         IUser executor)
     {
         StateTrigger = stateTrigger;
-        Flow = flow;
+        RootFlow = rootFlow;
         Executor = executor;
     }
 
-    internal TriggerContext(Flow flow,
+    internal TriggerContext(Flow currentFlow,
         IUser executor)
     {
-        Flow = flow;
+        RootFlow = currentFlow;
         Executor = executor;
     }
 
@@ -36,8 +36,8 @@ public class TriggerContext : BaseContext
         };
         context.StateTrigger = StateTrigger;
         context.Properties = Properties;
-        context.StateSetConfiguration = StateSetConfiguration;
-        context.Flow = Flow;
+        context.CommonConfiguration = CommonConfiguration;
+        context.RootFlow = RootFlow;
         context.State = State;
         context.Executor = Executor;
 
@@ -56,8 +56,8 @@ public class TriggerContext : BaseContext
         };
         context.StateTrigger = StateTrigger;
         context.Properties = Properties;
-        context.StateSetConfiguration = StateSetConfiguration;
-        context.Flow = Flow;
+        context.CommonConfiguration = CommonConfiguration;
+        context.RootFlow = RootFlow;
         context.State = State;
         context.Executor = Executor;
 
@@ -66,13 +66,13 @@ public class TriggerContext : BaseContext
 
     public TriggerContext Clone()
     {
-        return new TriggerContext(StateTrigger, Flow, Executor)
+        return new TriggerContext(StateTrigger, RootFlow, Executor)
         {
             ServiceProvider = ServiceProvider,
             RootStateSet = RootStateSet,
             CurrentStateSet = CurrentStateSet,
             Properties = new Dictionary<string, object>(Properties),
-            StateSetConfiguration = StateSetConfiguration,
+            CommonConfiguration = CommonConfiguration,
             State = State
         };
     }

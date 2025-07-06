@@ -16,14 +16,16 @@ public class EntryExecutableNode : IEntryAction
 {
     public async ValueTask InvokeAsync(EntryContext context, Func<EntryContext, ValueTask> next)
     {
-        var node = new Node(context.Flow)
+        var currentFlow = context.GetCurrentFlow();
+
+        var node = new Node(currentFlow)
         {
             Id = Guid.NewGuid().ToString("N"),
             StateName = context.State.Name,
             StateId = context.StateTrigger.StateDetail.Id,
             ExecutorId = context.Executor.Id,
             StateSetId = context.CurrentStateSet.Id,
-            ParentFlowId = context.Flow.Id
+            ParentNodeId = currentFlow.Id
         };
 
         var actions = (List<ApAction>)context.Properties[EntryContext.EntryActionsProperty];
@@ -37,7 +39,6 @@ public class EntryExecutableNode : IEntryAction
             throw new ApException("No approvers assigned for the flow.");
         }
 
-        context.Flow.Nodes.Add(node);
-        await context.GetRequiredService<IFlowManager>().UpdateFlowAsync(context.Flow);
+        await context.AddNode(node);
     }
 }

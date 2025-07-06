@@ -5,17 +5,15 @@ using System.Linq;
 
 namespace Ap.Core.Models
 {
-    public class Flow : NodeBase
-    {
-        public string RootStateSetId { get; set; }
+	public class Flow : NodeBase
+	{
+		public List<NodeBase> Nodes { get; set; } = new();
 
-        public List<NodeBase> Nodes { get; set; } = new();
+		public FlowStatus FlowStatus { get; set; } = FlowStatus.Initial;
 
-        public FlowStatus FlowStatus { get; set; } = FlowStatus.Initial;
-
-        public NodeBase GetExecutingNode()
-        {
-            return Nodes.Single(x => x.IsTriggered);
-        }
-    }
+		public NodeBase? GetTriggeredNode()
+		{
+			return Nodes.FirstOrDefault(x => x.IsTriggered);
+		}
+	}
 }
