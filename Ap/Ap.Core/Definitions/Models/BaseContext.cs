@@ -38,17 +38,6 @@ public abstract class BaseContext
         return ServiceProvider.GetRequiredService<T>();
     }
 
-    ///// <summary>
-    ///// this will get the latest flow from the flow manager. Wil update the Flow property.
-    ///// </summary>
-    ///// <returns></returns>
-    //public async ValueTask<Flow> RefreshAsync()
-    //{
-    //	var flowManager = GetRequiredService<IFlowManager>();
-    //	CurrentFlow = await flowManager.GetFlowAsync(CurrentFlow.Id);
-    //	return CurrentFlow;
-    //}
-
     public TriggerContext CreateTriggerContext()
     {
         return new TriggerContext(StateTrigger, RootFlow, Executor)
@@ -57,10 +46,5 @@ public abstract class BaseContext
             RootStateSet = RootStateSet,
             CommonConfiguration = CommonConfiguration,
         };
-    }
-
-    public void AddNode()
-    {
-
     }
 }

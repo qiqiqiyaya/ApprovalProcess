@@ -57,26 +57,10 @@ namespace Ap.Core.Services
             }
             else
             {
-                stateName = GetNode(flow).StateName;
+                stateName = Flow.GetDeepTriggeredNode(flow).StateName;
             }
 
             return stateName;
-        }
-
-        private NodeBase GetNode(Flow flow)
-        {
-            var nodeBase = flow.GetTriggeredNode();
-            switch (nodeBase)
-            {
-                case FlowContainer container:
-                    foreach (var item in container.Flows)
-                    {
-                        return GetNode(item);
-                    }
-                    break;
-            }
-
-            return nodeBase;
         }
     }
 }

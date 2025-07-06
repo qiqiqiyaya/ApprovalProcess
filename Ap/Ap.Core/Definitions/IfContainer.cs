@@ -88,8 +88,10 @@ namespace Ap.Core.Definitions
             await base.Entry(context);
 
             IStateSet set = await GetStateSet();
+
             context.CurrentStateSet = set;
             context.State = set;
+            // to create new flow for this set
             await context.StateSetActionRunAsync(set.StateConfiguration);
 
             var triggerContext = context.CreateTriggerContext();
