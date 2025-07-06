@@ -32,6 +32,7 @@ public class EntryExecutableNode : IEntryAction
         node.Entry(actions);
         node.IsTriggered = true;
 
+        currentFlow.Nodes.Add(node);
         await next(context);
 
         if (context.NextApproverList.Count == 0)
@@ -39,6 +40,6 @@ public class EntryExecutableNode : IEntryAction
             throw new ApException("No approvers assigned for the flow.");
         }
 
-        await context.AddNode(node);
+        await context.GetRequiredService<IFlowManager>().UpdateFlowAsync(context.RootFlow);
     }
 }

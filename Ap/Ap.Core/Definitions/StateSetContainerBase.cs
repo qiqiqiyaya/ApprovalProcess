@@ -10,6 +10,8 @@ namespace Ap.Core.Definitions
     {
         protected readonly StateSetBase Parent;
 
+        protected IStateSet? SelectedStateSet = null;
+
         protected StateSetContainerBase(string name, StateSetBase parent) : base(name)
         {
             Parent = parent;
@@ -58,6 +60,19 @@ namespace Ap.Core.Definitions
         public virtual bool IsConfigured(string state)
         {
             return StateSets.Any(x => x.Value.LinkedList.Has(state));
+        }
+
+        public void Recover(IServiceProvider serviceProvider, List<IState> level)
+        {
+            if (level.Count == 0) return;
+
+            ServiceProvider = serviceProvider;
+            var firstState = level.First();
+            level.Remove(firstState);
+
+            var first = StateSets.Values.Single(x => x.Name == firstState.Name);
+            SelectedStateSet = first;
+            first.Recover(ServiceProvider, level);
         }
 
         protected virtual bool CheckIsEnding()

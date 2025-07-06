@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Ap.Core.Definitions
 {
@@ -12,5 +13,7 @@ namespace Ap.Core.Definitions
         bool IsEnd { get; }
 
         bool IsConfigured(string state);
+
+        void Recover(IServiceProvider serviceProvider, List<IState> level);
     }
 }

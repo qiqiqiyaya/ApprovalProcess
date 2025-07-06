@@ -144,13 +144,6 @@ namespace Ap.Core.Definitions
 
                 switch (item)
                 {
-                    case IStateSet set:
-                        if (GetStateLevel(set, predicate, level))
-                        {
-                            level.Add(set);
-                            return true;
-                        }
-                        break;
                     case IStateSetContainer container:
                         if (GetStateLevel(container, predicate, level))
                         {
@@ -176,7 +169,13 @@ namespace Ap.Core.Definitions
 
         private bool GetStateLevel(IStateSet set, Func<IState, bool> predicate, List<IState> level)
         {
-            return set.LinkedList.GetStateLevel(predicate, level);
+            if (set.LinkedList.GetStateLevel(predicate, level))
+            {
+                level.Add(set);
+                return true;
+            }
+
+            return false;
         }
     }
 }

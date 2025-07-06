@@ -5,48 +5,48 @@ using Ap.Core.Configurations;
 
 namespace Ap.Core.Definitions
 {
-	/// <summary>
-	/// State set
-	/// </summary>
-	public interface IStateSet : IState, IStateTrigger
-	{
-		/// <summary>
-		/// Initial state
-		/// </summary>
-		string InitialState { get; }
+    /// <summary>
+    /// State set
+    /// </summary>
+    public interface IStateSet : IState, IStateTrigger
+    {
+        /// <summary>
+        /// Initial state
+        /// </summary>
+        string InitialState { get; }
 
-		string CurrentState { get; internal set; }
+        string CurrentState { get; internal set; }
 
-		bool IsInitial { get; }
+        bool IsInitial { get; }
 
-		IState CurrentStateNode { get; }
+        IState CurrentStateNode { get; }
 
-		/// <summary>
-		/// Dictionary
-		/// </summary>
-		Dictionary<string, IState> StateDictionary { get; }
+        /// <summary>
+        /// Dictionary
+        /// </summary>
+        Dictionary<string, IState> StateDictionary { get; }
 
-		StateLinkedList LinkedList { get; }
+        StateLinkedList LinkedList { get; }
 
-		StateLinkedList RootLinkedList { get; }
+        StateLinkedList RootLinkedList { get; }
 
-		bool IsEnd { get; }
+        bool IsEnd { get; }
 
-		StateSetConfiguration StateSetConfiguration { get; }
+        StateSetConfiguration StateSetConfiguration { get; }
 
-		void AddState(IState state);
+        void AddState(IState state);
 
-		void Recover(IServiceProvider serviceProvider, string stateName);
+        void Recover(IServiceProvider serviceProvider, string stateName);
 
-		void Recover(IServiceProvider serviceProvider, string stateName, List<IState> level);
+        void Recover(IServiceProvider serviceProvider, List<IState> level);
 
-		/// <summary>
-		/// reset ot initial state
-		/// </summary>
-		void Reset();
+        /// <summary>
+        /// reset ot initial state
+        /// </summary>
+        void Reset();
 
-		ValueTask InitialEntry(TriggerContext context);
+        ValueTask InitialEntry(TriggerContext context);
 
-		ValueTask CompletedExit(TriggerContext context);
-	}
+        ValueTask CompletedExit(TriggerContext context);
+    }
 }
