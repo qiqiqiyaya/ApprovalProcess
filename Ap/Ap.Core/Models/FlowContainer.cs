@@ -3,10 +3,17 @@
 
 namespace Ap.Core.Models
 {
-	public class FlowContainer : NodeBase
-	{
-		public List<Flow> Flows { get; set; } = new();
+    public class FlowContainer : NodeBase
+    {
+        public FlowContainer(Flow flow)
+        {
+            ParentNodeId = flow.Id;
+            Flow = flow;
+            RootStateSetId = flow.RootStateSetId;
+        }
 
-		public string RootStateSetId { get; set; }
-	}
+        public Flow Flow { get; set; }
+
+        public List<Flow> Flows { get; set; } = new();
+    }
 }

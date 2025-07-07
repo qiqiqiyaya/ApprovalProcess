@@ -45,7 +45,7 @@ namespace Ap.Core.Services
 
         public async ValueTask AddNodeAsync(Node node)
         {
-            var flow = await GetFlowAsync(node.FlowId);
+            var flow = await GetFlowAsync(node.ParentNodeId);
             flow.Nodes.Add(node);
         }
     }

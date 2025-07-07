@@ -17,6 +17,10 @@ public class EntryExecutableNode : IEntryAction
     public async ValueTask InvokeAsync(EntryContext context, Func<EntryContext, ValueTask> next)
     {
         var currentFlow = context.GetCurrentFlow();
+        if (currentFlow.FlowStatus == FlowStatus.Initial)
+        {
+            currentFlow.FlowStatus = FlowStatus.Running;
+        }
 
         var node = new Node(currentFlow)
         {
@@ -24,8 +28,7 @@ public class EntryExecutableNode : IEntryAction
             StateName = context.State.Name,
             StateId = context.StateTrigger.StateDetail.Id,
             ExecutorId = context.Executor.Id,
-            StateSetId = context.CurrentStateSet.Id,
-            ParentNodeId = currentFlow.Id
+            StateSetId = context.CurrentStateSet.Id
         };
 
         var actions = (List<ApAction>)context.Properties[EntryContext.EntryActionsProperty];

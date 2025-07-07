@@ -12,10 +12,8 @@ namespace Ap.Core.Models
         public Node(Flow flow)
         {
             Flow = flow;
-            FlowId = flow.Id;
+            ParentNodeId = flow.Id;
         }
-
-        public string FlowId { get; set; }
 
         public Flow Flow { get; set; }
 

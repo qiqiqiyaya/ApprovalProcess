@@ -35,6 +35,13 @@ public class ExitContext : BaseContext
         await pipeline.RunAsync(this);
     }
 
+    public async ValueTask StateSetActionRunAsync(StateConfiguration stateConfiguration)
+    {
+        List<ApAction> actions = [.. stateConfiguration.ExitTypes];
+        actions.Insert(0, new ApAction(typeof(ExceptionHandler)));
+        await ActionRunAsync(actions);
+    }
+
     public Flow GetCurrentFlow()
     {
         return GetFlow(RootFlow, CurrentStateSet);

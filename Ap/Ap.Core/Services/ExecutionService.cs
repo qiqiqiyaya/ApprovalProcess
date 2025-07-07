@@ -27,7 +27,6 @@ namespace Ap.Core.Services
 
             if (set.IsInitial) await set.InitialEntry(context);
 
-            flow.FlowStatus = FlowStatus.Running;
             // 触发
             await set.ExecuteTrigger(context);
 

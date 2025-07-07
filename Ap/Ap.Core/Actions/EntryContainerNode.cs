@@ -12,15 +12,13 @@ namespace Ap.Core.Actions
         {
             var flow = context.GetCurrentFlow();
 
-            var container = new FlowContainer()
+            var container = new FlowContainer(flow)
             {
                 Id = Guid.NewGuid().ToString("N"),
-                RootStateSetId = context.RootStateSet.Id,
                 StateSetId = context.CurrentStateSet.Id,
                 StateName = context.State.Name,
                 StateId = context.State.Id,
                 ExecutorId = context.Executor.Id,
-                ParentNodeId = flow.Id,
                 IsTriggered = true
             };
 

@@ -8,6 +8,8 @@ namespace Ap.Core.Definitions
 {
     public abstract class StateSetContainerBase : StateBase, IStateSetContainer
     {
+        public const string StateSetContainerIdProperty = "StateSetContainerIdProperty";
+
         protected readonly StateSetBase Parent;
 
         protected IStateSet? SelectedStateSet = null;
@@ -103,6 +105,21 @@ namespace Ap.Core.Definitions
         public override async ValueTask Entry(EntryContext context)
         {
             await context.ContainerActionRunAsync(StateConfiguration);
+        }
+
+        public override async ValueTask Exit(ExitContext context)
+        {
+            var newSet = context.CurrentStateSet;
+            var newState = context.State;
+
+            context.Properties[StateSetContainerIdProperty] = Id;
+            context.CurrentStateSet = SelectedStateSet!;
+            context.State = SelectedStateSet!;
+            await context.StateSetActionRunAsync(SelectedStateSet!.StateConfiguration);
+
+            context.CurrentStateSet = newSet;
+            context.State = newState;
+            await base.Exit(context);
         }
     }
 }
