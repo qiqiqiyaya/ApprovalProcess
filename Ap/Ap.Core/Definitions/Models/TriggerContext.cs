@@ -24,44 +24,9 @@ public class TriggerContext : BaseContext
         Executor = executor;
     }
 
-    internal ExitContext CreateExitContext()
+    internal TriggerContext(IUser executor)
     {
-        var context = new ExitContext
-        {
-            StateTrigger = StateTrigger,
-            RootStateSet = RootStateSet,
-            CurrentStateSet = CurrentStateSet,
-            ServiceProvider = ServiceProvider,
-            TriggeredTime = TriggeredTime
-        };
-        context.StateTrigger = StateTrigger;
-        context.Properties = Properties;
-        context.CommonConfiguration = CommonConfiguration;
-        context.RootFlow = RootFlow;
-        context.State = State;
-        context.Executor = Executor;
-
-        return context;
-    }
-
-    internal EntryContext CreateEntryContext()
-    {
-        var context = new EntryContext
-        {
-            StateTrigger = StateTrigger,
-            RootStateSet = RootStateSet,
-            CurrentStateSet = CurrentStateSet,
-            ServiceProvider = ServiceProvider,
-            TriggeredTime = TriggeredTime
-        };
-        context.StateTrigger = StateTrigger;
-        context.Properties = Properties;
-        context.CommonConfiguration = CommonConfiguration;
-        context.RootFlow = RootFlow;
-        context.State = State;
-        context.Executor = Executor;
-
-        return context;
+        Executor = executor;
     }
 
     public TriggerContext Clone()

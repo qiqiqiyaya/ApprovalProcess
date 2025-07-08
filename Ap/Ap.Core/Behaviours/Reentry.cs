@@ -5,7 +5,7 @@ namespace Ap.Core.Behaviours
 {
     public class Reentry(string destination) : BehaviourBase(ApCoreTriggers.Reentry, destination)
     {
-        public override ValueTask ExecuteAsync(TriggerContext context)
+        public override ValueTask ExecuteAsync(BaseContext context)
         {
             return new ValueTask();
         }

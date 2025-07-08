@@ -45,8 +45,8 @@ namespace Ap.Core.Definitions
         /// </summary>
         void Reset();
 
-        ValueTask InitialEntry(TriggerContext context);
+        //ValueTask InitialEntry(TriggerContext context);
 
-        ValueTask CompletedExit(TriggerContext context);
+        //ValueTask CompletedExit(TriggerContext context);
     }
 }

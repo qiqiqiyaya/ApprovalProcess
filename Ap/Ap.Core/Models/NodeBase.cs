@@ -33,7 +33,7 @@ namespace Ap.Core.Models
         /// </summary>
         public bool IsTriggered { get; internal set; } = false;
 
-        public string ParentNodeId { get; set; }
+        public string? ParentNodeId { get; set; }
 
         public override string ToString()
         {

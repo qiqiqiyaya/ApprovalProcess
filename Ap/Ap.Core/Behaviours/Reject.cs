@@ -11,7 +11,7 @@ namespace Ap.Core.Behaviours
     /// <param name="destination"></param>
     public class Reject(string destination) : BehaviourBase(ApCoreTriggers.Reject, destination)
     {
-        public override ValueTask ExecuteAsync(TriggerContext context)
+        public override ValueTask ExecuteAsync(BaseContext context)
         {
             var firstState = context.CurrentStateSet.RootLinkedList.FirstState;
 

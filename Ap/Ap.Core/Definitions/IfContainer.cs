@@ -25,13 +25,46 @@ namespace Ap.Core.Definitions
             StateSets.Add(FalseState, @false ?? throw new ArgumentNullException(nameof(@false)));
         }
 
+        protected async ValueTask<IStateSet> GetCurrentStateSet()
+        {
+            var trueSet = StateSets[TrueState];
+            var falseSet = StateSets[FalseState];
+
+            IStateSet set = null!;
+            if (trueSet.IsInitial && falseSet.IsInitial)
+            {
+                if (_predicate != null)
+                {
+                    var func = (IfFunction)ActivatorUtilities.CreateInstance(ServiceProvider, _predicate.Type, _predicate.Parameters);
+                    set = await func.InvokeAsync(new PredicateContext(ServiceProvider)) ? trueSet : falseSet;
+                }
+            }
+            else
+            {
+                set = StateSets.First(s => !s.Value.IsInitial).Value;
+            }
+
+            return set;
+        }
+
         public override async ValueTask ExecuteTrigger(TriggerContext context)
         {
-            IStateSet set = await GetStateSet();
+            // The current StateSet is only known during execution
+            IStateSet set = CurrentStateSet ??= await GetCurrentStateSet();
             set.ServiceProvider ??= ServiceProvider;
+            context.Properties[StateSetContainerIdProperty] = Id;
+
+            if (set.IsInitial)
+            {
+                // to create CurrentStateSet's flow
+                await set.Entry(context.CreateEntryContext());
+            }
 
             await set.ExecuteTrigger(context);
-            if (set.IsEnd) await set.CompletedExit(context);
+            if (set.IsEnd)
+            {
+                await set.Exit(context.CreateExitContext());
+            }
 
             _isEnd = set.IsEnd;
             if (_isEnd)
@@ -51,51 +84,11 @@ namespace Ap.Core.Definitions
 
         public override bool IsEnd => _isEnd;
 
-        private async ValueTask<IStateSet> GetStateSet()
-        {
-            if (SelectedStateSet != null) return SelectedStateSet;
-
-            var trueSet = StateSets[TrueState];
-            var falseSet = StateSets[FalseState];
-
-            IStateSet set = null!;
-            if (trueSet.IsInitial && falseSet.IsInitial)
-            {
-                if (_predicate != null)
-                {
-                    var func = (IfFunction)ActivatorUtilities.CreateInstance(ServiceProvider, _predicate.Type, _predicate.Parameters);
-                    set = await func.InvokeAsync(new PredicateContext(ServiceProvider)) ? trueSet : falseSet;
-                    SelectedStateSet = set;
-                }
-            }
-            else
-            {
-                set = StateSets.First(s => !s.Value.IsInitial).Value;
-            }
-
-            set.ServiceProvider = ServiceProvider;
-            return set;
-        }
-
         public override async ValueTask<StateTriggerCollection> GetTrigger()
         {
-            IStateSet set = await GetStateSet();
-            return await set.GetTrigger();
-        }
-
-        public override async ValueTask Entry(EntryContext context)
-        {
-            await base.Entry(context);
-
-            IStateSet set = await GetStateSet();
-
-            context.CurrentStateSet = set;
-            context.State = set;
-            // to create new flow for this set
-            await context.StateSetActionRunAsync(set.StateConfiguration);
-
-            var triggerContext = context.CreateTriggerContext();
-            if (set.IsInitial) await set.InitialEntry(triggerContext);
+            // At the initial entry ， CurrentStateSet is null
+            CurrentStateSet ??= await GetCurrentStateSet();
+            return await CurrentStateSet.GetTrigger();
         }
     }
 }

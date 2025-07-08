@@ -12,8 +12,6 @@ namespace Ap.Core.Definitions
 
         protected readonly StateSetBase Parent;
 
-        protected IStateSet? SelectedStateSet = null;
-
         protected StateSetContainerBase(string name, StateSetBase parent) : base(name)
         {
             Parent = parent;
@@ -26,6 +24,8 @@ namespace Ap.Core.Definitions
         public Dictionary<string, IStateSet> StateSets { get; } = new();
 
         public virtual bool IsEnd => CheckIsEnding();
+
+        public virtual IStateSet? CurrentStateSet { get; set; }
 
         public virtual async ValueTask ExecuteTrigger(TriggerContext context)
         {
@@ -73,7 +73,7 @@ namespace Ap.Core.Definitions
             level.Remove(firstState);
 
             var first = StateSets.Values.Single(x => x.Name == firstState.Name);
-            SelectedStateSet = first;
+            CurrentStateSet = first;
             first.Recover(ServiceProvider, level);
         }
 
@@ -104,21 +104,14 @@ namespace Ap.Core.Definitions
 
         public override async ValueTask Entry(EntryContext context)
         {
+            // create a container for the CurrentStateSet's flow
             await context.ContainerActionRunAsync(StateConfiguration);
         }
 
         public override async ValueTask Exit(ExitContext context)
         {
-            var newSet = context.CurrentStateSet;
-            var newState = context.State;
-
-            context.Properties[StateSetContainerIdProperty] = Id;
-            context.CurrentStateSet = SelectedStateSet!;
-            context.State = SelectedStateSet!;
-            await context.StateSetActionRunAsync(SelectedStateSet!.StateConfiguration);
-
-            context.CurrentStateSet = newSet;
-            context.State = newState;
+            context.CurrentStateSet = Parent;
+            context.State = this;
             await base.Exit(context);
         }
     }

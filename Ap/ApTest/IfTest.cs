@@ -1,5 +1,4 @@
 ﻿using Ap.Core.Builders;
-using Ap.Core.Models;
 using Ap.Core.Services.Interfaces;
 
 namespace ApTest
@@ -49,25 +48,16 @@ namespace ApTest
         public async Task Test1()
         {
             var user = new TestUser();
-            var uf = await CreateFlowAsync(user, IfFlowPreBuilder.FlowName);
+            var executionService = GetService<IExecutionService>();
+            var flow = await executionService.InvokeAsync(user, IfFlowPreBuilder.FlowName);
 
-            await ExecFlow(user, uf.FlowId);
-            await ExecFlow(user, uf.FlowId);
-            await ExecFlow(user, uf.FlowId);
-            await ExecFlow(user, uf.FlowId);
+            await ExecFlow(user, flow.Id);
+            await ExecFlow(user, flow.Id);
+            await ExecFlow(user, flow.Id);
+            await ExecFlow(user, flow.Id);
 
             var flowManager = GetService<IFlowManager>();
-            var userFlow = await flowManager.GetUserFlow(uf.FlowId);
-        }
-
-        public async Task<UserFlow> CreateFlowAsync(IUser user, string flowName)
-        {
-            var flowManager = GetService<IFlowManager>();
-            var stateSetService = GetService<IStateSetRepository>();
-
-            var stateSet = await stateSetService.GetByNameAsync(flowName);
-            var uf = await flowManager.CreateUserFlowAsync(user, stateSet);
-            return uf;
+            var userFlow = await flowManager.GetUserFlow(flow.Id);
         }
 
         private async Task ExecFlow(IUser user, string flowId)

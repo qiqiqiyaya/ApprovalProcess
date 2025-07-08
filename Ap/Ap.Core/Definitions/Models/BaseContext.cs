@@ -12,7 +12,7 @@ public abstract class BaseContext
 {
     public IServiceProvider ServiceProvider { get; set; }
 
-    public StateTrigger StateTrigger { get; internal set; }
+    public StateTrigger? StateTrigger { get; internal set; }
 
     public Flow RootFlow { get; internal set; }
 
@@ -46,5 +46,45 @@ public abstract class BaseContext
             RootStateSet = RootStateSet,
             CommonConfiguration = CommonConfiguration,
         };
+    }
+
+    internal ExitContext CreateExitContext()
+    {
+        var context = new ExitContext
+        {
+            StateTrigger = StateTrigger,
+            RootStateSet = RootStateSet,
+            CurrentStateSet = CurrentStateSet,
+            ServiceProvider = ServiceProvider,
+            TriggeredTime = TriggeredTime
+        };
+        context.StateTrigger = StateTrigger;
+        context.Properties = Properties;
+        context.CommonConfiguration = CommonConfiguration;
+        context.RootFlow = RootFlow;
+        context.State = State;
+        context.Executor = Executor;
+
+        return context;
+    }
+
+    internal EntryContext CreateEntryContext()
+    {
+        var context = new EntryContext
+        {
+            StateTrigger = StateTrigger,
+            RootStateSet = RootStateSet,
+            CurrentStateSet = CurrentStateSet,
+            ServiceProvider = ServiceProvider,
+            TriggeredTime = TriggeredTime
+        };
+        context.StateTrigger = StateTrigger;
+        context.Properties = Properties;
+        context.CommonConfiguration = CommonConfiguration;
+        context.RootFlow = RootFlow;
+        context.State = State;
+        context.Executor = Executor;
+
+        return context;
     }
 }

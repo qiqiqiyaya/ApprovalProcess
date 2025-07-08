@@ -1,5 +1,6 @@
 ﻿using Ap.Core.Builders;
 using Ap.Core.Models;
+using Ap.Core.Services;
 using Ap.Core.Services.Interfaces;
 
 namespace ApTest
@@ -71,15 +72,16 @@ namespace ApTest
         public async Task CreateTest()
         {
             var user = new TestUser();
-            var uf = await CreateFlowAsync(user, FlowPreBuilder.FlowName);
+            var executionService = GetService<IExecutionService>();
+            var flow = await executionService.InvokeAsync(user, FlowPreBuilder.FlowName);
 
-            await ExecFlow(user, uf.FlowId);
-            await ExecFlow(user, uf.FlowId);
-            await ExecFlow(user, uf.FlowId);
-            await ExecFlow(user, uf.FlowId);
+            await ExecFlow(user, flow.Id);
+            await ExecFlow(user, flow.Id);
+            await ExecFlow(user, flow.Id);
+            await ExecFlow(user, flow.Id);
 
             var flowManager = GetService<IFlowManager>();
-            var userFlow = await flowManager.GetUserFlow(uf.FlowId);
+            var userFlow = await flowManager.GetUserFlow(flow.Id);
         }
     }
 }

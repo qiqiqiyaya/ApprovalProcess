@@ -9,7 +9,7 @@ namespace Ap.Core.Behaviours
 
         public string Destination { get; } = destination;
 
-        public virtual ValueTask ExecuteAsync(TriggerContext context)
+        public virtual ValueTask ExecuteAsync(BaseContext context)
         {
             context.CurrentStateSet.CurrentState = Destination;
             return new ValueTask();

@@ -26,9 +26,10 @@ public class EntryExecutableNode : IEntryAction
         {
             Id = Guid.NewGuid().ToString("N"),
             StateName = context.State.Name,
-            StateId = context.StateTrigger.StateDetail.Id,
+            StateId = context.State.Id,
             ExecutorId = context.Executor.Id,
-            StateSetId = context.CurrentStateSet.Id
+            StateSetId = context.CurrentStateSet.Id,
+            RootStateSetId = context.RootStateSet.Id
         };
 
         var actions = (List<ApAction>)context.Properties[EntryContext.EntryActionsProperty];

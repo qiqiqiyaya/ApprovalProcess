@@ -224,21 +224,29 @@ namespace Ap.Core.Definitions
             }
         }
 
-        public virtual async ValueTask InitialEntry(TriggerContext context)
+        protected virtual async ValueTask StateSetInitial(EntryContext context)
         {
-            context.RootStateSet ??= this;
-            context.CommonConfiguration ??= StateSetConfiguration;
-            context.ServiceProvider ??= ServiceProvider;
-            context.TriggeredTime = DateTime.UtcNow;
-
             var state = (GetState(CurrentState) as StartState)!;
             var behaviour = state.GetBehaviour();
-            await ExitAndEntry(state, behaviour, context);
+
+            await state.Exit(context.CreateExitContext());
+            await behaviour.ExecuteAsync(context);
+
+            var nextState = GetState(CurrentState);
+            context.State = nextState;
+            nextState.ServiceProvider ??= ServiceProvider;
+            await nextState.Entry(context.CreateEntryContext());
         }
 
-        public virtual ValueTask CompletedExit(TriggerContext context)
+        protected virtual async ValueTask StateSetEnd(ExitContext context)
         {
-            return new ValueTask();
+            // exit the last state
+            var nextState = GetState(CurrentState);
+            nextState.ServiceProvider ??= ServiceProvider;
+            context.State = nextState;
+            context.CurrentStateSet = this;
+
+            await nextState.Exit(context);
         }
 
         /// <summary>
@@ -273,6 +281,37 @@ namespace Ap.Core.Definitions
                 LinkedList = LinkedList,
                 RootLinkedList = RootLinkedList
             };
+        }
+
+        /// <summary>
+        /// StateSet entry ,Initial StateSet
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override async ValueTask Entry(EntryContext context)
+        {
+            if (IsInitial)
+            {
+                context.CurrentStateSet = this;
+                context.State = this;
+                // to create new flow for this set
+                await context.StateSetActionRunAsync(StateConfiguration);
+
+                // Initialize oneself
+                await StateSetInitial(context);
+            }
+        }
+
+        public override async ValueTask Exit(ExitContext context)
+        {
+            if (IsEnd)
+            {
+                await StateSetEnd(context);
+
+                context.CurrentStateSet = this;
+                context.State = this;
+                await context.StateSetActionRunAsync(StateConfiguration);
+            }
         }
     }
 }
