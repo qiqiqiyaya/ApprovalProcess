@@ -1,76 +1,60 @@
-using Ap.Core.Behaviours;
-using Ap.Core.Definitions;
+using Ap.Core.Builders;
+using Ap.Core.Services.Interfaces;
 
 namespace ApTest
 {
+
+    public class BranchAndBuildTest : IPreBuilder
+    {
+        public const string FlowName = "BranchAndBuildTest";
+
+        public IStateSetBuilder Build(IStateSetBuilderProvider builderProvider)
+        {
+            var builder = builderProvider.Create("edit")
+                .Then("FirstApprove")
+                .Then("SecondApprove")
+                .BranchAnd(branch =>
+                {
+                    branch.New("SecondApprove_A1")
+                        .Then("SecondApprove_A2");
+
+                    branch.New("SecondApprove_B1")
+                        .Then("SecondApprove_B2");
+                })
+                .Then("ThirdApprove");
+
+            builder.Name = FlowName;
+            return builder;
+        }
+    }
+
     public class BranchAndTest : Base
     {
         [Fact]
-        public void Test()
+        public async Task Test()
         {
-            //var builder = StateSetBuilderProvider.Create("edit");
-            //string aId = "";
-            //string bId = "";
+            var user = new TestUser();
+            var executionService = GetService<IExecutionService>();
+            var flow = await executionService.InvokeAsync(user, BranchAndBuildTest.FlowName);
 
-            //builder.Then("FirstApprove")
-            //    .Then("SecondApprove")
-            //    .BranchAnd(branch =>
-            //    {
-            //        var builderA = branch.New("SecondApprove_A1")
-            //            .Then("SecondApprove_A2");
-            //        aId = builderA.Id;
+            await ExecFlow(user, flow.Id);
+            await ExecFlow(user, flow.Id);
+            await ExecFlow(user, flow.Id);
 
-            //        var builderB = branch.New("SecondApprove_B1", "2")
-            //            .Then("SecondApprove_B2");
-            //        bId = builderB.Id;
-            //    })
-            //    .Then("ThirdApprove")
-            //    .Complete();
+            await ExecFlow(user, flow.Id);
 
-            //builder.ConfigureEntry("FirstApprove", async (context) =>
-            //{
-            //    await Task.Delay(2000);
-            //});
+            var flowManager = GetService<IFlowManager>();
+            var userFlow = await flowManager.GetUserFlow(flow.Id);
+        }
 
-            //builder.ConfigureEntry("SecondApprove_B1", async (context) =>
-            //{
-            //    await Task.Delay(2000);
-            //});
-
-            //builder.ConfigureEntry("ThirdApprove", async (context) =>
-            //{
-            //    await Task.Delay(2000);
-            //});
-
-            //IStateSet stateSet = builder.Build();
-            //stateSet.ExecuteTrigger(ApCoreTriggers.Submit);
-            //stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
-
-            //stateSet.ExecuteTrigger(ApCoreTriggers.Reject);
-
-            //stateSet.ExecuteTrigger(ApCoreTriggers.Submit);
-            //stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
-            //stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
-
-            //stateSet.ExecuteTrigger(aId, ApCoreTriggers.Approve);
-            //var triggerDictionary = stateSet.GetTrigger();
-
-            //Assert.True(triggerDictionary.Count > 0);
-
-            //stateSet.ExecuteTrigger(aId, ApCoreTriggers.Reject);
-
-            //stateSet.ExecuteTrigger(ApCoreTriggers.Submit);
-            //stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
-            //stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
-
-            //stateSet.ExecuteTrigger(aId, ApCoreTriggers.Approve);
-            //stateSet.ExecuteTrigger(aId, ApCoreTriggers.Approve);
-
-            //stateSet.ExecuteTrigger(bId, ApCoreTriggers.Approve);
-            //stateSet.ExecuteTrigger(bId, ApCoreTriggers.Approve);
-
-            //stateSet.ExecuteTrigger(ApCoreTriggers.Approve);
-            //Assert.True(stateSet.IsEnd);
+        private async Task ExecFlow(IUser user, string flowId)
+        {
+            var flowManager = GetService<IFlowManager>();
+            var executionService = GetService<IExecutionService>();
+            var flow = await flowManager.GetFlowAsync(flowId);
+            var actions = await executionService.GetTriggerAsync(flow);
+            var trigger = actions[0];
+            await executionService.InvokeAsync(user, flow, trigger);
         }
     }
 }

@@ -37,7 +37,8 @@ namespace Ap.Core.Models
 
         public override string ToString()
         {
-            return $"StateName: {StateName}  StateId: {StateId}";
+            var type = this.GetType().Name;
+            return $"{type}  StateName: {StateName}  StateId: {StateId}";
         }
     }
 }

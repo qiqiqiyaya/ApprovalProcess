@@ -58,6 +58,9 @@ namespace ApTest
 
             var flowManager = GetService<IFlowManager>();
             var userFlow = await flowManager.GetUserFlow(flow.Id);
+
+            Assert.False(userFlow.Flow.IsTriggered);
+            Assert.True(userFlow.Flow.Nodes.Count >= 4);
         }
 
         private async Task ExecFlow(IUser user, string flowId)

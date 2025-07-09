@@ -1,6 +1,4 @@
 ﻿using Ap.Core.Builders;
-using Ap.Core.Models;
-using Ap.Core.Services;
 using Ap.Core.Services.Interfaces;
 
 namespace ApTest
@@ -48,16 +46,6 @@ namespace ApTest
 
     public class FlowTest1 : Base
     {
-        public async Task<UserFlow> CreateFlowAsync(IUser user, string flowName)
-        {
-            var flowManager = GetService<IFlowManager>();
-            var stateSetService = GetService<IStateSetRepository>();
-
-            var stateSet = await stateSetService.GetByNameAsync(flowName);
-            var uf = await flowManager.CreateUserFlowAsync(user, stateSet);
-            return uf;
-        }
-
         private async Task ExecFlow(IUser user, string flowId)
         {
             var flowManager = GetService<IFlowManager>();
@@ -82,6 +70,9 @@ namespace ApTest
 
             var flowManager = GetService<IFlowManager>();
             var userFlow = await flowManager.GetUserFlow(flow.Id);
+
+            Assert.False(userFlow.Flow.IsTriggered);
+            Assert.True(userFlow.Flow.Nodes.Count >= 4);
         }
     }
 }

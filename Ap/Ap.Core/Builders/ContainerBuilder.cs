@@ -68,9 +68,7 @@ namespace Ap.Core.Builders
             foreach (var builder in StateSetBuilderDic)
             {
                 var setBuilder = (ContainerStateSetBuilder)builder.Value;
-                setBuilder.Complete();
                 var set = setBuilder.Build();
-
                 container.StateSets.Add(builder.Key, set);
             }
 

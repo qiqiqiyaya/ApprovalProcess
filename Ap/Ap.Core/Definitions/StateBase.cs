@@ -74,7 +74,7 @@ namespace Ap.Core.Definitions
 
         public override string ToString()
         {
-            return Name;
+            return $"{GetType().Name}  Name: {Name}  Id: {Id}";
         }
 
 

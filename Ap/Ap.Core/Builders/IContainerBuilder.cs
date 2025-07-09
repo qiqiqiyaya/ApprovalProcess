@@ -17,6 +17,6 @@ namespace Ap.Core.Builders
 
         IContainerStateSetBuilder New(string state);
 
-        IStateSetContainer Build(StateSetBase parent);
+        internal IStateSetContainer Build(StateSetBase parent);
     }
 }

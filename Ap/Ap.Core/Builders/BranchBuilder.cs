@@ -1,5 +1,4 @@
 ﻿using Ap.Core.Definitions;
-using System;
 
 namespace Ap.Core.Builders
 {
@@ -25,9 +24,7 @@ namespace Ap.Core.Builders
             foreach (var builder in StateSetBuilderDic)
             {
                 var setBuilder = (ContainerStateSetBuilder)builder.Value;
-                setBuilder.Complete();
                 var set = setBuilder.Build();
-
                 container.StateSets.Add(builder.Key, set);
             }
 
