@@ -51,7 +51,7 @@ namespace Ap.Core.Builders
                     return builder;
                 });
 
-            StateSetBuilderDic.Add(containerBuilder.Name, containerBuilder);
+            StateSetBuilderDic.Add(containerBuilder.Id, containerBuilder);
             return containerBuilder;
         }
 

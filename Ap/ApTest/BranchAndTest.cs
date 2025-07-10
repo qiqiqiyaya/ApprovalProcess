@@ -42,6 +42,10 @@ namespace ApTest
             await ExecFlow(user, flow.Id);
 
             await ExecFlow(user, flow.Id);
+            await ExecFlow(user, flow.Id);
+
+            await ExecFlow(user, flow.Id);
+            await ExecFlow(user, flow.Id);
 
             var flowManager = GetService<IFlowManager>();
             var userFlow = await flowManager.GetUserFlow(flow.Id);

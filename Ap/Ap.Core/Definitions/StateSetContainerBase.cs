@@ -29,12 +29,22 @@ namespace Ap.Core.Definitions
 
         public virtual async ValueTask ExecuteTrigger(TriggerContext context)
         {
-            var stateSetId = context.StateTrigger.StateSetId;
-            if (string.IsNullOrEmpty(stateSetId)) throw new ArgumentException("StateSetId cannot be null or empty.", nameof(context.StateTrigger.StateSetId));
+            var stateSetId = context.StateTrigger!.StateSetId;
             IStateSet set = StateSets[stateSetId!];
-            set.ServiceProvider = ServiceProvider;
+            set.ServiceProvider ??= ServiceProvider;
+            context.Properties[StateSetContainerIdProperty] = Id;
+
+            if (set.IsInitial)
+            {
+                // to create CurrentStateSet's flow
+                await set.Entry(context.CreateEntryContext());
+            }
 
             await set.ExecuteTrigger(context);
+            if (set.IsEnd)
+            {
+                await set.Exit(context.CreateExitContext());
+            }
 
             if (IsEnd)
             {

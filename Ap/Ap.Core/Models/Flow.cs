@@ -48,7 +48,10 @@ namespace Ap.Core.Models
                 case FlowContainer container:
                     foreach (var item in container.Flows)
                     {
-                        return GetDeepTriggeredNode(item);
+                        if (item.IsTriggered)
+                        {
+                            return GetDeepTriggeredNode(item);
+                        }
                     }
                     break;
             }

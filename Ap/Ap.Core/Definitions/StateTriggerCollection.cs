@@ -20,5 +20,7 @@ namespace Ap.Core.Definitions
         {
             return this.FirstOrDefault(x => x.StateDetail.Name == stateName);
         }
+
+
     }
 }
