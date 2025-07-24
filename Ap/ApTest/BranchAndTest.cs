@@ -54,6 +54,7 @@ namespace ApTest
         private async Task ExecFlow(IUser user, string flowId)
         {
             var flowManager = GetService<IFlowManager>();
+
             var executionService = GetService<IExecutionService>();
             var flow = await flowManager.GetFlowAsync(flowId);
             var actions = await executionService.GetTriggerAsync(flow);

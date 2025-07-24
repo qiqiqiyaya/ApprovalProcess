@@ -12,7 +12,7 @@ namespace Ap.Core.Actions
         {
             if (context.RootFlow == null!)
             {
-                await FirstEntry(context);
+                await RootEntry(context);
             }
             else
             {
@@ -45,7 +45,7 @@ namespace Ap.Core.Actions
             await next(context);
         }
 
-        private async ValueTask FirstEntry(EntryContext context)
+        private async ValueTask RootEntry(EntryContext context)
         {
             var flow = new Flow()
             {
