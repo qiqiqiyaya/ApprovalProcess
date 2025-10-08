@@ -1,0 +1,86 @@
+<div class="process-designer-container">
+  <!-- 左侧工具栏 -->
+  <div class="toolbar">
+    <div class="toolbar-section">
+      <h3>流程节点</h3>
+      <div *ngFor="let template of nodeTemplates" 
+           class="node-template"
+           draggable="true"
+           (dragstart)="drag($event, template.type)">
+        <span class="material-icons">{{template.icon}}</span>
+        <span>{{template.name}}</span>
+      </div>
+    </div>
+    
+    <div class="toolbar-section">
+      <h3>操作</h3>
+      <button (click)="addNode(NodeType.APPROVAL, 200, 200)" class="toolbar-btn">添加审批节点</button>
+      <button (click)="addNode(NodeType.CONDITION, 200, 300)" class="toolbar-btn">添加条件节点</button>
+      <button *ngIf="selectedNode" (click)="deleteNode(selectedNode!.id)" class="toolbar-btn danger">删除节点</button>
+    </div>
+  </div>
+
+  <!-- 画布区域 -->
+  <div class="designer-canvas">
+    <div #canvas class="canvas" 
+         (dragover)="allowDrop($event)"
+         (drop)="onDrop($event)">
+      <!-- 节点和连线将通过JavaScript动态渲染 -->
+    </div>
+  </div>
+
+  <!-- 右侧属性面板 -->
+  <div class="property-panel" *ngIf="selectedNode">
+    <h3>节点属性</h3>
+    
+    <div class="property-group">
+      <label>节点名称</label>
+      <input type="text" [(ngModel)]="selectedNode!.name" 
+             (change)="processDefinitionChange.emit(processDefinition)">
+    </div>
+    
+    <div class="property-group">
+      <label>位置</label>
+      <div class="position-inputs">
+        <input type="number" [(ngModel)]="selectedNode!.position.x" 
+               (change)="renderProcess()"> x
+        <input type="number" [(ngModel)]="selectedNode!.position.y" 
+               (change)="renderProcess()"> y
+      </div>
+    </div>
+
+    <!-- 审批节点特定配置 -->
+    <div *ngIf="selectedNode.type === NodeType.APPROVAL" class="property-group">
+      <h4>审批人设置</h4>
+      <div *ngFor="let approver of selectedNode.config.approvers || []; let i = index" class="approver-item">
+        <input type="text" [(ngModel)]="approver.name" placeholder="审批人名称">
+        <select [(ngModel)]="approver.type">
+          <option value="user">指定成员</option>
+          <option value="role">角色</option>
+          <option value="department">部门</option>
+        </select>
+        <button (click)="selectedNode!.config.approvers?.splice(i, 1)">删除</button>
+      </div>
+      <button (click)="addApprover()">添加审批人</button>
+    </div>
+
+    <!-- 条件节点特定配置 -->
+    <div *ngIf="selectedNode.type === NodeType.CONDITION" class="property-group">
+      <h4>条件设置</h4>
+      <div *ngFor="let condition of selectedNode.config.conditions || []; let i = index" class="condition-item">
+        <select [(ngModel)]="condition.field">
+          <option value="amount">金额</option>
+          <option value="department">部门</option>
+        </select>
+        <select [(ngModel)]="condition.operator">
+          <option value="gt">大于</option>
+          <option value="lt">小于</option>
+          <option value="eq">等于</option>
+        </select>
+        <input type="text" [(ngModel)]="condition.value" placeholder="值">
+        <button (click)="selectedNode!.config.conditions?.splice(i, 1)">删除</button>
+      </div>
+      <button (click)="addCondition()">添加条件</button>
+    </div>
+  </div>
+</div>

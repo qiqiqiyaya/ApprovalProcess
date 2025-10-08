@@ -1,0 +1,15 @@
+<div id="container" style="width: 100%;height: 100%;"></div>
+
+<ng-template #tplContent let-params>
+    <nz-card>
+        <div nz-card-grid (click)="openDrawer()">审批</div>
+        <div nz-card-grid>抄送</div>
+        <div nz-card-grid>Content</div>
+        <div nz-card-grid>Content</div>
+    </nz-card>
+</ng-template>
+
+<nz-drawer [nzVisible]="this.operation.drawerShow" nzPlacement="right" nzTitle="Basic Drawer" (nzOnClose)="closeDrawer()"
+    [nzSize]="'large'">
+    <app-add-node *nzDrawerContent></app-add-node>
+</nz-drawer>
