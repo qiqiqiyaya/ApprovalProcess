@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { Graph, Node as XNode } from '@antv/x6';
 import { GraphConstant } from './graph-constant';
-import { NodeDescription, NodeType } from './node-description';
+import { NodeInfo, NodeType } from './node-description';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
 type direction = "x" | "xy";
@@ -70,14 +70,14 @@ export class NodeOperationService {
   }
 
   connectOpNode(source: XNode, target: XNode) {
-    this.yAutoSet(source, target);
     this._graph.addEdge({ source: source.id, target: target.id, attrs: { line: { targetMarker: null }, }, });
+    this.yAutoSet(source, target);
   }
 
   addApproveNode(nodeMetaData: XNode.Metadata) {
     const newNode = this._graph.addNode(nodeMetaData);
     const currentOpNode = this.crrentOp;
-    const opNodeData = currentOpNode.getData() as NodeDescription;
+    const opNodeData = currentOpNode.getData() as NodeInfo;
 
     // opNodeData.next?.forEach(res => this._graph.removeConnectedEdges(res));
     const edges = this._graph.getOutgoingEdges(currentOpNode);
@@ -91,8 +91,8 @@ export class NodeOperationService {
       height: 40
     });
 
-    const newNodeDes: NodeDescription = { type: NodeType.Info, current: newNode, prev: opNodeData.current, next: [newOpNode] };
-    const newOpdes: NodeDescription = { type: NodeType.Add, current: newOpNode, prev: newNode, next: opNodeData.next };
+    const newNodeDes: NodeInfo = { type: NodeType.Info, current: newNode, prev: opNodeData.current, next: [newOpNode] };
+    const newOpdes: NodeInfo = { type: NodeType.AddApproveNode, current: newOpNode, prev: newNode, next: opNodeData.next };
     newNode.setData(newNodeDes);
     newOpNode.setData(newOpdes);
 
@@ -111,7 +111,7 @@ export class NodeOperationService {
   private ReSetPostion(next: XNode) {
     if (!next) return;
 
-    var data = next.getData() as NodeDescription;
+    var data = next.getData() as NodeInfo;
     data.next?.forEach(res => {
       this.yAutoSet(next, res);
       this.ReSetPostion(res);
@@ -121,7 +121,7 @@ export class NodeOperationService {
   parallelApproval(nodeMetaData: XNode.Metadata) {
     const newNode = this._graph.addNode(nodeMetaData);
     const currentOpNode = this.crrentOp;
-    const opNodeData = currentOpNode.getData() as NodeDescription;
+    const opNodeData = currentOpNode.getData() as NodeInfo;
 
     const edges = this._graph.getOutgoingEdges(currentOpNode);
     edges?.forEach(res => {
@@ -151,10 +151,10 @@ export class NodeOperationService {
       height: 40,
     });
 
-    const newNode1Des: NodeDescription = { type: NodeType.Info, current: newNode1, prev: currentOpNode, next: [newOpNode1] };
-    const newNode2Des: NodeDescription = { type: NodeType.Info, current: newNode2, prev: currentOpNode, next: [newOpNode2] };
-    const newOpdes1: NodeDescription = { type: NodeType.Add, current: newOpNode1, prev: newNode1, next: opNodeData.next };
-    const newOpdes2: NodeDescription = { type: NodeType.Add, current: newOpNode2, prev: newNode2, next: opNodeData.next };
+    const newNode1Des: NodeInfo = { type: NodeType.Info, current: newNode1, prev: currentOpNode, next: [newOpNode1] };
+    const newNode2Des: NodeInfo = { type: NodeType.Info, current: newNode2, prev: currentOpNode, next: [newOpNode2] };
+    const newOpdes1: NodeInfo = { type: NodeType.AddApproveNode, current: newOpNode1, prev: newNode1, next: opNodeData.next };
+    const newOpdes2: NodeInfo = { type: NodeType.AddApproveNode, current: newOpNode2, prev: newNode2, next: opNodeData.next };
 
     newNode1.setData(newNode1Des);
     newNode2.setData(newNode2Des);

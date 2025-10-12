@@ -1,12 +1,14 @@
 import { Component, inject, Injector, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
-import { Graph, Node as xNode } from '@antv/x6';
+import { Graph, Node as XNode } from '@antv/x6';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { register } from '@antv/x6-angular-shape'
 import { NodeOperationService } from './node-operation.service';
 import { NodeOperationComponent } from './node-operation/node-operation.component';
 import { GraphConstant } from './graph-constant';
-import { NodeDescription, NodeType } from './node-description';
+import { NodeInfo, NodeType } from './node-description';
 import { ParallelApprovalBtnComponent } from './parallel-approval-btn/parallel-approval-btn.component';
+import { X6FlowGraph } from './services/x6-flow-graph';
+import { X6NodeRegister } from './x6-node-register';
 
 @Component({
   selector: 'app-x6-flow-designer',
@@ -24,71 +26,58 @@ export class X6FlowDesignerComponent implements OnInit {
   modal = inject(NzModalService);
   ref = inject(ViewContainerRef);
 
-  /* 图 */
-  graph: Graph;
-  startNode: xNode;
-  endNode: xNode;
+  startNode: XNode;
+  endNode: XNode;
   /* 当前操作的节点 */
-  currentOpNode: xNode;
+  currentOpNode: XNode;
 
 
-  constructor(private injector: Injector) {
-    register({
-      shape: 'operation-node',
-      width: 120,
-      height: 20,
-      content: NodeOperationComponent,
-      injector: this.injector,
-    });
-    
-    register({
-      shape: 'parallel-approval-node',
-      width: 120,
-      height: 40,
-      content: ParallelApprovalBtnComponent,
-      injector: this.injector,
-    })
+  constructor(injector: Injector,
+    private flowGraph: X6FlowGraph) {
+    X6NodeRegister.register(injector);
   }
 
   ngOnInit() {
   }
 
   ngAfterViewInit() {
-    this.graph = new Graph({
+    const graph = new Graph({
       container: document.getElementById('container')!,
       grid: true,
       panning: true,
       mousewheel: true,
     });
-    this.operation.init(this.graph);
 
-    this.addStartNode();
-    this.addOperationNode();
-    this.addEndNode();
+    const startNode = graph.addNode({ id: "start", width: GraphConstant.nodeWidth, height: GraphConstant.nodeHeight, label: "发起人" });
+    const startInfo: NodeInfo = { type: NodeType.Start, current: startNode, next: [] };
 
-    const current: NodeDescription = { type: NodeType.Start, current: this.startNode, next: [this.currentOpNode] };
-    this.startNode.setData(current);
-    const opdes: NodeDescription = { type: NodeType.Add, current: this.currentOpNode, prev: this.startNode, next: [this.endNode] };
-    this.currentOpNode.setData(opdes);
-    const endDes: NodeDescription = { type: NodeType.End, current: this.startNode, prev: this.currentOpNode };
-    this.endNode.setData(endDes);
+    const operationNode = graph.addNode({ id: 'add', shape: 'operation-node', width: GraphConstant.nodeWidth, height: 40, label: '结束' });
+    const operationNodeInfo: NodeInfo = { type: NodeType.AddApproveNode, current: operationNode, prev: startNode, next: [] };
 
-    this.operation.start = this.startNode;
-    this.operation.fristOp = this.currentOpNode;
-    this.operation.end = this.endNode;
+    const endNode = graph.addNode({ id: 'end', width: GraphConstant.nodeWidth, height: GraphConstant.nodeHeight, label: '结束' });
+    const endNodeInfo: NodeInfo = { type: NodeType.End, current: endNode, prev: operationNode };
+    
+    startInfo.next?.push(operationNode);
+    operationNodeInfo.next?.push(endNode);
 
-    this.operation.connectOpNode(this.startNode, this.currentOpNode);
-    this.operation.connectOpNode(this.currentOpNode, this.endNode);
+    startNode.setData(startInfo);
+    operationNode.setData(operationNodeInfo);
+    endNode.setData(endNodeInfo);
 
-    this.graph.centerContent();
 
-    this.graph.on('node:click', ({ e, x, y, node, view }) => {
-      const nodeData = node.getData() as NodeDescription;
-      if (nodeData.type == NodeType.Add) {
-        this.operation.crrentOp = nodeData.current;
-        this.nodeCreate();
-      }
-    });
+    // this.operation.connectOpNode(this.startNode, this.currentOpNode);
+    // this.operation.connectOpNode(this.currentOpNode, this.endNode);
+
+    // this.flowGraph.graph.on('node:click', ({ e, x, y, node, view }) => {
+    //   const nodeData = node.getData() as NodeInfo;
+    //   if (nodeData.type == NodeType.AddApproveNode) {
+    //     this.operation.crrentOp = nodeData.current;
+    //     this.nodeCreate();
+    //   }
+    // });
+
+
+    this.flowGraph.init(graph, startNode, endNode);
   }
 
   nodeCreate() {
@@ -109,24 +98,15 @@ export class X6FlowDesignerComponent implements OnInit {
   }
 
   addStartNode() {
-    this.startNode = this.graph.addNode({ id: "start", width: GraphConstant.nodeWidth, height: GraphConstant.nodeHeight, label: "发起人" });
+    this.startNode = this.flowGraph.graph.addNode({ id: "start", width: GraphConstant.nodeWidth, height: GraphConstant.nodeHeight, label: "发起人" });
   }
 
   addOperationNode() {
-    this.currentOpNode = this.graph.addNode({
+    return this.flowGraph.graph.addNode({
       id: 'add',
       shape: 'operation-node',
       width: GraphConstant.nodeWidth,
       height: 40,
-      label: '结束'
-    });
-  }
-
-  addEndNode() {
-    this.endNode = this.graph.addNode({
-      id: 'end',
-      width: GraphConstant.nodeWidth,
-      height: GraphConstant.nodeHeight,
       label: '结束'
     });
   }

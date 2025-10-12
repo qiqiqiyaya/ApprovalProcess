@@ -5,11 +5,11 @@ import { Graph, Node as XNode } from '@antv/x6';
 export enum NodeType {
     Start,
     End,
-    Add,
+    AddApproveNode,
     Info
 }
 
-export interface NodeDescription {
+export interface NodeInfo {
     type: NodeType;
     title?: string;
 

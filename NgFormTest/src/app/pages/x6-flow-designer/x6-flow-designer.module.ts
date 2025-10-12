@@ -11,6 +11,7 @@ import { AddNodeComponent } from './add-node/add-node.component';
 import { NodeOperationService } from './node-operation.service';
 import { X6FlowDesignerRoutes } from './x6-flow-designer.routing';
 import { ParallelApprovalBtnComponent } from './parallel-approval-btn/parallel-approval-btn.component';
+import { X6FlowGraph } from './services/x6-flow-graph';
 
 @NgModule({
   imports: [
@@ -29,7 +30,8 @@ import { ParallelApprovalBtnComponent } from './parallel-approval-btn/parallel-a
     ParallelApprovalBtnComponent
   ],
   providers: [
-    NodeOperationService
+    NodeOperationService,
+    X6FlowGraph
   ]
 })
 export class X6FlowDesignerModule { }
