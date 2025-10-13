@@ -3,6 +3,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NodeOperationService } from '../node-operation.service';
 import { GraphConstant } from '../graph-constant';
+import { ApproveNodeService } from '../services/approve-node.service';
 
 @Component({
   selector: 'app-add-node',
@@ -13,17 +14,14 @@ import { GraphConstant } from '../graph-constant';
 export class AddNodeComponent implements OnInit {
 
   operation = inject(NodeOperationService);
+  approveNode = inject(ApproveNodeService);
   constructor() { }
 
   ngOnInit() {
   }
 
   create() {
-    this.operation.addApproveNode({
-      width: GraphConstant.nodeWidth,
-      height: GraphConstant.nodeHeight,
-      label: "审批"
-    });
+    this.approveNode.addApproveNode();
   }
 
   parallel() {

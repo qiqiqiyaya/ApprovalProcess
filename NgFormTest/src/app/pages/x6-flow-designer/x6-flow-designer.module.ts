@@ -12,6 +12,9 @@ import { NodeOperationService } from './node-operation.service';
 import { X6FlowDesignerRoutes } from './x6-flow-designer.routing';
 import { ParallelApprovalBtnComponent } from './parallel-approval-btn/parallel-approval-btn.component';
 import { X6FlowGraph } from './services/x6-flow-graph';
+import { ApproveNodeService } from './services/approve-node.service';
+import { ApproveNodeComponent } from './approve-node/approve-node.component';
+import { NzGridModule } from 'ng-zorro-antd/grid';
 
 @NgModule({
   imports: [
@@ -21,17 +24,20 @@ import { X6FlowGraph } from './services/x6-flow-graph';
     NzCardModule,
     NzIconModule,
     NzDrawerModule,
+    NzGridModule,
     X6FlowDesignerRoutes
   ],
   declarations: [
     X6FlowDesignerComponent,
     NodeOperationComponent,
     AddNodeComponent,
-    ParallelApprovalBtnComponent
+    ParallelApprovalBtnComponent,
+    ApproveNodeComponent
   ],
   providers: [
     NodeOperationService,
-    X6FlowGraph
+    X6FlowGraph,
+    ApproveNodeService
   ]
 })
 export class X6FlowDesignerModule { }

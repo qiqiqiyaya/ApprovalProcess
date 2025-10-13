@@ -9,6 +9,7 @@ import { NodeInfo, NodeType } from './node-description';
 import { ParallelApprovalBtnComponent } from './parallel-approval-btn/parallel-approval-btn.component';
 import { X6FlowGraph } from './services/x6-flow-graph';
 import { X6NodeRegister } from './x6-node-register';
+import { AddNodeComponent } from './add-node/add-node.component';
 
 @Component({
   selector: 'app-x6-flow-designer',
@@ -51,7 +52,7 @@ export class X6FlowDesignerComponent implements OnInit {
     const startNode = graph.addNode({ id: "start", width: GraphConstant.nodeWidth, height: GraphConstant.nodeHeight, label: "发起人" });
     const startInfo: NodeInfo = { type: NodeType.Start, current: startNode, next: [] };
 
-    const operationNode = graph.addNode({ id: 'add', shape: 'operation-node', width: GraphConstant.nodeWidth, height: 40, label: '结束' });
+    const operationNode = graph.addNode({ id: 'add', shape: 'operation-node', width: GraphConstant.nodeWidth, height: 40 });
     const operationNodeInfo: NodeInfo = { type: NodeType.AddApproveNode, current: operationNode, prev: startNode, next: [] };
 
     const endNode = graph.addNode({ id: 'end', width: GraphConstant.nodeWidth, height: GraphConstant.nodeHeight, label: '结束' });
@@ -64,7 +65,6 @@ export class X6FlowDesignerComponent implements OnInit {
     operationNode.setData(operationNodeInfo);
     endNode.setData(endNodeInfo);
 
-
     // this.operation.connectOpNode(this.startNode, this.currentOpNode);
     // this.operation.connectOpNode(this.currentOpNode, this.endNode);
 
@@ -76,14 +76,16 @@ export class X6FlowDesignerComponent implements OnInit {
     //   }
     // });
 
-
     this.flowGraph.init(graph, startNode, endNode);
+    debugger;
+    this.flowGraph.autoConnect(startNode);
+    this.flowGraph.rePositionForNext(startNode);
   }
 
   nodeCreate() {
     this.flowOperationModel = this.modal.create({
       nzTitle: "添加",
-      nzContent: this.tplContent,
+      nzContent: AddNodeComponent,
       nzFooter: null
     });
   }
