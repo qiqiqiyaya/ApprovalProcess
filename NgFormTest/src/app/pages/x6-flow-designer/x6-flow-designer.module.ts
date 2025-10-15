@@ -10,11 +10,13 @@ import { NodeOperationComponent } from './node-operation/node-operation.componen
 import { AddNodeComponent } from './add-node/add-node.component';
 import { NodeOperationService } from './node-operation.service';
 import { X6FlowDesignerRoutes } from './x6-flow-designer.routing';
-import { ParallelApprovalBtnComponent } from './parallel-approval-btn/parallel-approval-btn.component';
 import { X6FlowGraph } from './services/x6-flow-graph';
 import { ApproveNodeService } from './services/approve-node.service';
 import { ApproveNodeComponent } from './approve-node/approve-node.component';
 import { NzGridModule } from 'ng-zorro-antd/grid';
+import { ParallelApproveNodeService } from './services/parallel-approve-node.service';
+import { ParallelApprovalNodeComponent } from './parallel-approval-node/parallel-approval-node.component';
+import { ParallelApprovalMergeNodeComponent } from './parallel-approval-Merge-node/parallel-approval-Merge-node.component';
 
 @NgModule({
   imports: [
@@ -31,13 +33,15 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
     X6FlowDesignerComponent,
     NodeOperationComponent,
     AddNodeComponent,
-    ParallelApprovalBtnComponent,
-    ApproveNodeComponent
+    ParallelApprovalNodeComponent,
+    ApproveNodeComponent,
+    ParallelApprovalMergeNodeComponent
   ],
   providers: [
     NodeOperationService,
     X6FlowGraph,
-    ApproveNodeService
+    ApproveNodeService,
+    ParallelApproveNodeService
   ]
 })
 export class X6FlowDesignerModule { }

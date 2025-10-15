@@ -1,15 +1,13 @@
 import { Component, inject, Injector, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { Graph, Node as XNode } from '@antv/x6';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
-import { register } from '@antv/x6-angular-shape'
 import { NodeOperationService } from './node-operation.service';
-import { NodeOperationComponent } from './node-operation/node-operation.component';
 import { GraphConstant } from './graph-constant';
 import { NodeInfo, NodeType } from './node-description';
-import { ParallelApprovalBtnComponent } from './parallel-approval-btn/parallel-approval-btn.component';
 import { X6FlowGraph } from './services/x6-flow-graph';
 import { X6NodeRegister } from './x6-node-register';
 import { AddNodeComponent } from './add-node/add-node.component';
+import './global-extension';
 
 @Component({
   selector: 'app-x6-flow-designer',
@@ -53,10 +51,10 @@ export class X6FlowDesignerComponent implements OnInit {
     const startInfo: NodeInfo = { type: NodeType.Start, current: startNode, next: [] };
 
     const operationNode = graph.addNode({ id: 'add', shape: 'operation-node', width: GraphConstant.nodeWidth, height: 40 });
-    const operationNodeInfo: NodeInfo = { type: NodeType.AddApproveNode, current: operationNode, prev: startNode, next: [] };
+    const operationNodeInfo: NodeInfo = { type: NodeType.OperationNode, current: operationNode, prevs: [startNode], next: [] };
 
     const endNode = graph.addNode({ id: 'end', width: GraphConstant.nodeWidth, height: GraphConstant.nodeHeight, label: '结束' });
-    const endNodeInfo: NodeInfo = { type: NodeType.End, current: endNode, prev: operationNode };
+    const endNodeInfo: NodeInfo = { type: NodeType.End, current: endNode, prevs: [operationNode] };
     
     startInfo.next?.push(operationNode);
     operationNodeInfo.next?.push(endNode);

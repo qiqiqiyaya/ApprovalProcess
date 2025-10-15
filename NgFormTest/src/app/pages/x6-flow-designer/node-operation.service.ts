@@ -93,8 +93,8 @@ export class NodeOperationService {
       height: 40
     });
 
-    const newNodeDes: NodeInfo = { type: NodeType.Info, current: newNode, prev: opNodeData.current, next: [newOpNode] };
-    const newOpdes: NodeInfo = { type: NodeType.AddApproveNode, current: newOpNode, prev: newNode, next: opNodeData.next };
+    const newNodeDes: NodeInfo = { type: NodeType.Info, current: newNode, prevs: [opNodeData.current], next: [newOpNode] };
+    const newOpdes: NodeInfo = { type: NodeType.OperationNode, current: newOpNode, prevs: [newNode], next: opNodeData.next };
     newNode.setData(newNodeDes);
     newOpNode.setData(newOpdes);
 
@@ -153,10 +153,10 @@ export class NodeOperationService {
       height: 40,
     });
 
-    const newNode1Des: NodeInfo = { type: NodeType.Info, current: newNode1, prev: currentOpNode, next: [newOpNode1] };
-    const newNode2Des: NodeInfo = { type: NodeType.Info, current: newNode2, prev: currentOpNode, next: [newOpNode2] };
-    const newOpdes1: NodeInfo = { type: NodeType.AddApproveNode, current: newOpNode1, prev: newNode1, next: opNodeData.next };
-    const newOpdes2: NodeInfo = { type: NodeType.AddApproveNode, current: newOpNode2, prev: newNode2, next: opNodeData.next };
+    const newNode1Des: NodeInfo = { type: NodeType.Info, current: newNode1, prevs: [currentOpNode], next: [newOpNode1] };
+    const newNode2Des: NodeInfo = { type: NodeType.Info, current: newNode2, prevs: [currentOpNode], next: [newOpNode2] };
+    const newOpdes1: NodeInfo = { type: NodeType.OperationNode, current: newOpNode1, prevs: [newNode1], next: opNodeData.next };
+    const newOpdes2: NodeInfo = { type: NodeType.OperationNode, current: newOpNode2, prevs: [newNode2], next: opNodeData.next };
 
     newNode1.setData(newNode1Des);
     newNode2.setData(newNode2Des);

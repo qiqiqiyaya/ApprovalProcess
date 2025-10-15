@@ -4,6 +4,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NodeOperationService } from '../node-operation.service';
 import { GraphConstant } from '../graph-constant';
 import { ApproveNodeService } from '../services/approve-node.service';
+import { ParallelApproveNodeService } from '../services/parallel-approve-node.service';
 
 @Component({
   selector: 'app-add-node',
@@ -14,22 +15,19 @@ import { ApproveNodeService } from '../services/approve-node.service';
 export class AddNodeComponent implements OnInit {
 
   operation = inject(NodeOperationService);
+
   approveNode = inject(ApproveNodeService);
+  parallelApproveNode = inject(ParallelApproveNodeService);
   constructor() { }
 
   ngOnInit() {
   }
 
-  create() {
-    this.approveNode.addApproveNode();
+  addApproveNode() {
+    this.approveNode.add();
   }
 
-  parallel() {
-    this.operation.parallelApproval({
-      shape: 'parallel-approval-node',
-      width: GraphConstant.nodeWidth,
-      height: GraphConstant.nodeHeight,
-      label: "添加审批节点"
-    });
+  addParallelApproveNode() {
+    this.parallelApproveNode.add();
   }
 }

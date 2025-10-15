@@ -11,18 +11,14 @@ import { Graph, Node as XNode } from '@antv/x6';
 export class ApproveNodeComponent implements OnInit {
 
   approveNode = inject(ApproveNodeService);
-  node: XNode;
-
+  
   constructor() { }
 
   ngOnInit() {
-    debugger;
-    this.node = this.approveNode.approveNode;
+    
   }
 
   close() {
-
-    debugger;
-    const dfads=this.node;
+    this.approveNode.remove();
   }
 }

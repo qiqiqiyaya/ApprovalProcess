@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Edge, Graph, Node as XNode } from '@antv/x6';
 import { NodeInfo, NodeType } from '../node-description';
 import { GraphConstant } from '../graph-constant';
-import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { AddNodeComponent } from '../add-node/add-node.component';
 import { EdgeMap } from '../EdgeMap';
 
@@ -15,7 +15,8 @@ export class X6FlowGraph {
   private _endNode: XNode;
   /* 当前操作的节点 */
   private _currentNode: XNode;
-  modal = inject(NzModalService);
+  private modal = inject(NzModalService);
+  private _addNodeModal: NzModalRef;
 
   constructor() { }
 
@@ -40,16 +41,20 @@ export class X6FlowGraph {
   RegisterClickEvent() {
     this.graph.on('node:click', ({ e, x, y, node, view }) => {
       debugger;
-      const nodeData = node.getData() as NodeInfo;
-      if (nodeData.type == NodeType.AddApproveNode) {
-        this._currentNode = node;
-        this.modal.create({
+      const nodeData = node.getNodeInfo();
+      this._currentNode = node;
+      if (nodeData.type == NodeType.OperationNode) {
+        this._addNodeModal = this.modal.create({
           nzTitle: "添加",
           nzContent: AddNodeComponent,
           nzFooter: null
         });
       }
     });
+  }
+
+  closeAddNodeModal() {
+    if (this._addNodeModal) this._addNodeModal.close();
   }
 
   /**
@@ -117,15 +122,16 @@ export class X6FlowGraph {
     this.rePositionForNext(current);
   }
 
-  private multNextPositionSet(previous: XNode, current: XNode[]) {
+  private multNextPositionSet(previous: XNode, next: XNode[]) {
     const position = previous.getPosition();
     const size = previous.getSize();
     let y = position.y;
+    /* 节点向下添加 */
     y += size.height;
     y += GraphConstant.ySpace;
 
-    this.xSet(y, current);
-    current.forEach(res => {
+    this.xSet(y, next);
+    next.forEach(res => {
       this.rePositionForNext(res);
     })
   }
@@ -149,7 +155,7 @@ export class X6FlowGraph {
       const left = totalCount / 2 - 1;
       let leftNum = GraphConstant.xSpace / 2;
 
-      for (let index = left; index == 0; index--) {
+      for (let index = left; index >= 0; index--) {
         const element = next[index];
 
         const elPosition = { ...element.getPosition() };
@@ -164,7 +170,7 @@ export class X6FlowGraph {
       /* 右侧节点集 */
       const right = left + 1;
       let rightNum = GraphConstant.xSpace / 2;
-      for (let index = right; index == totalCount; index++) {
+      for (let index = right; index < totalCount; index++) {
         const element = next[index];
 
         const elPosition = { ...element.getPosition() };
@@ -223,13 +229,6 @@ export class X6FlowGraph {
   }
 
   /**
-   * 添加操作节点
-   */
-  public addOperationNode() {
-    return this.graph.addNode({ shape: 'operation-node', width: GraphConstant.nodeWidth, height: 40 });
-  }
-
-  /**
    * 移出掉所有连接到 next 的线程
    */
   public removeAllNextEdge(node: XNode) {
@@ -250,6 +249,39 @@ export class X6FlowGraph {
 
       if (!map) return;
       this.graph.removeEdge(map.edge);
+    });
+  }
+
+  /**
+   * 移除掉所有外向的连接线
+   * @param node 
+   */
+  public removeAllOutgoingEdges(node: XNode) {
+    const edges = this._graph.getOutgoingEdges(node);
+    if (!edges) return;
+    edges.forEach(res => {
+      this.graph.removeEdge(res);
+    });
+  }
+
+  
+
+  /**
+   * 添加操作节点
+   */
+  public addOperationNode() {
+    return this.graph.addNode({ shape: 'operation-node', width: GraphConstant.nodeWidth, height: 40 });
+  }
+
+  /**
+   * 添加审批人节点
+   */
+  public addApprovalNode() {
+    return this.graph.addNode({
+      shape: 'approval-node',
+      width: GraphConstant.nodeWidth,
+      height: GraphConstant.nodeHeight,
+      label: "审批"
     });
   }
 }

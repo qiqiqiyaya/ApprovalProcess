@@ -13,7 +13,7 @@ export const GraphConstant = {
     /** 2个常规节点之间的间距 */
     ySpace: 20,
     /** 2个常规节点之间的间距 */
-    xSpace: 100,
+    xSpace: 180,
     /** 添加操作的节点之间的间距 */
     opNodySpace: 10,
     /** 初始节点x y 都为 0 */
