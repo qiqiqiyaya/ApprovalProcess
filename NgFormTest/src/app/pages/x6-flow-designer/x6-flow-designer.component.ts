@@ -8,6 +8,7 @@ import { X6FlowGraph } from './services/x6-flow-graph';
 import { X6NodeRegister } from './x6-node-register';
 import { AddNodeComponent } from './add-node/add-node.component';
 import './global-extension';
+import { NzTabChangeEvent, NzTabComponent } from 'ng-zorro-antd/tabs';
 
 @Component({
   selector: 'app-x6-flow-designer',
@@ -17,7 +18,6 @@ import './global-extension';
 })
 export class X6FlowDesignerComponent implements OnInit {
 
-  @ViewChild('tplContent', { static: true }) tplContent: any;
   flowOperationModel: NzModalRef;
   @ViewChild('template') template: TemplateRef<{}>
 
@@ -30,6 +30,8 @@ export class X6FlowDesignerComponent implements OnInit {
   /* 当前操作的节点 */
   currentOpNode: XNode;
 
+  selectedIndex: number=0;
+  tabs: boolean[] = [true, false, false];
 
   constructor(injector: Injector,
     private flowGraph: X6FlowGraph) {
@@ -40,44 +42,7 @@ export class X6FlowDesignerComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    const graph = new Graph({
-      container: document.getElementById('container')!,
-      grid: true,
-      panning: true,
-      mousewheel: true,
-    });
 
-    const startNode = graph.addNode({ id: "start", width: GraphConstant.nodeWidth, height: GraphConstant.nodeHeight, label: "发起人" });
-    const startInfo: NodeInfo = { type: NodeType.Start, current: startNode, next: [] };
-
-    const operationNode = graph.addNode({ id: 'add', shape: 'operation-node', width: GraphConstant.nodeWidth, height: 40 });
-    const operationNodeInfo: NodeInfo = { type: NodeType.OperationNode, current: operationNode, prevs: [startNode], next: [] };
-
-    const endNode = graph.addNode({ id: 'end', width: GraphConstant.nodeWidth, height: GraphConstant.nodeHeight, label: '结束' });
-    const endNodeInfo: NodeInfo = { type: NodeType.End, current: endNode, prevs: [operationNode] };
-    
-    startInfo.next?.push(operationNode);
-    operationNodeInfo.next?.push(endNode);
-
-    startNode.setData(startInfo);
-    operationNode.setData(operationNodeInfo);
-    endNode.setData(endNodeInfo);
-
-    // this.operation.connectOpNode(this.startNode, this.currentOpNode);
-    // this.operation.connectOpNode(this.currentOpNode, this.endNode);
-
-    // this.flowGraph.graph.on('node:click', ({ e, x, y, node, view }) => {
-    //   const nodeData = node.getData() as NodeInfo;
-    //   if (nodeData.type == NodeType.AddApproveNode) {
-    //     this.operation.crrentOp = nodeData.current;
-    //     this.nodeCreate();
-    //   }
-    // });
-
-    this.flowGraph.init(graph, startNode, endNode);
-    debugger;
-    this.flowGraph.autoConnect(startNode);
-    this.flowGraph.rePositionForNext(startNode);
   }
 
   nodeCreate() {
@@ -97,17 +62,11 @@ export class X6FlowDesignerComponent implements OnInit {
     this.operation.drawerShow = false;
   }
 
-  addStartNode() {
-    this.startNode = this.flowGraph.graph.addNode({ id: "start", width: GraphConstant.nodeWidth, height: GraphConstant.nodeHeight, label: "发起人" });
+  tabSelectChange(tab: NzTabChangeEvent) {
+    this.tabs[tab.index!] = true;
   }
 
-  addOperationNode() {
-    return this.flowGraph.graph.addNode({
-      id: 'add',
-      shape: 'operation-node',
-      width: GraphConstant.nodeWidth,
-      height: 40,
-      label: '结束'
-    });
+  save(){
+    
   }
 }

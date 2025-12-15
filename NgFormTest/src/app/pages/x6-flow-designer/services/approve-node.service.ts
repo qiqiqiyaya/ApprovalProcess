@@ -2,10 +2,12 @@ import { inject, Injectable } from '@angular/core';
 import { NodeInfo, NodeType } from '../node-description';
 import { X6FlowGraph } from './x6-flow-graph';
 import { BaseService } from './base-service';
+import { NzDrawerService } from 'ng-zorro-antd/drawer';
+import { ApprovalSettingsComponent } from '../approval-settings/approval-settings.component';
 
 @Injectable()
 export class ApproveNodeService extends BaseService {
-
+  drawer = inject(NzDrawerService);
   constructor() {
     super(inject(X6FlowGraph));
   }
@@ -70,6 +72,14 @@ export class ApproveNodeService extends BaseService {
     prevInfo.next = info.next[0].getNodeInfo().next;
     this._flowGraph.rePositionForNext(info.prevs![0]);
     this._flowGraph.autoConnect(info.prevs![0]);
+  }
 
+  setApprove(){
+      this.drawer.create({
+        nzMaskClosable:false,
+        nzTitle: '设置审批人',
+        nzWidth: 800,
+        nzContent: ApprovalSettingsComponent,
+      })
   }
 }

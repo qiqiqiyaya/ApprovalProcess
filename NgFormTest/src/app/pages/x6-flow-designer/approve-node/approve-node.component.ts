@@ -1,6 +1,8 @@
-import { Component,  OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ApproveNodeService } from '../services/approve-node.service';
 import { Graph, Node as XNode } from '@antv/x6';
+import { NzDrawerService } from 'ng-zorro-antd/drawer';
+import { ApprovalSettingsComponent } from '../approval-settings/approval-settings.component';
 
 @Component({
   selector: 'app-approve-node',
@@ -11,14 +13,25 @@ import { Graph, Node as XNode } from '@antv/x6';
 export class ApproveNodeComponent implements OnInit {
 
   approveNode = inject(ApproveNodeService);
-  
+  drawer = inject(NzDrawerService);
+
   constructor() { }
 
   ngOnInit() {
-    
+
   }
 
   close() {
     this.approveNode.remove();
+  }
+
+  setApprove() {
+
+    this.drawer.create({
+      nzMaskClosable:false,
+      nzTitle: '设置审批人',
+      nzWidth: 800,
+      nzContent: ApprovalSettingsComponent,
+    })
   }
 }

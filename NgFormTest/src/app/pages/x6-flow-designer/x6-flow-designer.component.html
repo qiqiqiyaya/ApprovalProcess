@@ -1,10 +1,19 @@
-<div id="container" style="width: 100%;height: 100%;"></div>
+<div class="x6-flow-designer">
+    <nz-tabset [nzAnimated]="true" [nzSelectedIndex]="this.selectedIndex" (nzSelectChange)="tabSelectChange($event)">
+        
+        <button *nzTabBarExtraContent="'end'" nz-button  nzType="primary">
+            <nz-icon nzType="save" nzTheme="outline" />
+            Save
+        </button>
+        <nz-tab nzTitle="设置">
+            设置
+        </nz-tab>
+        <nz-tab nzTitle="form">
+            <app-form-settings *ngIf="this.tabs[1]"></app-form-settings>
+        </nz-tab>
+        <nz-tab nzTitle="流">
+            <app-flow-graph *ngIf="this.tabs[2]"></app-flow-graph>
+        </nz-tab>
+    </nz-tabset>
 
-<ng-template #tplContent let-params>
-    <nz-card>
-        <div nz-card-grid (click)="openDrawer()">审批</div>
-        <div nz-card-grid>抄送</div>
-        <div nz-card-grid>Content</div>
-        <div nz-card-grid>Content</div>
-    </nz-card>
-</ng-template>
+</div>

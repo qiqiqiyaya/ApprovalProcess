@@ -1,6 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { DelonFormModule, SFSchema, SFStringWidgetSchema, SFValueChange } from '@delon/form';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { DelonFormModule, SFComponent, SFSchema, SFStringWidgetSchema, SFValueChange } from '@delon/form';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { FlowFormService } from '../x6-flow-designer/services/flow-form.service';
 
 @Component({
   selector: 'app-form',
@@ -10,22 +11,19 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class FormComponent implements OnInit {
 
-  schema: SFSchema;
-  formJson = '{"properties":{"name":{"type":"string","title":"Name","ui":{"addOnAfter":"RMB","placeholder":"RMB结算"}},"mobile":{"type":"string","format":"date","title":"手机号"},"sfz":{"type":"string","format":"week","title":"身份证号"},"regex":{"type":"string","pattern":"^[abc]+$","title":"正则表达式","ui":{"placeholder":"^[abc]+$"}},"color":{"type":"string","format":"color","title":"颜色","ui":{"optionalHelp":{"text":"我是有背景颜色的喔","bgColor":"#f50"}}}},"required":["name"]}';
+  @ViewChild('sf', { static: false }) sf: SFComponent;
+  msg = inject(NzMessageService);
 
   ngOnInit(): void {
-    const form = JSON.parse(this.formJson);
-    this.schema = form;
+    // this.form.loadFormData();
   }
 
-  private readonly msg = inject(NzMessageService);
-
   submit(value: {}): void {
-    this.msg.success(JSON.stringify(value));
+    debugger;
+    // this.form.propertyNames();
   }
 
   valueChange(res: SFValueChange): void {
     this.msg.info(JSON.stringify(res));
   }
-
 }

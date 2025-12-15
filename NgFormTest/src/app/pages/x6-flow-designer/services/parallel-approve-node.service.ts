@@ -97,7 +97,7 @@ export class ParallelApproveNodeService extends BaseService {
 
     /* 审批人节点 */
     const apNode= this._flowGraph.addApprovalNode();
-    const apNodeInfo: NodeInfo = { type: NodeType.OperationNode, current: apNode, prevs: [opNode1] };
+    const apNodeInfo: NodeInfo = { type: NodeType.Info, current: apNode, prevs: [opNode1] };
 
     /* 操作节点 2 */
     const opNode2 = this._flowGraph.addOperationNode();

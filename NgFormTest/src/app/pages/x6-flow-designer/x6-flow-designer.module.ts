@@ -17,6 +17,19 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { ParallelApproveNodeService } from './services/parallel-approve-node.service';
 import { ParallelApprovalNodeComponent } from './parallel-approval-node/parallel-approval-node.component';
 import { ParallelApprovalMergeNodeComponent } from './parallel-approval-Merge-node/parallel-approval-Merge-node.component';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
+import { ApprovalSettingsComponent } from './approval-settings/approval-settings.component';
+import { ApproverConfigurationComponent } from './approval-settings/approver-configuration/approver-configuration.component';
+import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ApprovalSettingsService } from './services/approval-settings.service';
+import { FormSettingsComponent } from './form-settings/form-settings.component';
+import { DelonFormModule } from '@delon/form';
+import { FlowGraphComponent } from './flow-graph/flow-graph.component';
+import { FormFieldConfigurationComponent } from './approval-settings/form-field-configuration/form-field-configuration.component';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { FlowService } from './services/flow.service';
+import { FlowFormService } from './services/flow-form.service';
 
 @NgModule({
   imports: [
@@ -27,6 +40,13 @@ import { ParallelApprovalMergeNodeComponent } from './parallel-approval-Merge-no
     NzIconModule,
     NzDrawerModule,
     NzGridModule,
+    NzTabsModule,
+    NzRadioModule,
+    ReactiveFormsModule,
+    FormsModule,
+    DelonFormModule,
+    NzTableModule,
+    
     X6FlowDesignerRoutes
   ],
   declarations: [
@@ -35,13 +55,21 @@ import { ParallelApprovalMergeNodeComponent } from './parallel-approval-Merge-no
     AddNodeComponent,
     ParallelApprovalNodeComponent,
     ApproveNodeComponent,
-    ParallelApprovalMergeNodeComponent
+    ParallelApprovalMergeNodeComponent,
+    ApprovalSettingsComponent,
+    ApproverConfigurationComponent,
+    FormSettingsComponent,
+    FlowGraphComponent,
+    FormFieldConfigurationComponent
   ],
   providers: [
     NodeOperationService,
     X6FlowGraph,
     ApproveNodeService,
-    ParallelApproveNodeService
+    ParallelApproveNodeService,
+    ApprovalSettingsService,
+    FlowService,
+    FlowFormService
   ]
 })
 export class X6FlowDesignerModule { }

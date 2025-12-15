@@ -40,7 +40,7 @@ export class X6FlowGraph {
 
   RegisterClickEvent() {
     this.graph.on('node:click', ({ e, x, y, node, view }) => {
-      debugger;
+
       const nodeData = node.getNodeInfo();
       this._currentNode = node;
       if (nodeData.type == NodeType.OperationNode) {
@@ -63,7 +63,7 @@ export class X6FlowGraph {
    * @returns 
    */
   autoConnect(node: XNode) {
-    debugger;
+
     const data = node.getData() as NodeInfo;
     const next = data.next;
     if (!next) return;
@@ -98,7 +98,7 @@ export class X6FlowGraph {
   }
 
   rePositionForNext(node: XNode) {
-    debugger;
+
     const data = node.getData() as NodeInfo;
     const next = data.next;
     if (!next) return;
@@ -283,5 +283,12 @@ export class X6FlowGraph {
       height: GraphConstant.nodeHeight,
       label: "审批"
     });
+  }
+
+
+  public getNodeData(){
+    const array=[];
+    const top= this.startNode.getNodeInfo();
+
   }
 }

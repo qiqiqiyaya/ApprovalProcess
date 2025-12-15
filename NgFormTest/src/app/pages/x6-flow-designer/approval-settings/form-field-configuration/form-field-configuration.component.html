@@ -1,0 +1,20 @@
+<nz-table #basicTable [nzData]="(this.form.properties|async)||[]" [nzBordered]="'true'">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>readonly</th>
+      <th>editable</th>
+      <th>hidden</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (data of basicTable.data; track data.name;) {
+      <tr>
+        <td>{{ data.name }}</td>
+        <td><label nz-radio [(ngModel)]="data.readonly" (ngModelChange)="modelChange(data,'readonly')"></label></td>
+        <td><label nz-radio [(ngModel)]="data.editable" (ngModelChange)="modelChange(data,'editable')"></label></td>
+        <td><label nz-radio [(ngModel)]="data.hidden" (ngModelChange)="modelChange(data,'hidden')"></label></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
