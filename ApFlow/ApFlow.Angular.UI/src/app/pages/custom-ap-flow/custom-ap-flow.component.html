@@ -1,0 +1,83 @@
+<div class="custom-ap-flow-container">
+    <!-- 顶部工具栏 -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <button nz-button nzType="primary" (click)="saveFlow()">
+                <i nz-icon nzType="save"></i>
+                保存流程
+            </button>
+            <button nz-button (click)="clearCanvas()" nzDanger>
+                <i nz-icon nzType="delete"></i>
+                清空画布
+            </button>
+            <button nz-button (click)="zoomToFit()">
+                <i nz-icon nzType="fullscreen"></i>
+                适应画布
+            </button>
+        </div>
+        <div class="toolbar-right">
+            <button nz-button [nzType]="showToolPanel ? 'default' : 'primary'" (click)="toggleToolPanel()">
+                <i nz-icon nzType="tool"></i>
+                工具面板
+            </button>
+            <button nz-button [nzType]="showPropertyPanel ? 'default' : 'primary'" (click)="togglePropertyPanel()">
+                <i nz-icon nzType="setting"></i>
+                属性面板
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- 左侧工具面板 -->
+        <div class="tool-panel" [class.collapsed]="!showToolPanel">
+            <div class="panel-header">
+                <h4>节点工具箱</h4>
+            </div>
+            <div class="panel-content">
+                <div class="node-category">
+                    <h5>基础节点</h5>
+                    <div class="node-list">
+                        <div class="node-item" (click)="addNode('approver')">
+                            <div class="node-preview approver-node"></div>
+                            <span>审批人</span>
+                        </div>
+                        <div class="node-item" (click)="addNode('parallel')">
+                            <div class="node-preview parallel-node"></div>
+                            <span>并行审批</span>
+                        </div>
+                        <div class="node-item" (click)="addNode('cc')">
+                            <div class="node-preview cc-node"></div>
+                            <span>抄送人</span>
+                        </div>
+                        <div class="node-item" (click)="addNode('condition')">
+                            <div class="node-preview condition-node"></div>
+                            <span>条件分支</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 中间画布区域 -->
+        <div class="canvas-container">
+            <div #graphContainer class="graph-container"></div>
+        </div>
+
+        <!-- 右侧属性面板 -->
+        <div class="property-panel" [class.collapsed]="!showPropertyPanel">
+            <div class="panel-header">
+                <h4>属性设置</h4>
+            </div>
+            <div class="panel-content">
+                <div class="no-selection" *ngIf="!selectedCell">
+                    <p>请选择一个节点或边进行属性设置</p>
+                </div>
+                <div class="property-form" *ngIf="selectedCell">
+                    <!-- 根据选中的节点或边类型动态加载不同的属性表单 -->
+                    <app-node-properties [cell]="selectedCell" *ngIf="selectedCell.isNode()"></app-node-properties>
+                    <app-edge-properties [cell]="selectedCell" *ngIf="selectedCell.isEdge()"></app-edge-properties>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

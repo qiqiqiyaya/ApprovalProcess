@@ -1,0 +1,376 @@
+<div class="node-properties">
+    <form [formGroup]="nodePropertiesForm" class="properties-form">
+        <!-- 基本属性 -->
+        <div class="form-section">
+            <h5>基本属性</h5>
+            <div class="form-field">
+                <label for="label">节点名称</label>
+                <input id="label" type="text" nz-input formControlName="label" placeholder="请输入节点名称">
+                <div class="error-message"
+                    *ngIf="nodePropertiesForm.get('label')?.invalid && nodePropertiesForm.get('label')?.touched">
+                    节点名称不能为空
+                </div>
+            </div>
+        </div>
+
+        <!-- 审批人节点属性 -->
+        <div class="form-section" *ngIf="nodeType === 'approver'">
+            <h5>审批人设置</h5>
+
+            <div class="form-field">
+                <label>审批人类型</label>
+                <nz-select [(ngModel)]="approverProperties.approverType" nzPlaceHolder="请选择审批人类型">
+                    <nz-option nzValue="specific" nzLabel="指定人员"></nz-option>
+                    <nz-option nzValue="role" nzLabel="角色"></nz-option>
+                    <nz-option nzValue="department" nzLabel="部门"></nz-option>
+                    <nz-option nzValue="initiator" nzLabel="发起人"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="form-field" *ngIf="approverProperties.approverType === 'specific'">
+                <label>指定审批人</label>
+                <nz-select [(ngModel)]="approverProperties.approvers" nzMode="multiple" nzPlaceHolder="请选择审批人"
+                    nzShowSearch nzSearchPlaceholder="搜索人员">
+                    <nz-option *ngFor="let user of mockUsers" [nzValue]="user.id" [nzLabel]="user.name"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="form-field" *ngIf="approverProperties.approverType === 'role'">
+                <label>审批角色</label>
+                <nz-select [(ngModel)]="approverProperties.role" nzPlaceHolder="请选择角色">
+                    <nz-option *ngFor="let role of mockRoles" [nzValue]="role.id" [nzLabel]="role.name"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="form-field" *ngIf="approverProperties.approverType === 'department'">
+                <label>审批部门</label>
+                <nz-select [(ngModel)]="approverProperties.department" nzPlaceHolder="请选择部门">
+                    <nz-option *ngFor="let dept of mockDepartments" [nzValue]="dept.id"
+                        [nzLabel]="dept.name"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="form-field">
+                <label>审批方式</label>
+                <nz-radio-group [(ngModel)]="approverProperties.approvalMethod">
+                    <label nz-radio nzValue="any">任一人审批</label>
+                    <label nz-radio nzValue="all">所有人审批</label>
+                    <label nz-radio nzValue="order">按顺序审批</label>
+                </nz-radio-group>
+            </div>
+
+            <div class="form-field">
+                <label>审批时限（小时）</label>
+                <nz-input-number [(ngModel)]="approverProperties.timeLimit" [nzMin]="1" [nzMax]="720"
+                    nzPlaceHolder="请输入审批时限"></nz-input-number>
+            </div>
+
+            <div class="form-field">
+                <label>超时处理</label>
+                <nz-select [(ngModel)]="approverProperties.timeoutAction" nzPlaceHolder="请选择超时处理方式">
+                    <nz-option nzValue="skip" nzLabel="自动跳过"></nz-option>
+                    <nz-option nzValue="remind" nzLabel="提醒审批人"></nz-option>
+                    <nz-option nzValue="escalate" nzLabel="上报上级"></nz-option>
+                </nz-select>
+            </div>
+        </div>
+
+        <!-- 并行审批节点属性 -->
+        <div class="form-section" *ngIf="nodeType === 'parallel'">
+            <h5>并行审批设置</h5>
+
+            <div class="parallel-branches">
+                <div class="branch-header">
+                    <span>并行分支</span>
+                    <button nz-button nzType="primary" nzSize="small" (click)="addParallelBranch()">
+                        <i nz-icon nzType="plus"></i>
+                        添加分支
+                    </button>
+                </div>
+
+                <div class="branch-list">
+                    <div class="branch-item" *ngFor="let branch of parallelProperties.branches; let i = index">
+                        <div class="branch-header">
+                            <nz-input [(ngModel)]="branch.name" nzSize="small"></nz-input>
+                            <button nz-button nzType="text" nzDanger nzSize="small" (click)="removeParallelBranch(i)"
+                                [disabled]="parallelProperties.branches.length <= 1">
+                                <i nz-icon nzType="delete"></i>
+                            </button>
+                        </div>
+
+                        <div class="branch-content">
+                            <div class="form-field">
+                                <label>审批人类型</label>
+                                <nz-select [(ngModel)]="branch.approvers[0].approverType" nzSize="small">
+                                    <nz-option nzValue="specific" nzLabel="指定人员"></nz-option>
+                                    <nz-option nzValue="role" nzLabel="角色"></nz-option>
+                                    <nz-option nzValue="department" nzLabel="部门"></nz-option>
+                                </nz-select>
+                            </div>
+
+                            <div class="form-field">
+                                <label>审批方式</label>
+                                <nz-radio-group [(ngModel)]="branch.approvalMethod" nzSize="small">
+                                    <label nz-radio nzValue="any">任一人审批</label>
+                                    <label nz-radio nzValue="all">所有人审批</label>
+                                </nz-radio-group>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label>合并条件</label>
+                <nz-select [(ngModel)]="parallelProperties.mergeCondition" nzPlaceHolder="请选择合并条件">
+                    <nz-option nzValue="all" nzLabel="所有分支完成"></nz-option>
+                    <nz-option nzValue="any" nzLabel="任一分支完成"></nz-option>
+                    <nz-option nzValue="custom" nzLabel="自定义条件"></nz-option>
+                </nz-select>
+            </div>
+        </div>
+
+        <!-- 抄送节点属性 -->
+        <div class="form-section" *ngIf="nodeType === 'cc'">
+            <h5>抄送设置</h5>
+
+            <div class="form-field">
+                <label>抄送人类型</label>
+                <nz-select [(ngModel)]="ccProperties.ccType" nzPlaceHolder="请选择抄送人类型">
+                    <nz-option nzValue="specific" nzLabel="指定人员"></nz-option>
+                    <nz-option nzValue="role" nzLabel="角色"></nz-option>
+                    <nz-option nzValue="department" nzLabel="部门"></nz-option>
+                    <nz-option nzValue="field" nzLabel="表单字段"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="form-field" *ngIf="ccProperties.ccType === 'specific'">
+                <label>指定抄送人</label>
+                <nz-select [(ngModel)]="ccProperties.ccUsers" nzMode="multiple" nzPlaceHolder="请选择抄送人" nzShowSearch>
+                    <nz-option *ngFor="let user of mockUsers" [nzValue]="user.id" [nzLabel]="user.name"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="form-field" *ngIf="ccProperties.ccType === 'role'">
+                <label>抄送角色</label>
+                <nz-select [(ngModel)]="ccProperties.ccRole" nzPlaceHolder="请选择角色">
+                    <nz-option *ngFor="let role of mockRoles" [nzValue]="role.id" [nzLabel]="role.name"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="form-field" *ngIf="ccProperties.ccType === 'department'">
+                <label>抄送部门</label>
+                <nz-select [(ngModel)]="ccProperties.ccDepartment" nzPlaceHolder="请选择部门">
+                    <nz-option *ngFor="let dept of mockDepartments" [nzValue]="dept.id"
+                        [nzLabel]="dept.name"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="form-field" *ngIf="ccProperties.ccType === 'field'">
+                <label>表单字段</label>
+                <nz-select [(ngModel)]="ccProperties.ccField" nzPlaceHolder="请选择表单字段">
+                    <nz-option *ngFor="let field of mockFormFields" [nzValue]="field.id"
+                        [nzLabel]="field.name"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="form-field">
+                <label>抄送时机</label>
+                <nz-select [(ngModel)]="ccProperties.ccTiming" nzPlaceHolder="请选择抄送时机">
+                    <nz-option nzValue="immediate" nzLabel="立即抄送"></nz-option>
+                    <nz-option nzValue="after_approval" nzLabel="审批通过后"></nz-option>
+                    <nz-option nzValue="after_rejection" nzLabel="审批拒绝后"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="form-field">
+                <label>抄送内容</label>
+                <nz-checkbox-group [(ngModel)]="ccContentOptions">
+                    <label nz-checkbox [nzValue]="'includeFormData'">包含表单数据</label>
+                    <label nz-checkbox [nzValue]="'includeComments'">包含审批意见</label>
+                    <label nz-checkbox [nzValue]="'includeAttachments'">包含附件</label>
+                </nz-checkbox-group>
+            </div>
+        </div>
+
+        <!-- 条件分支节点属性 -->
+        <div class="form-section" *ngIf="nodeType === 'condition'">
+            <h5>条件设置</h5>
+
+            <div class="form-field">
+                <label>条件类型</label>
+                <nz-select [(ngModel)]="conditionProperties.conditionType" nzPlaceHolder="请选择条件类型">
+                    <nz-option nzValue="form_field" nzLabel="表单字段条件"></nz-option>
+                    <nz-option nzValue="script" nzLabel="脚本条件"></nz-option>
+                    <nz-option nzValue="approval_result" nzLabel="审批结果条件"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="condition-branches">
+                <div class="branch-header">
+                    <span>条件分支</span>
+                    <button nz-button nzType="primary" nzSize="small" (click)="addConditionBranch()">
+                        <i nz-icon nzType="plus"></i>
+                        添加分支
+                    </button>
+                </div>
+
+                <div class="branch-list">
+                    <div class="branch-item" *ngFor="let branch of conditionProperties.branches; let i = index">
+                        <div class="branch-header">
+                            <nz-input [(ngModel)]="branch.name" nzSize="small"></nz-input>
+                            <button nz-button nzType="text" nzSize="small" (click)="setDefaultConditionBranch(i)"
+                                [nzType]="branch.isDefault ? 'primary' : 'default'">
+                                {{ branch.isDefault ? '默认' : '设为默认' }}
+                            </button>
+                            <button nz-button nzType="text" nzDanger nzSize="small" (click)="removeConditionBranch(i)"
+                                [disabled]="conditionProperties.branches.length <= 1">
+                                <i nz-icon nzType="delete"></i>
+                            </button>
+                        </div>
+
+                        <div class="branch-content">
+                            <!-- 表单字段条件 -->
+                            <div *ngIf="conditionProperties.conditionType === 'form_field'">
+                                <div class="form-field">
+                                    <label>字段</label>
+                                    <nz-select [ngModel]="getFieldConditionFieldId(branch)"
+                                        (ngModelChange)="setFieldConditionFieldId(branch, $event)" nzSize="small"
+                                        nzPlaceHolder="请选择字段">
+                                        <nz-option *ngFor="let field of mockFormFields" [nzValue]="field.id"
+                                            [nzLabel]="field.name"></nz-option>
+                                    </nz-select>
+                                </div>
+
+                                <div class="form-field">
+                                    <label>操作符</label>
+                                    <nz-select [ngModel]="getFieldConditionOperator(branch)"
+                                        (ngModelChange)="setFieldConditionOperator(branch, $event)" nzSize="small">
+                                        <nz-option nzValue="eq" nzLabel="等于"></nz-option>
+                                        <nz-option nzValue="ne" nzLabel="不等于"></nz-option>
+                                        <nz-option nzValue="gt" nzLabel="大于"></nz-option>
+                                        <nz-option nzValue="gte" nzLabel="大于等于"></nz-option>
+                                        <nz-option nzValue="lt" nzLabel="小于"></nz-option>
+                                        <nz-option nzValue="lte" nzLabel="小于等于"></nz-option>
+                                        <nz-option nzValue="in" nzLabel="包含"></nz-option>
+                                        <nz-option nzValue="not_in" nzLabel="不包含"></nz-option>
+                                    </nz-select>
+                                </div>
+
+                                <div class="form-field">
+                                    <label>值</label>
+                                    <input nz-input [ngModel]="getFieldConditionValue(branch)"
+                                        (ngModelChange)="setFieldConditionValue(branch, $event)" nzSize="small"
+                                        placeholder="请输入比较值" />
+                                </div>
+                            </div>
+
+                            <!-- 脚本条件 -->
+                            <div *ngIf="conditionProperties.conditionType === 'script'">
+                                <div class="form-field">
+                                    <label>脚本表达式</label>
+                                    <textarea nz-input [(ngModel)]="branch.condition.scriptCondition" nzRows="4"
+                                        placeholder="请输入脚本表达式"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- 审批结果条件 -->
+                            <div *ngIf="conditionProperties.conditionType === 'approval_result'">
+                                <div class="form-field">
+                                    <label>节点</label>
+                                    <nz-select [ngModel]="getApprovalResultConditionNodeId(branch)"
+                                        (ngModelChange)="setApprovalResultConditionNodeId(branch, $event)"
+                                        nzSize="small" nzPlaceHolder="请选择节点">
+                                        <nz-option *ngFor="let node of mockNodes" [nzValue]="node.id"
+                                            [nzLabel]="node.name"></nz-option>
+                                    </nz-select>
+                                </div>
+
+                                <div class="form-field">
+                                    <label>结果</label>
+                                    <nz-select [ngModel]="getApprovalResultConditionResult(branch)"
+                                        (ngModelChange)="setApprovalResultConditionResult(branch, $event)"
+                                        nzSize="small">
+                                        <nz-option nzValue="approved" nzLabel="通过"></nz-option>
+                                        <nz-option nzValue="rejected" nzLabel="拒绝"></nz-option>
+                                        <nz-option nzValue="withdrawn" nzLabel="撤回"></nz-option>
+                                    </nz-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 条件并行节点属性 -->
+        <div class="form-section" *ngIf="nodeType === 'condition-parallel'">
+            <h5>条件并行设置</h5>
+
+            <div class="form-field">
+                <label>条件表达式</label>
+                <input nz-input [(ngModel)]="conditionParallelProperties.condition" nzSize="small"
+                    placeholder="请输入条件表达式">
+            </div>
+
+            <div class="form-field">
+                <label>合并条件</label>
+                <nz-select [(ngModel)]="conditionParallelProperties.mergeCondition" nzPlaceHolder="请选择合并条件">
+                    <nz-option nzValue="all" nzLabel="所有分支完成"></nz-option>
+                    <nz-option nzValue="any" nzLabel="任一分支完成"></nz-option>
+                    <nz-option nzValue="custom" nzLabel="自定义条件"></nz-option>
+                </nz-select>
+            </div>
+
+            <div class="condition-parallel-branches">
+                <div class="branch-header">
+                    <span>条件并行分支</span>
+                    <button nz-button nzType="primary" nzSize="small" (click)="addConditionParallelBranch()">
+                        <i nz-icon nzType="plus"></i>
+                        添加分支
+                    </button>
+                </div>
+
+                <div class="branch-list">
+                    <div class="branch-item" *ngFor="let branch of conditionParallelProperties.branches; let i = index">
+                        <div class="branch-header">
+                            <nz-input [(ngModel)]="branch.name" nzSize="small"></nz-input>
+                            <button nz-button nzType="text" nzDanger nzSize="small"
+                                (click)="removeConditionParallelBranch(i)"
+                                [disabled]="conditionParallelProperties.branches.length <= 1">
+                                <i nz-icon nzType="delete"></i>
+                            </button>
+                        </div>
+
+                        <div class="branch-content">
+                            <div class="form-field">
+                                <label>分支条件</label>
+                                <input nz-input [(ngModel)]="branch.condition" nzSize="small" placeholder="请输入分支条件">
+                            </div>
+
+                            <div class="form-field">
+                                <label>审批方式</label>
+                                <nz-select [(ngModel)]="branch.approvalMethod" nzSize="small">
+                                    <nz-option nzValue="any" nzLabel="任一人审批"></nz-option>
+                                    <nz-option nzValue="all" nzLabel="所有人审批"></nz-option>
+                                </nz-select>
+                            </div>
+
+                            <div class="form-field">
+                                <label>审批时限（小时）</label>
+                                <nz-input-number [(ngModel)]="branch.timeLimit" nzSize="small" [nzMin]="1"
+                                    [nzMax]="168"></nz-input-number>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="form-actions">
+            <button nz-button nzType="primary" (click)="saveNodeProperties()">保存</button>
+            <button nz-button>取消</button>
+        </div>
+    </form>
+</div>
