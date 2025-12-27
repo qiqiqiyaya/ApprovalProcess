@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="8.3.4" />
+		<PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="8.3.4" />
+		<PackageReference Include="Volo.Abp.Autofac" Version="8.3.4" />
+		<PackageReference Include="Volo.Abp.Swashbuckle" Version="8.3.4" />
+		<PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
+		<PackageReference Include="Serilog.Sinks.Async" Version="2.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ApFlow.Application\ApFlow.Application.csproj" />
+		<ProjectReference Include="..\ApFlow.EntityFrameworkCore.Sqlserver\ApFlow.EntityFrameworkCore.Sqlserver.csproj" />
+		<ProjectReference Include="..\ApFlow.Domain.Share\ApFlow.Domain.Share.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="Logs\**" />
+		<Content Remove="Logs\**" />
+		<None Remove="Logs\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="C:\Users\wwwxi\.nuget\packages\volo.abp.aspnetcore.mvc\8.3.4\contentFiles\any\net8.0\Volo.Abp.AspNetCore.Mvc.abppkg.analyze.json" />
+		<Content Remove="C:\Users\wwwxi\.nuget\packages\volo.abp.aspnetcore.serilog\8.3.4\contentFiles\any\net8.0\Volo.Abp.AspNetCore.Serilog.abppkg.analyze.json" />
+	</ItemGroup>
+
+</Project>

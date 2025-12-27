@@ -6,7 +6,7 @@ import { GraphConstant } from './graph-constant';
 import { NodeInfo, NodeType } from './node-description';
 import { X6FlowGraph } from './services/x6-flow-graph';
 import { X6NodeRegister } from './x6-node-register';
-import { AddNodeComponent } from './add-node/add-node.component';
+import { AddNodeComponent } from '../ap-flow-node-components/add-node/add-node.component';
 import './global-extension';
 import { NzTabChangeEvent, NzTabComponent } from 'ng-zorro-antd/tabs';
 

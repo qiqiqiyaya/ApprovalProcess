@@ -15,15 +15,17 @@
     1. Entity Framwork Core框架 SQL Server 数据库 Code First 模式
 12. Web主机层 ApFlow.Web.Host，部署为 Win Service 服务
 13. 前端 ApFlow.Angular.UI
-    1. 模仿钉钉、AntFlow(仓库地址：https://gitee.com/tylerzhou/Antflow)自定义流程
-    2. Angular 框架 ng-zorro-antd  组件库（版本 19.3.1）
-    3. 核心组件 @antv/x6 UI 图形库、NG-ALAIN 其下 @delon/form 动态表单
-    4. 核心算法基于 @antv/x6 UI 图形库，图（graph）有向无环，顶点 Node ，边 Flow
-    5. 实现鼠标拖拽自定义创建流程图
-    6. 主要节点
+    1. 前端规则描述文件 ./front-end-rules.md
+    2. 模仿钉钉、AntFlow(仓库地址：https://gitee.com/tylerzhou/Antflow)自定义流程
+    3. Angular 框架 ng-zorro-antd  组件库（版本 19.3.1）
+    4. 核心组件 @antv/x6 UI 图形库、@delon/form 动态表单
+    5. 核心算法基于 @antv/x6 UI 图形库，图（graph）有向无环，顶点 Node ，边 Flow
+    6. 实现鼠标拖拽自定义创建流程图
+    7. 主要节点
         1. 审批人
         2. 并行审批
         3. 抄送人
         4. 条件分支
         5. 动态条件
         6. 条件并行
+

@@ -3,7 +3,7 @@ import { Edge, Graph, Node as XNode } from '@antv/x6';
 import { NodeInfo, NodeType } from '../node-description';
 import { GraphConstant } from '../graph-constant';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
-import { AddNodeComponent } from '../add-node/add-node.component';
+import { AddNodeComponent } from '../../ap-flow-node-components/add-node/add-node.component';
 import { EdgeMap } from '../EdgeMap';
 
 
