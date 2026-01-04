@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FlowFormService, PropertyName } from '../../services/flow-form.service';
+import { FlowFormService, PropertyName } from '../../x6-flow-designer/services/flow-form.service';
 import { SFSchema } from '@delon/form';
 
 @Component({

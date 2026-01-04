@@ -3,21 +3,21 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { ApFlowDesignerComponent } from './ap-flow-designer.component';
+import { FlowGraphEditorComponent } from './flow-graph-editor.component';
 
-describe('ApFlowDesignerComponent', () => {
-  let component: ApFlowDesignerComponent;
-  let fixture: ComponentFixture<ApFlowDesignerComponent>;
+describe('FlowGraphEditorComponent', () => {
+  let component: FlowGraphEditorComponent;
+  let fixture: ComponentFixture<FlowGraphEditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ApFlowDesignerComponent ]
+      declarations: [ FlowGraphEditorComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ApFlowDesignerComponent);
+    fixture = TestBed.createComponent(FlowGraphEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

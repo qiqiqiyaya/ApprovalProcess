@@ -3,18 +3,15 @@ import { Graph, Node as XNode } from '@antv/x6';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { NodeOperationService } from './node-operation.service';
 import { GraphConstant } from './graph-constant';
-import { NodeInfo, NodeType } from './node-description';
-import { X6FlowGraph } from './services/x6-flow-graph';
-import { X6NodeRegister } from './x6-node-register';
-import { AddNodeComponent } from '../ap-flow-node-components/add-node/add-node.component';
-import './global-extension';
+import { NodeInfo, NodeType } from '../models/node-description';
+import { X6FlowGraph } from '../ap-flow-designer/services/x6-flow-graph';
+import '../models/global-extension';
 import { NzTabChangeEvent, NzTabComponent } from 'ng-zorro-antd/tabs';
 
 @Component({
   selector: 'app-x6-flow-designer',
   templateUrl: './x6-flow-designer.component.html',
   styleUrls: ['./x6-flow-designer.component.css'],
-  standalone: false,
 })
 export class X6FlowDesignerComponent implements OnInit {
 
@@ -35,7 +32,7 @@ export class X6FlowDesignerComponent implements OnInit {
 
   constructor(injector: Injector,
     private flowGraph: X6FlowGraph) {
-    X6NodeRegister.register(injector);
+    // X6NodeRegister.register(injector);
   }
 
   ngOnInit() {
@@ -46,11 +43,11 @@ export class X6FlowDesignerComponent implements OnInit {
   }
 
   nodeCreate() {
-    this.flowOperationModel = this.modal.create({
-      nzTitle: "添加",
-      nzContent: AddNodeComponent,
-      nzFooter: null
-    });
+    // this.flowOperationModel = this.modal.create({
+    //   nzTitle: "添加",
+    //   nzContent: AddNodeComponent,
+    //   nzFooter: null
+    // });
   }
 
   openDrawer() {

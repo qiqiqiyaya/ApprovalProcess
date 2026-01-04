@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { Graph, Node as XNode } from '@antv/x6';
 import { GraphConstant } from './graph-constant';
-import { NodeInfo, NodeType } from './node-description';
+import { NodeInfo, NodeType } from '../models/node-description';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
 type direction = "x" | "xy";

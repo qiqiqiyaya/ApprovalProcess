@@ -1,10 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { Edge, Graph, Node as XNode } from '@antv/x6';
-import { NodeInfo, NodeType } from '../node-description';
-import { GraphConstant } from '../graph-constant';
+import { NodeInfo, NodeType } from '../../models/node-description';
+import { GraphConstant } from '../../x6-flow-designer/graph-constant';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
-import { AddNodeComponent } from '../../ap-flow-node-components/add-node/add-node.component';
-import { EdgeMap } from '../EdgeMap';
+import { EdgeMap } from '../../x6-flow-designer/EdgeMap';
 
 
 @Injectable()
@@ -41,15 +40,15 @@ export class X6FlowGraph {
   RegisterClickEvent() {
     this.graph.on('node:click', ({ e, x, y, node, view }) => {
 
-      const nodeData = node.getNodeInfo();
+      // const nodeData = node.getNodeInfo();
       this._currentNode = node;
-      if (nodeData.type == NodeType.OperationNode) {
-        this._addNodeModal = this.modal.create({
-          nzTitle: "添加",
-          nzContent: AddNodeComponent,
-          nzFooter: null
-        });
-      }
+      // if (nodeData.type == NodeType.OperationNode) {
+      //   this._addNodeModal = this.modal.create({
+      //     nzTitle: "添加",
+      //     nzContent: AddNodeComponent,
+      //     nzFooter: null
+      //   });
+      // }
     });
   }
 
@@ -288,7 +287,7 @@ export class X6FlowGraph {
 
   public getNodeData(){
     const array=[];
-    const top= this.startNode.getNodeInfo();
+    // const top= this.startNode.getNodeInfo();
 
   }
 }

@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { GraphConstant } from '../graph-constant';
-import { NodeInfo, NodeType } from '../node-description';
+import { NodeInfo, NodeType } from '../../models/node-description';
 import { Node as XNode } from '@antv/x6';
-import { X6FlowGraph } from './x6-flow-graph';
+import { X6FlowGraph } from '../../ap-flow-designer/services/x6-flow-graph';
 import { BaseService } from './base-service';
 
 @Injectable()

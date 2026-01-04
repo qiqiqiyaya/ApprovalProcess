@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { NodeInfo, NodeType } from '../node-description';
-import { X6FlowGraph } from './x6-flow-graph';
+import { NodeInfo, NodeType } from '../../models/node-description';
+import { X6FlowGraph } from '../../ap-flow-designer/services/x6-flow-graph';
 import { BaseService } from './base-service';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { ApprovalSettingsComponent } from '../approval-settings/approval-settings.component';

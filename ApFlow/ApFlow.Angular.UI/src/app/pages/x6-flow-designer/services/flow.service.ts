@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { X6FlowGraph } from './x6-flow-graph';
+import { X6FlowGraph } from '../../ap-flow-designer/services/x6-flow-graph';
 import { FlowFormService } from './flow-form.service';
 
 @Injectable()

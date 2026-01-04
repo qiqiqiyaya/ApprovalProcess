@@ -1,6 +1,4 @@
-import { Inject } from "@angular/core";
-import { NodeOperationService } from "./node-operation.service";
-import { Graph, Node as XNode } from '@antv/x6';
+import { Node as XNode } from '@antv/x6';
 
 export enum NodeType {
     Start,
@@ -28,6 +26,4 @@ export interface NodeInfo {
 
 export class NodeMap{
     current:XNode;
-
-
 }

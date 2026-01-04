@@ -1,4 +1,4 @@
-import { X6FlowGraph } from "./x6-flow-graph";
+import { X6FlowGraph } from "../../ap-flow-designer/services/x6-flow-graph";
 
 export abstract class BaseService {
   protected _flowGraph: X6FlowGraph;
