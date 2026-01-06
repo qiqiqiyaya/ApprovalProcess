@@ -1,0 +1,34 @@
+<div style="width: 100%;height: 100%;text-align: center;line-height: 40px;">
+  <button nz-button nzType="primary" [nzSize]="'large'" nzShape="circle" (click)="onAddClick()">
+    <nz-icon nzType="plus" nzTheme="outline" />
+  </button>
+
+  <!-- 添加节点模态框 -->
+  <nz-modal [(nzVisible)]="isModalVisible" nzTitle="添加新节点" nzWidth="600px" (nzOnCancel)="handleModalCancel()"
+    (nzOnOk)="handleModalOk()">
+    <!-- 模态框内容区域 -->
+    <div class="add-node-modal-content">
+      <p>请选择要添加的审批节点类型：</p>
+
+      <!-- 审批节点列表 -->
+      <div class="node-list">
+        <div *ngFor="let node of approvalNodes" class="node-item" [class.selected]="selectedNode?.type === node.type"
+          (click)="onNodeSelect(node)">
+          <div class="node-icon">
+            <nz-icon [nzType]="node.icon" nzTheme="outline" nzSize="large" />
+          </div>
+          <div class="node-info">
+            <h4 class="node-name">{{ node.name }}</h4>
+            <p class="node-description">{{ node.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 选中节点信息 -->
+      <div class="selected-node-info" *ngIf="selectedNode">
+        <p>已选择：<strong>{{ selectedNode.name }}</strong></p>
+        <p>{{ selectedNode.description }}</p>
+      </div>
+    </div>
+  </nz-modal>
+</div>
