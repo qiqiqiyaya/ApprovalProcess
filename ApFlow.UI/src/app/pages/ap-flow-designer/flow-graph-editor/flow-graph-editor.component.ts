@@ -1,85 +1,87 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Injector, OnInit, ViewChild } from '@angular/core';
-import { Graph } from '@antv/x6';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector, OnDestroy, OnInit } from '@angular/core';
+import { Graph, Node } from '@antv/x6';
 import { GraphConstant } from '../../models/graph-constant';
 import { NodeInfo, NodeType } from '../../models/node-description';
 import { X6FlowGraph } from '../services/x6-flow-graph';
-import { CustomShapeNames } from '../custom-shape-names';
 import { CustomShapeRegister } from '../custom-shape-register';
+import { CustomShapeNames } from '../custom-shape-names';
 
 @Component({
   selector: 'app-flow-graph-editor',
   templateUrl: './flow-graph-editor.component.html',
   styleUrls: ['./flow-graph-editor.component.css'],
   standalone: false,
-  // 使用OnPush策略优化性能
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlowGraphEditorComponent implements OnInit, AfterViewInit {
-  // 获取容器元素引用
-  @ViewChild('container', { static: false }) containerRef!: ElementRef<HTMLDivElement>;
+export class FlowGraphEditorComponent implements OnInit, OnDestroy {
+  
+  private static readonly CONTAINER_ID = 'container';
+  private static readonly START_NODE_ID = 'start';
+  private static readonly START_NODE_LABEL = '发起人';
+  private static readonly OPERATION_NODE_ID = 'add';
+  private static readonly END_NODE_ID = 'end';
+  private static readonly END_NODE_LABEL = '结束';
 
-  // 注入服务
-  flowGraph = inject(X6FlowGraph);
+  private graph: Graph | null = null;
+  private readonly flowGraph = inject(X6FlowGraph);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(injector: Injector) {
-    // 注册自定义形状
     CustomShapeRegister.register(injector);
   }
 
-  ngOnInit() {
-    // 初始化逻辑可在此扩展
+  ngOnInit(): void {
   }
 
-  ngAfterViewInit() {
-    // 确保容器存在
-    if (!this.containerRef?.nativeElement) {
-      console.error('Flow graph container not found');
+  ngAfterViewInit(): void {
+    this.initializeGraph();
+    const nodes = this.createInitialNodes();
+    this.buildNodeRelationships(nodes);
+    this.initializeFlowGraph(nodes);
+  }
+
+  ngOnDestroy(): void {
+    this.disposeGraph();
+  }
+
+  private initializeGraph(): void {
+    const container = document.getElementById(FlowGraphEditorComponent.CONTAINER_ID);
+    
+    if (!container) {
+      console.error(`容器元素 #${FlowGraphEditorComponent.CONTAINER_ID} 未找到`);
       return;
     }
 
-    // 初始化流程图
-    this.initGraph();
-  }
-
-  /**
-   * 初始化流程图实例和节点
-   */
-  private initGraph(): void {
-    // 创建X6 Graph实例
-    const graph = new Graph({
-      container: this.containerRef.nativeElement,
+    this.graph = new Graph({
+      container,
       grid: true,
       panning: true,
       mousewheel: true,
-      // 添加更多默认配置以提高可维护性
-      connecting: {
-        snap: true,
-        allowBlank: false,
-        allowLoop: false,
-        allowMulti: true,
-        connector: {
-          name: 'rounded',
-          args: {
-            radius: 8,
-          },
-        },
-      },
     });
-
-    // 初始化基础流程节点
-    this.initBaseNodes(graph);
   }
 
-  /**
-   * 初始化基础流程节点（开始、操作、结束）
-   */
-  private initBaseNodes(graph: Graph): void {
-    // 创建开始节点
-    const startNode = graph.addNode({
-      id: 'start',
+  private createInitialNodes(): InitialNodes {
+    if (!this.graph) {
+      throw new Error('Graph 实例未初始化');
+    }
+
+    const startNode = this.createStartNode();
+    const operationNode = this.createOperationNode(startNode);
+    const endNode = this.createEndNode(operationNode);
+
+    return { startNode, operationNode, endNode };
+  }
+
+  private createStartNode(): Node {
+    if (!this.graph) {
+      throw new Error('Graph 实例未初始化');
+    }
+
+    const startNode = this.graph.addNode({
+      id: FlowGraphEditorComponent.START_NODE_ID,
       width: GraphConstant.nodeWidth,
       height: GraphConstant.nodeHeight,
-      label: '发起人'
+      label: FlowGraphEditorComponent.START_NODE_LABEL
     });
 
     const startInfo: NodeInfo = {
@@ -88,9 +90,18 @@ export class FlowGraphEditorComponent implements OnInit, AfterViewInit {
       next: []
     };
 
-    // 创建操作节点
-    const operationNode = graph.addNode({
-      id: 'operation',
+    startNode.setData(startInfo);
+
+    return startNode;
+  }
+
+  private createOperationNode(prevNode: Node): Node {
+    if (!this.graph) {
+      throw new Error('Graph 实例未初始化');
+    }
+
+    const operationNode = this.graph.addNode({
+      id: FlowGraphEditorComponent.OPERATION_NODE_ID,
       shape: CustomShapeNames.addNodeBtn,
       width: GraphConstant.nodeWidth,
       height: 40
@@ -99,38 +110,78 @@ export class FlowGraphEditorComponent implements OnInit, AfterViewInit {
     const operationNodeInfo: NodeInfo = {
       type: NodeType.OperationNode,
       current: operationNode,
-      prevs: [startNode],
+      prevs: [prevNode],
       next: []
     };
 
-    // 创建结束节点
-    const endNode = graph.addNode({
-      id: 'end',
+    operationNode.setData(operationNodeInfo);
+
+    return operationNode;
+  }
+
+  private createEndNode(prevNode: Node): Node {
+    if (!this.graph) {
+      throw new Error('Graph 实例未初始化');
+    }
+
+    const endNode = this.graph.addNode({
+      id: FlowGraphEditorComponent.END_NODE_ID,
       width: GraphConstant.nodeWidth,
       height: GraphConstant.nodeHeight,
-      label: '结束'
+      label: FlowGraphEditorComponent.END_NODE_LABEL
     });
 
     const endNodeInfo: NodeInfo = {
       type: NodeType.End,
       current: endNode,
-      prevs: [operationNode]
+      prevs: [prevNode]
     };
 
-    // 设置节点间连接关系
-    startInfo.next?.push(operationNode);
-    operationNodeInfo.next?.push(endNode);
-
-    // 保存节点信息
-    startNode.setData(startInfo);
-    operationNode.setData(operationNodeInfo);
     endNode.setData(endNodeInfo);
 
-    // 初始化流程图服务
-    this.flowGraph.init(graph, startNode, endNode);
-
-    // 自动连接和布局
-    this.flowGraph.autoConnect(startNode);
-    this.flowGraph.rePositionForNext(startNode);
+    return endNode;
   }
+
+  private buildNodeRelationships(nodes: InitialNodes): void {
+    const { startNode, operationNode, endNode } = nodes;
+
+    const startInfo = startNode.getData() as NodeInfo;
+    const operationNodeInfo = operationNode.getData() as NodeInfo;
+
+    if (startInfo.next) {
+      startInfo.next.push(operationNode);
+    }
+
+    if (operationNodeInfo.next) {
+      operationNodeInfo.next.push(endNode);
+    }
+
+    startNode.setData(startInfo);
+    operationNode.setData(operationNodeInfo);
+  }
+
+  private initializeFlowGraph(nodes: InitialNodes): void {
+    if (!this.graph) {
+      throw new Error('Graph 实例未初始化');
+    }
+
+    const { startNode, endNode } = nodes;
+
+    this.flowGraph.init(this.graph, startNode, endNode);
+    this.flowGraph.establishFlowConnections(startNode);
+    this.flowGraph.layoutFlowNodes(startNode);
+  }
+
+  private disposeGraph(): void {
+    if (this.graph) {
+      this.graph.dispose();
+      this.graph = null;
+    }
+  }
+}
+
+interface InitialNodes {
+  startNode: Node;
+  operationNode: Node;
+  endNode: Node;
 }

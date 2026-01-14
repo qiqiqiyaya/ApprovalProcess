@@ -63,8 +63,8 @@ export class ParallelApproveNodeService extends BaseService {
     cuInfo.next=[paNode];
     this.currentNode.setData(cuInfo);
 
-    this._flowGraph.rePositionForNext(this.currentNode);
-    this._flowGraph.autoConnect(this.currentNode);
+    this._flowGraph.layoutFlowNodes(this.currentNode);
+    this._flowGraph.establishFlowConnections(this.currentNode);
 
     this._flowGraph.closeAddNodeModal();
   }

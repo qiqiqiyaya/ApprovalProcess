@@ -10,9 +10,9 @@ export const GraphConstant = {
     nodeWidth: 120,
     /** 节点的高 */
     nodeHeight: 60,
-    /** 2个常规节点之间的间距 */
-    ySpace: 20,
-    /** 2个常规节点之间的间距 */
+    /** 2个常规节点之间的间距（Y轴，向下生长） */
+    ySpace: 60,
+    /** 2个常规节点之间的间距（X轴，水平分布） */
     xSpace: 180,
     /** 添加操作的节点之间的间距 */
     opNodySpace: 10,

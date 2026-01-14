@@ -25,11 +25,6 @@
   transform: translateY(-1px);
 }
 
-.node-item.selected {
-  border-color: #1890ff;
-  background-color: rgba(24, 144, 255, 0.05);
-}
-
 .node-icon {
   display: flex;
   align-items: center;
@@ -59,17 +54,4 @@
   font-size: 14px;
   color: #8c8c8c;
   line-height: 1.5;
-}
-
-.selected-node-info {
-  margin-top: 16px;
-  padding: 16px;
-  background-color: #fafafa;
-  border-radius: 8px;
-  border-left: 4px solid #1890ff;
-}
-
-.selected-node-info p {
-  margin: 4px 0;
-  color: #595959;
 }

@@ -1,0 +1,139 @@
+<div class="flow-chart-container">
+  <div class="toolbar">
+    <button (click)="createNewParallelFlow()" class="toolbar-btn">
+      <i class="icon">📋</i>
+      <span>新建并行流程</span>
+    </button>
+    <button (click)="addParallelBranch()" class="toolbar-btn">
+      <i class="icon">➕</i>
+      <span>添加并行分支</span>
+    </button>
+    <button (click)="autoLayout()" class="toolbar-btn">
+      <i class="icon">🔧</i>
+      <span>自动布局</span>
+    </button>
+    <button (click)="alignParallelAndMerge()" class="toolbar-btn">
+      <i class="icon">↕️</i>
+      <span>对齐并行/合并</span>
+    </button>
+    <button (click)="alignSelectedVertical()" class="toolbar-btn">
+      <i class="icon">📏</i>
+      <span>垂直对齐选中</span>
+    </button>
+    <button (click)="clearCanvas()" class="toolbar-btn danger">
+      <i class="icon">🗑️</i>
+      <span>清空画布</span>
+    </button>
+    <div class="toolbar-separator"></div>
+    <button (click)="exportAsImage()" class="toolbar-btn">
+      <i class="icon">🖼️</i>
+      <span>导出图片</span>
+    </button>
+    <button (click)="exportAsJson()" class="toolbar-btn">
+      <i class="icon">💾</i>
+      <span>导出JSON</span>
+    </button>
+  </div>
+
+  <div class="main-content">
+    <div class="node-panel">
+      <div class="node-panel-title">节点类型</div>
+      <div class="node-list">
+        <div class="node-item start" draggable="true" (dragstart)="startDrag('circle', '开始', $event)"
+          (dragend)="endDrag($event)" (click)="onClickAddNode('circle', '开始')">
+          <div class="node-icon start-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <circle cx="12" cy="12" r="10" fill="#52c41a" />
+            </svg>
+          </div>
+          <div class="node-label">开始节点</div>
+          <div class="node-hint">点击或拖拽添加</div>
+        </div>
+        <div class="node-item end" draggable="true" (dragstart)="startDrag('circle', '结束', $event)"
+          (dragend)="endDrag($event)" (click)="onClickAddNode('circle', '结束')">
+          <div class="node-icon end-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <circle cx="12" cy="12" r="10" fill="#ff4d4f" />
+              <circle cx="12" cy="12" r="5" fill="#fff" />
+            </svg>
+          </div>
+          <div class="node-label">结束节点</div>
+          <div class="node-hint">点击或拖拽添加</div>
+        </div>
+        <div class="node-item task" draggable="true" (dragstart)="startDrag('rect', '任务', $event)"
+          (dragend)="endDrag($event)" (click)="onClickAddNode('rect', '任务')">
+          <div class="node-icon task-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <rect x="4" y="6" width="16" height="12" rx="2" fill="none" stroke="#595959" stroke-width="2" />
+            </svg>
+          </div>
+          <div class="node-label">任务节点</div>
+          <div class="node-hint">点击或拖拽添加</div>
+        </div>
+        <div class="node-item parallel" draggable="true" (dragstart)="startDrag('parallel', '并行', $event)"
+          (dragend)="endDrag($event)" (click)="onClickAddNode('parallel', '并行')">
+          <div class="node-icon parallel-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <line x1="4" y1="4" x2="20" y2="4" stroke="#1890ff" stroke-width="2" />
+              <line x1="4" y1="12" x2="20" y2="12" stroke="#1890ff" stroke-width="2" />
+              <line x1="4" y1="20" x2="20" y2="20" stroke="#1890ff" stroke-width="2" />
+            </svg>
+          </div>
+          <div class="node-label">并行节点</div>
+          <div class="node-hint">点击或拖拽添加</div>
+        </div>
+        <div class="node-item merge" draggable="true" (dragstart)="startDrag('merge', '合并', $event)"
+          (dragend)="endDrag($event)" (click)="onClickAddNode('merge', '合并')">
+          <div class="node-icon merge-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <line x1="4" y1="4" x2="20" y2="20" stroke="#52c41a" stroke-width="2" />
+              <line x1="20" y1="4" x2="4" y2="20" stroke="#52c41a" stroke-width="2" />
+            </svg>
+          </div>
+          <div class="node-label">合并节点</div>
+          <div class="node-hint">点击或拖拽添加</div>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <h4>使用说明：</h4>
+        <ul>
+          <li><strong>拖拽左侧节点</strong>到画布添加节点</li>
+          <li><strong>点击左侧节点</strong>在画布中心添加节点</li>
+          <li><strong>拖拽节点端口</strong>进行连接</li>
+          <li><strong>点击节点</strong>进行选中</li>
+          <li><strong>使用工具栏按钮</strong>进行布局调整</li>
+          <li>并行节点和合并节点会自动垂直对齐</li>
+          <li><strong>Shift + 鼠标拖拽</strong>平移画布</li>
+          <li><strong>鼠标滚轮</strong>缩放画布</li>
+          <li><strong>Delete/Backspace</strong>删除选中元素</li>
+          <li><strong>Ctrl+A / Meta+A</strong>全选所有元素</li>
+          <li><strong>Ctrl+Z / Meta+Z</strong>撤销操作</li>
+          <li><strong>Ctrl+Shift+Z / Meta+Shift+Z</strong>重做操作</li>
+          <li><strong>+ / NumPad+</strong>放大画布</li>
+          <li><strong>- / NumPad-</strong>缩小画布</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="graph-container" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+      <div #container class="x6-graph"></div>
+
+      <div class="status-bar">
+        <div class="status-item">
+          <span>节点数: {{ getNodeCount() }}</span>
+        </div>
+        <div class="status-item">
+          <span>边数: {{ getEdgeCount() }}</span>
+        </div>
+        <div class="status-item">
+          @if (isDragging) {
+          <div class="drag-hint">
+            <span>释放鼠标放置节点</span>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

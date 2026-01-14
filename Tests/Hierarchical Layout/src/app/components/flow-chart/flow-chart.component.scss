@@ -1,0 +1,366 @@
+.flow-chart-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 10;
+  
+  .toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 16px;
+    margin-right: 8px;
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    color: #595959;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    
+    .icon {
+      margin-right: 6px;
+      font-size: 16px;
+    }
+    
+    &:hover {
+      color: #1890ff;
+      border-color: #1890ff;
+      background: #f0f9ff;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+    
+    &.danger:hover {
+      color: #ff4d4f;
+      border-color: #ff4d4f;
+      background: #fff2f0;
+      box-shadow: 0 2px 8px rgba(255, 77, 79, 0.2);
+    }
+  }
+  
+  .toolbar-separator {
+    width: 1px;
+    height: 20px;
+    margin: 0 12px;
+    background: #e8e8e8;
+  }
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.node-panel {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  padding: 16px;
+  overflow-y: auto;
+  
+  .node-panel-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #262626;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #1890ff;
+  }
+  
+  .node-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .node-item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    border: 2px solid #f0f0f0;
+    border-radius: 8px;
+    background: #fafafa;
+    cursor: grab;
+    transition: all 0.3s;
+    
+    &.dragging {
+      opacity: 0.7;
+      border-style: dashed;
+      border-color: #1890ff;
+      transform: scale(0.98);
+    }
+    
+    &:hover {
+      border-color: #1890ff;
+      background: #f0f9ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+    }
+    
+    &:active {
+      cursor: grabbing;
+    }
+    
+    .node-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      font-size: 20px;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+      
+      &.start-icon {
+        background: #f6ffed;
+      }
+      
+      &.end-icon {
+        background: #fff2f0;
+      }
+      
+      &.task-icon {
+        background: #fafafa;
+      }
+      
+      &.parallel-icon {
+        background: #e6f7ff;
+      }
+      
+      &.merge-icon {
+        background: #f6ffed;
+      }
+    }
+    
+    .node-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #262626;
+      margin-bottom: 4px;
+    }
+    
+    .node-hint {
+      font-size: 11px;
+      color: #8c8c8c;
+    }
+    
+    &.start {
+      border-left: 4px solid #52c41a;
+      .node-icon {
+        color: #52c41a;
+      }
+    }
+    
+    &.end {
+      border-left: 4px solid #ff4d4f;
+      .node-icon {
+        color: #ff4d4f;
+      }
+    }
+    
+    &.task {
+      border-left: 4px solid #595959;
+      .node-icon {
+        color: #595959;
+      }
+    }
+    
+    &.parallel {
+      border-left: 4px solid #1890ff;
+      .node-icon {
+        color: #1890ff;
+      }
+    }
+    
+    &.merge {
+      border-left: 4px solid #52c41a;
+      .node-icon {
+        color: #52c41a;
+      }
+    }
+  }
+  
+  .instructions {
+    margin-top: 24px;
+    padding: 16px;
+    background: linear-gradient(135deg, #f6ffed 0%, #f9f0ff 100%);
+    border: 1px solid #b7eb8f;
+    border-radius: 8px;
+    
+    h4 {
+      margin: 0 0 12px 0;
+      color: #52c41a;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    
+    ul {
+      margin: 0;
+      padding-left: 16px;
+      color: #595959;
+      font-size: 13px;
+      line-height: 1.6;
+      
+      li {
+        margin-bottom: 6px;
+        
+        strong {
+          color: #1890ff;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+.graph-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  
+  // 拖拽放置区域样式
+  &.drag-over {
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 3px dashed #1890ff;
+      background: rgba(24, 144, 255, 0.05);
+      pointer-events: none;
+      z-index: 100;
+      border-radius: 8px;
+      animation: pulse 1.5s infinite;
+    }
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  
+  .x6-graph {
+    flex: 1;
+    background: #fff;
+  }
+  
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 36px;
+    padding: 0 16px;
+    background: #fff;
+    border-top: 1px solid #e8e8e8;
+    font-size: 13px;
+    color: #595959;
+    
+    .status-item {
+      display: flex;
+      align-items: center;
+      
+      .drag-hint {
+        padding: 4px 12px;
+        background: #1890ff;
+        color: #fff;
+        border-radius: 16px;
+        font-weight: 500;
+        animation: bounce 0.5s infinite alternate;
+      }
+      
+      @keyframes bounce {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+}
+
+// 响应式调整
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .node-panel {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e8e8e8;
+    height: 200px;
+    overflow-x: auto;
+    
+    .node-list {
+      flex-direction: row;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      
+      .node-item {
+        flex: 0 0 auto;
+        width: 140px;
+        margin-right: 12px;
+      }
+    }
+  }
+}
+
+// 全局拖拽样式
+*[draggable="true"] {
+  user-select: none;
+}
+
+// 画布节点样式增强
+.x6-node {
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+  }
+  
+  .x6-port {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  &:hover .x6-port {
+    opacity: 1;
+  }
+}

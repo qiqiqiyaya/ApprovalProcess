@@ -57,173 +57,210 @@ export class X6FlowGraph {
   }
 
   /**
-   * 自动连接节点
-   * @param node 
-   * @returns 
+   * 建立流程连接（有向连接，向下生长）
+   * 根据 NodeInfo 的 next 关系自动创建连接线，使用迭代代替递归避免栈溢出
+   * @param startNode 起始节点
    */
-  autoConnect(node: XNode) {
+  establishFlowConnections(startNode: XNode): void {
+    console.log('=== 开始重建连接线 ===');
+    const nodesToProcess: XNode[] = [startNode];
+    const processedNodes = new Set<string>();
 
-    const data = node.getData() as NodeInfo;
-    const next = data.next;
-    if (!next) return;
+    while (nodesToProcess.length > 0) {
+      const currentNode = nodesToProcess.shift()!;
+      
+      if (!currentNode || processedNodes.has(currentNode.id)) {
+        continue;
+      }
 
-    /* 所有的连接线 */
-    const edges = this._graph.getOutgoingEdges(node);
-    let edgeMaps: EdgeMap[] = [];
-    if (edges) {
-      edgeMaps = EdgeMap.toMaps(edges);
-    }
+      processedNodes.add(currentNode.id);
 
-    if (next.length == 1) {
-      /* 判断是否已连接过 */
-      const targetNode = edgeMaps.find(x => x.target && x.target.id == next[0].id);
-      if (targetNode) return;
+      const nodeData = currentNode.getData();
+      if (!this.isValidNodeInfo(nodeData)) {
+        console.warn('节点数据无效:', currentNode.id);
+        continue;
+      }
 
-      this._graph.addEdge({ source: node.id, target: next[0].id });
-      this.autoConnect(next[0]);
-    }
-    else {
-      for (let index = 0; index < next.length; index++) {
+      const nextNodes = nodeData.next;
+      console.log(`处理节点 ${currentNode.id}, next 数量: ${nextNodes?.length || 0}`);
+      
+      if (!nextNodes || nextNodes.length === 0) {
+        continue;
+      }
 
-        const res = next[index];
-        /* 判断是否已连接过 */
-        const targetNode = edgeMaps.find(x => x.target && x.target.id == res.id);
-        if (targetNode) continue;
+      const existingEdges = this._graph.getOutgoingEdges(currentNode);
+      const connectedTargetIds = new Set(
+        existingEdges?.map(edge => edge.getTargetCellId()) || []
+      );
+      console.log(`节点 ${currentNode.id} 已存在的连接数: ${existingEdges?.length || 0}`);
 
-        this._graph.addEdge({ source: node.id, target: res.id });
-        this.autoConnect(res);
+      for (const nextNode of nextNodes) {
+        console.log(`  检查连接: ${currentNode.id} -> ${nextNode.id}`);
+        
+        if (connectedTargetIds.has(nextNode.id)) {
+          console.log(`  连接已存在，跳过创建但继续处理下游节点`);
+        } else {
+          console.log(`  创建新连接: ${currentNode.id} -> ${nextNode.id}`);
+          this._graph.addEdge({
+            source: currentNode.id,
+            target: nextNode.id,
+            attrs: {
+              line: {
+                stroke: '#000000',
+                strokeWidth: 2,
+                targetMarker: {
+                  name: 'block',
+                  width: 12,
+                  height: 8
+                }
+              }
+            },
+            router: {
+              name: 'normal'
+            },
+            connector: {
+              name: 'normal'
+            }
+          });
+        }
+
+        // 无论连接是否存在，都要将 nextNode 添加到处理队列
+        nodesToProcess.push(nextNode);
       }
     }
+    console.log('=== 连接线重建完成 ===');
   }
 
-  rePositionForNext(node: XNode) {
+  /**
+   * 类型守卫：验证节点数据是否为有效的 NodeInfo
+   */
+  private isValidNodeInfo(data: unknown): data is NodeInfo {
+    return data !== null && 
+           typeof data === 'object' && 
+           'type' in data && 
+           'current' in data;
+  }
 
-    const data = node.getData() as NodeInfo;
-    const next = data.next;
-    if (!next) return;
+  /**
+   * 布局流程节点（向下生长）
+   * 当添加新节点后，自动调整当前节点及其所有下游节点的位置，优化可视化效果
+   * 使用迭代代替递归避免栈溢出
+   * @param startNode 起始节点
+   */
+  layoutFlowNodes(startNode: XNode): void {
+    const nodesToProcess: XNode[] = [startNode];
+    const processedNodes = new Set<string>();
 
-    if (next.length == 1) {
-      this.singleNextPositionSet(data.current, next[0]);
-    }
+    while (nodesToProcess.length > 0) {
+      const currentNode = nodesToProcess.shift()!;
+      
+      if (!currentNode || processedNodes.has(currentNode.id)) {
+        continue;
+      }
 
-    if (next.length >= 2) {
-      this.multNextPositionSet(data.current, next);
+      processedNodes.add(currentNode.id);
+
+      const nodeData = currentNode.getData();
+      if (!this.isValidNodeInfo(nodeData)) {
+        continue;
+      }
+
+      const nextNodes = nodeData.next;
+      if (!nextNodes || nextNodes.length === 0) {
+        continue;
+      }
+
+      const currentPosition = currentNode.getPosition();
+      const currentSize = currentNode.getSize();
+      const nextY = currentPosition.y + currentSize.height + GraphConstant.ySpace;
+
+      if (nextNodes.length === 1) {
+        this.setNodePosition(nextNodes[0], currentPosition.x, nextY);
+        nodesToProcess.push(nextNodes[0]);
+      } else {
+        this.setMultipleNodesPosition(nextNodes, nextY);
+        nextNodes.forEach(nextNode => nodesToProcess.push(nextNode));
+      }
     }
   }
 
   /**
-   * 单个节点设置
-   * @param previous 
-   * @param current 
+   * 设置节点位置
    */
-  private singleNextPositionSet(previous: XNode, current: XNode) {
-    this.ySet(previous, current);
-    this.rePositionForNext(current);
+  private setNodePosition(node: XNode, x: number, y: number): void {
+    node.setPosition({ x, y });
   }
 
-  private multNextPositionSet(previous: XNode, next: XNode[]) {
-    const position = previous.getPosition();
-    const size = previous.getSize();
-    let y = position.y;
-    /* 节点向下添加 */
-    y += size.height;
-    y += GraphConstant.ySpace;
+  /**
+   * 设置多个节点的位置（水平分布）
+   */
+  private setMultipleNodesPosition(nodes: XNode[], y: number): void {
+    const totalCount = nodes.length;
+    const isEven = totalCount % 2 === 0;
 
-    this.xSet(y, next);
-    next.forEach(res => {
-      this.rePositionForNext(res);
-    })
-  }
-
-  private ySet(referenceNode: XNode, current: XNode) {
-    const position = referenceNode.getPosition();
-    const size = referenceNode.getSize();
-    const pos = { ...position }
-    pos.y += size.height;
-    pos.y += GraphConstant.ySpace;
-    current.setPosition(pos);
-  }
-
-  private xSet(y: number, next: XNode[]) {
-    const remainder = next.length % 2;
-    const totalCount = next.length;
-
-    /* 偶数 */
-    if (remainder == 0) {
-      /* 左侧节点集 */
-      const left = totalCount / 2 - 1;
-      let leftNum = GraphConstant.xSpace / 2;
-
-      for (let index = left; index >= 0; index--) {
-        const element = next[index];
-
-        const elPosition = { ...element.getPosition() };
-        elPosition.x -= leftNum;
-        elPosition.y = y;
-        element.setPosition(elPosition)
-
-        /* 与左侧邻居的距离 */
-        leftNum += Math.abs(elPosition.x) + GraphConstant.xSpace;
-      }
-
-      /* 右侧节点集 */
-      const right = left + 1;
-      let rightNum = GraphConstant.xSpace / 2;
-      for (let index = right; index < totalCount; index++) {
-        const element = next[index];
-
-        const elPosition = { ...element.getPosition() };
-        elPosition.x += rightNum;
-        elPosition.y = y;
-        element.setPosition(elPosition)
-
-        /* 与左侧邻居的距离 */
-        rightNum += Math.abs(elPosition.x) + GraphConstant.xSpace;
-      }
+    if (isEven) {
+      this.setEvenNodesPosition(nodes, y);
     } else {
-      /* 奇数 */
+      this.setOddNodesPosition(nodes, y);
+    }
+  }
 
-      /* 中间节点 */
-      const middleIndex = Math.floor(totalCount / 2) + 1;
-      const middleNode = next[middleIndex];
+  /**
+   * 设置偶数个节点的位置
+   */
+  private setEvenNodesPosition(nodes: XNode[], y: number): void {
+    const totalCount = nodes.length;
+    const leftCount = totalCount / 2;
+    const rightCount = leftCount;
 
-      const elPosition = { ...middleNode.getPosition() };
-      elPosition.y = y;
-      middleNode.setPosition(elPosition);
-      const mSize = middleNode.getSize();
+    let leftOffset = GraphConstant.xSpace / 2;
+    let rightOffset = GraphConstant.xSpace / 2;
 
-      /* 其他平行节点 */
+    for (let i = leftCount - 1; i >= 0; i--) {
+      const node = nodes[i];
+      const currentPosition = node.getPosition();
+      const newX = currentPosition.x - leftOffset;
+      this.setNodePosition(node, newX, y);
+      leftOffset += GraphConstant.xSpace;
+    }
 
-      /* 左侧 */
-      const left = Math.floor(totalCount / 2) - 1;
-      let leftNum = GraphConstant.xSpace + mSize.width / 2;
+    for (let i = leftCount; i < totalCount; i++) {
+      const node = nodes[i];
+      const currentPosition = node.getPosition();
+      const newX = currentPosition.x + rightOffset;
+      this.setNodePosition(node, newX, y);
+      rightOffset += GraphConstant.xSpace;
+    }
+  }
 
-      for (let index = left; index == 0; index--) {
-        const element = next[index];
+  /**
+   * 设置奇数个节点的位置
+   */
+  private setOddNodesPosition(nodes: XNode[], y: number): void {
+    const totalCount = nodes.length;
+    const middleIndex = Math.floor(totalCount / 2);
+    const middleNode = nodes[middleIndex];
 
-        const elPosition = { ...element.getPosition() };
-        elPosition.x -= leftNum;
-        elPosition.y = y;
-        element.setPosition(elPosition)
+    this.setNodePosition(middleNode, middleNode.getPosition().x, y);
 
-        /* 与左侧邻居的距离 */
-        leftNum += Math.abs(elPosition.x) + GraphConstant.xSpace;
-      }
+    const middleNodeSize = middleNode.getSize();
+    let leftOffset = GraphConstant.xSpace + middleNodeSize.width / 2;
+    let rightOffset = GraphConstant.xSpace + middleNodeSize.width / 2;
 
-      /* 右侧 */
-      const right = Math.ceil(totalCount / 2);
-      let rightNum = GraphConstant.xSpace + mSize.width / 2;
-      for (let index = right; index == totalCount; index++) {
-        const element = next[index];
+    for (let i = middleIndex - 1; i >= 0; i--) {
+      const node = nodes[i];
+      const currentPosition = node.getPosition();
+      const newX = currentPosition.x - leftOffset;
+      this.setNodePosition(node, newX, y);
+      leftOffset += GraphConstant.xSpace;
+    }
 
-        const elPosition = { ...element.getPosition() };
-        elPosition.x += rightNum;
-        elPosition.y = y;
-        element.setPosition(elPosition)
-
-        /* 与左侧邻居的距离 */
-        rightNum += Math.abs(elPosition.x) + GraphConstant.xSpace;
-      }
+    for (let i = middleIndex + 1; i < totalCount; i++) {
+      const node = nodes[i];
+      const currentPosition = node.getPosition();
+      const newX = currentPosition.x + rightOffset;
+      this.setNodePosition(node, newX, y);
+      rightOffset += GraphConstant.xSpace;
     }
   }
 
@@ -231,24 +268,30 @@ export class X6FlowGraph {
    * 移出掉所有连接到 next 的线程
    */
   public removeAllNextEdge(node: XNode) {
+    console.log(`=== 删除节点 ${node.id} 的所有连接线 ===`);
     const edges = this._graph.getOutgoingEdges(node);
     /* 所有连接线 */
     let edgeMaps: EdgeMap[] = [];
     if (edges) {
       edgeMaps = EdgeMap.toMaps(edges);
     }
+    console.log(`找到 ${edgeMaps.length} 条连接线`);
     if (edgeMaps.length == 0) return;
 
     const nodeInfo = node.getData() as NodeInfo;
     if (!nodeInfo.next) return
+
+    console.log(`节点 ${node.id} 的 next 数量: ${nodeInfo.next.length}`);
 
     /* 移除连接线 */
     nodeInfo.next.forEach(res => {
       const map = edgeMaps.find(x => x.targetId == res.id);
 
       if (!map) return;
+      console.log(`  删除连接线: ${node.id} -> ${res.id}`);
       this.graph.removeEdge(map.edge);
     });
+    console.log(`=== 连接线删除完成 ===`);
   }
 
   /**

@@ -40,8 +40,8 @@ export class ApproveNodeService extends BaseService {
     newNode.setData(newNodeInfo);
     newOpNode.setData(newOpInfo);
 
-    this._flowGraph.rePositionForNext(this.currentNode);
-    this._flowGraph.autoConnect(this.currentNode);
+    this._flowGraph.layoutFlowNodes(this.currentNode);
+    this._flowGraph.establishFlowConnections(this.currentNode);
 
     this._flowGraph.closeAddNodeModal();
   }
@@ -70,8 +70,8 @@ export class ApproveNodeService extends BaseService {
     this.graph.removeNode(info.next[0]);
 
     prevInfo.next = info.next[0].getNodeInfo().next;
-    this._flowGraph.rePositionForNext(info.prevs![0]);
-    this._flowGraph.autoConnect(info.prevs![0]);
+    this._flowGraph.layoutFlowNodes(info.prevs![0]);
+    this._flowGraph.establishFlowConnections(info.prevs![0]);
   }
 
   setApprove(){
