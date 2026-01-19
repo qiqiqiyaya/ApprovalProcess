@@ -15,6 +15,7 @@ export class CustomShapeRegister {
      * @param injector 注入器
      */
     static register(injector: Injector) {
+        // 注册添加节点按钮
         register({
             shape: CustomShapeNames.addNodeBtn,
             width: 120,
@@ -23,14 +24,16 @@ export class CustomShapeRegister {
             injector: injector,
         });
 
+        // 注册审批节点
         register({
             shape: CustomShapeNames.apNode,
             width: 120,
             height: 40,
             content: ApproveNodeComponent,
             injector: injector,
-        })
+        });
 
+        // 注册并行审批节点
         register({
             shape: CustomShapeNames.pApNode,
             width: 120,
@@ -39,12 +42,13 @@ export class CustomShapeRegister {
             injector: injector,
         });
 
+        // 注册并行审批合并节点
         register({
             shape: CustomShapeNames.pApMergeNode,
             width: 120,
             height: 40,
             content: ParallelApprovalMergeNodeComponent,
             injector: injector,
-        })
+        });
     }
 }

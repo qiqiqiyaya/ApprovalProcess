@@ -32,8 +32,8 @@ export class AddNodeBtnComponent implements OnInit {
   private readonly flowGraph = inject(X6FlowGraph);
 
   constructor() {
-    DagreLayout
-   }
+
+  }
 
   ngOnInit() {
     // 初始化审批节点列表
@@ -84,7 +84,7 @@ export class AddNodeBtnComponent implements OnInit {
   onNodeClick(node: ApprovalNode): void {
     // 获取当前操作节点
     const currentNode = this.flowGraph.currentNode;
-    
+
     if (!currentNode) {
       console.error('当前操作节点不存在');
       this.isModalVisible = false;
@@ -111,7 +111,7 @@ export class AddNodeBtnComponent implements OnInit {
   private handleRegularApprovalNode(currentNode: XNode, node: ApprovalNode): void {
     // 创建普通审批节点
     const approvalNode = this.createApprovalNode(node, currentNode);
-    
+
     if (!approvalNode) {
       console.error('创建审批节点失败');
       return;
@@ -122,7 +122,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 创建新的 add 节点
     const newAddNode = this.createAddNode(approvalNode);
-    
+
     if (!newAddNode) {
       console.error('创建 add 节点失败');
       return;
@@ -138,7 +138,7 @@ export class AddNodeBtnComponent implements OnInit {
     const currentInfo = currentNode.getData() as NodeInfo;
     const approvalInfo = approvalNode.getData() as NodeInfo;
     const addInfo = newAddNode.getData() as NodeInfo;
-    
+
     console.log('=== 验证节点关系 ===');
     console.log('当前 add 节点 next 数量:', currentInfo.next?.length || 0);
     console.log('当前 add 节点 next IDs:', currentInfo.next?.map(n => n.id) || []);
@@ -166,7 +166,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 创建并行审批节点
     const parallelNode = this.createApprovalNode(node, currentNode);
-    
+
     if (!parallelNode) {
       console.error('创建并行审批节点失败');
       return;
@@ -181,7 +181,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 创建第一个 add 节点（分支1，左侧）
     const addNode1 = this.createAddNodeWithOffset(parallelNode, -80);
-    
+
     if (!addNode1) {
       console.error('创建第一个 add 节点失败');
       return;
@@ -191,7 +191,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 创建第二个 add 节点（分支2，右侧）
     const addNode2 = this.createAddNodeWithOffset(parallelNode, 80);
-    
+
     if (!addNode2) {
       console.error('创建第二个 add 节点失败');
       return;
@@ -201,7 +201,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 创建合并审批节点（位于并行审批节点下方，居中）
     const mergeNode = this.createMergeNode(parallelNode);
-    
+
     if (!mergeNode) {
       console.error('创建合并审批节点失败');
       return;
@@ -219,7 +219,7 @@ export class AddNodeBtnComponent implements OnInit {
     const addInfo1 = addNode1.getData() as NodeInfo;
     const addInfo2 = addNode2.getData() as NodeInfo;
     const mergeInfo = mergeNode.getData() as NodeInfo;
-    
+
     console.log('=== 验证并行审批节点关系 ===');
     console.log('当前 add 节点 next 数量:', currentInfo.next?.length || 0);
     console.log('当前 add 节点 next IDs:', currentInfo.next?.map(n => n.id) || []);
@@ -253,7 +253,7 @@ export class AddNodeBtnComponent implements OnInit {
   private createApprovalNode(node: ApprovalNode, prevNode: XNode): XNode | null {
     const prevPosition = prevNode.getPosition();
     const prevSize = prevNode.getSize();
-    
+
     // 计算新节点位置（在前置节点下方）
     const newNodeY = prevPosition.y + prevSize.height + 60; // 60 是垂直间距
 
@@ -312,7 +312,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 更新新节点的 prevs 为当前节点
     newInfo.prevs = [currentNode];
-    
+
     // 更新新节点的 next 为原来当前节点的 next
     newInfo.next = originalNextNodes;
     newNode.setData(newInfo);
@@ -325,7 +325,7 @@ export class AddNodeBtnComponent implements OnInit {
       const nextInfo = nextNode.getData() as NodeInfo;
       console.log('处理原下游节点:', nextNode.id);
       console.log('原下游节点当前的 prevs IDs:', nextInfo.prevs?.map(n => n.id) || []);
-      
+
       if (nextInfo.prevs) {
         const index = nextInfo.prevs.indexOf(currentNode);
         if (index !== -1) {
@@ -335,7 +335,7 @@ export class AddNodeBtnComponent implements OnInit {
         }
       }
     }
-    
+
     console.log('=== 节点关系更新完成 ===');
   }
 
@@ -347,7 +347,7 @@ export class AddNodeBtnComponent implements OnInit {
   private createAddNode(prevNode: XNode): XNode | null {
     const prevPosition = prevNode.getPosition();
     const prevSize = prevNode.getSize();
-    
+
     // 计算新节点位置（在前置节点下方）
     const newNodeY = prevPosition.y + prevSize.height + 60; // 60 是垂直间距
 
@@ -381,7 +381,7 @@ export class AddNodeBtnComponent implements OnInit {
   private createAddNodeWithOffset(prevNode: XNode, xOffset: number): XNode | null {
     const prevPosition = prevNode.getPosition();
     const prevSize = prevNode.getSize();
-    
+
     // 计算新节点位置（在前置节点下方，带有水平偏移）
     const newNodeY = prevPosition.y + prevSize.height + 60; // 60 是垂直间距
     const newNodeX = prevPosition.x + xOffset;
@@ -415,7 +415,7 @@ export class AddNodeBtnComponent implements OnInit {
   private createMergeNode(prevNode: XNode): XNode | null {
     const prevPosition = prevNode.getPosition();
     const prevSize = prevNode.getSize();
-    
+
     // 计算新节点位置（在前置节点下方）
     const newNodeY = prevPosition.y + prevSize.height + 60; // 60 是垂直间距
 
@@ -476,7 +476,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 更新审批节点的 prevs 为当前 add 节点
     approvalInfo.prevs = [currentAdd];
-    
+
     // 更新审批节点的 next 为新 add 节点
     approvalInfo.next = [newAddNode];
     approvalNode.setData(approvalInfo);
@@ -485,7 +485,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 更新新 add 节点的 prevs 为审批节点
     newAddInfo.prevs = [approvalNode];
-    
+
     // 更新新 add 节点的 next 为原下游节点
     newAddInfo.next = originalNextNodes;
     newAddNode.setData(newAddInfo);
@@ -497,7 +497,7 @@ export class AddNodeBtnComponent implements OnInit {
       const nextInfo = nextNode.getData() as NodeInfo;
       console.log('处理原下游节点:', nextNode.id);
       console.log('原下游节点当前的 prevs IDs:', nextInfo.prevs?.map(n => n.id) || []);
-      
+
       if (nextInfo.prevs) {
         const index = nextInfo.prevs.indexOf(currentAdd);
         if (index !== -1) {
@@ -507,7 +507,7 @@ export class AddNodeBtnComponent implements OnInit {
         }
       }
     }
-    
+
     console.log('=== 三个节点关系更新完成 ===');
   }
 
@@ -521,10 +521,10 @@ export class AddNodeBtnComponent implements OnInit {
    * @param mergeNode 合并审批节点
    */
   private updateParallelNodeRelationships(
-    currentAdd: XNode, 
-    parallelNode: XNode, 
-    addNode1: XNode, 
-    addNode2: XNode, 
+    currentAdd: XNode,
+    parallelNode: XNode,
+    addNode1: XNode,
+    addNode2: XNode,
     mergeNode: XNode
   ): void {
     const currentAddInfo = currentAdd.getData() as NodeInfo;
@@ -558,7 +558,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 2. 更新并行审批节点的 prevs 为当前 add 节点
     parallelInfo.prevs = [currentAdd];
-    
+
     // 3. 更新并行审批节点的 next 为两个 add 节点
     parallelInfo.next = [addNode1, addNode2];
     parallelNode.setData(parallelInfo);
@@ -567,7 +567,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 4. 更新第一个 add 节点的 prevs 为并行审批节点
     addInfo1.prevs = [parallelNode];
-    
+
     // 5. 更新第一个 add 节点的 next 为合并审批节点
     addInfo1.next = [mergeNode];
     addNode1.setData(addInfo1);
@@ -576,7 +576,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 6. 更新第二个 add 节点的 prevs 为并行审批节点
     addInfo2.prevs = [parallelNode];
-    
+
     // 7. 更新第二个 add 节点的 next 为合并审批节点
     addInfo2.next = [mergeNode];
     addNode2.setData(addInfo2);
@@ -585,7 +585,7 @@ export class AddNodeBtnComponent implements OnInit {
 
     // 8. 更新合并审批节点的 prevs 为两个 add 节点
     mergeInfo.prevs = [addNode1, addNode2];
-    
+
     // 9. 更新合并审批节点的 next 为原下游节点
     mergeInfo.next = originalNextNodes;
     mergeNode.setData(mergeInfo);
@@ -597,7 +597,7 @@ export class AddNodeBtnComponent implements OnInit {
       const nextInfo = nextNode.getData() as NodeInfo;
       console.log('处理原下游节点:', nextNode.id);
       console.log('原下游节点当前的 prevs IDs:', nextInfo.prevs?.map(n => n.id) || []);
-      
+
       if (nextInfo.prevs) {
         const index = nextInfo.prevs.indexOf(currentAdd);
         if (index !== -1) {
@@ -607,7 +607,7 @@ export class AddNodeBtnComponent implements OnInit {
         }
       }
     }
-    
+
     console.log('=== 并行审批节点关系更新完成 ===');
   }
 

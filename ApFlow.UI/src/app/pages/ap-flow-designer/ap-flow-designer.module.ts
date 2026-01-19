@@ -8,6 +8,10 @@ import { X6FlowGraph } from './services/x6-flow-graph';
 import { ApproveNodeService } from './services/approve-node.service';
 import { AddNodeBtnComponent } from './add-node-btn/add-node-btn.component';
 import { ApproveNodeComponent } from './nodes/approve-node/approve-node.component';
+import { FixedLayoutService } from './services/fixed-layout.service';
+import { LayoutService } from './services/layout.service';
+import { GenerateNodeService } from './services/generate-node.service';
+import { FlowGraph } from './services/flow-graph';
 
 @NgModule({
   imports: [
@@ -22,8 +26,12 @@ import { ApproveNodeComponent } from './nodes/approve-node/approve-node.componen
     ApproveNodeComponent
   ],
   providers: [
-    X6FlowGraph,
-    ApproveNodeService
+    // X6FlowGraph,
+    // ApproveNodeService,
+    FlowGraph,
+    FixedLayoutService,
+    LayoutService,
+    GenerateNodeService
   ]
 })
 export class ApFlowDesignerModule {

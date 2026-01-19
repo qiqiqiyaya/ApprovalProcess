@@ -5,7 +5,7 @@ export const CustomShapeNames = {
     /** 
      * 添加节点按钮
      */
-    addNodeBtn: "add-node-btn",
+    addNodeBtn: "add-node",
     /** 
      * 审批节点
      */
