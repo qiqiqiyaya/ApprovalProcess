@@ -1,0 +1,14 @@
+<div style="width: 100%;height: 100%;text-align: center;line-height: 40px;">
+  <button nz-button nzType="primary" [nzSize]="'large'" nzShape="circle" nz-popover [nzPopoverContent]="contentTemplate"
+    [nzPopoverPlacement]="'rightBottom'">
+    <nz-icon nzType="plus" nzTheme="outline" />
+  </button>
+  <ng-template #contentTemplate>
+    <nz-card>
+      <div nz-card-grid (click)="onCardClick()">approve</div>
+      <div nz-card-grid (click)="onCardClick()">parallel-approval</div>
+      <div nz-card-grid (click)="onCardClick()">approve</div>
+      <div nz-card-grid (click)="onCardClick()">parallel-approval</div>
+    </nz-card>
+  </ng-template>
+</div>

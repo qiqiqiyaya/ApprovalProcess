@@ -1,0 +1,30 @@
+/* You can add global styles to this file, and also import other style files */
+/* 定义动画 */
+@keyframes running-line {
+    to {
+        /*
+         * stroke-dashoffset 会从 0 减到 -20。
+         * 负值会让虚线图案向前（或路径方向）移动。
+         * -20 是 stroke-dasharray (10 + 10) 的总长度，
+         * 这样可以实现无缝循环动画。
+        */
+        stroke-dashoffset: -20;
+    }
+}
+
+/* 将动画应用到带有 .running-line 类的 path 元素上 */
+.running-line {
+    /* * 定义虚线样式: 10px 的实线，后面跟着 10px 的空白。
+       * 你可以调整这些值来改变流动点的外观。
+       * 例如 '2 10' 会变成点状流动的效果。
+      */
+    stroke-dasharray: 10 10;
+
+    /* * 应用动画:
+       * running-line: 动画名称
+       * 1s: 动画周期，即流动一个循环需要1秒
+       * linear: 动画速度曲线，保持匀速
+       * infinite: 无限循环
+      */
+    animation: running-line 1s linear infinite;
+}

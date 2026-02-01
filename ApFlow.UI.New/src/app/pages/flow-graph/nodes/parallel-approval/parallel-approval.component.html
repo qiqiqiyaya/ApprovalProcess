@@ -1,0 +1,12 @@
+<div class="parallel-approval-node" (click)="handleNodeClick()">
+  <div class="node-header">
+    <i class="anticon anticon-scan"></i>
+    <span>{{ nodeName }}</span>
+  </div>
+  <div class="node-content">
+    @if (nodeId)
+    {
+      <span class="node-id">ID: {{ nodeId }}</span>
+    }
+  </div>
+</div>

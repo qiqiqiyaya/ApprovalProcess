@@ -1,0 +1,11 @@
+<div nz-row style="background: antiquewhite;">
+  <div nz-col [nzSpan]="18">审批人</div>
+  <div nz-col [nzSpan]="6">
+    <button nz-button nzType="primary" [nzSize]="'small'" (click)="close()">
+      <nz-icon nzType="close" nzTheme="outline" />
+    </button>
+  </div>
+  <div nz-col [nzSpan]="24">
+    <a nz-button nzType="link" (click)="setApprove()">请选择审批人>></a>
+  </div>
+</div>
