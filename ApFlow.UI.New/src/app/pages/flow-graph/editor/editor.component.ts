@@ -3,6 +3,7 @@ import { CanvasComponent } from "../canvas/canvas.component";
 import { Graph } from '@antv/x6';
 import { DagreLayout } from '@antv/layout';
 import { NodeShape } from '../nodes/node-register';
+import { FlowGraph } from '../../models/flow-graph';
 
 @Component({
   selector: 'app-editor',
@@ -56,16 +57,16 @@ export class EditorComponent implements OnInit {
       ]
     };
 
+
+
     // 1. 使用 DagreLayout 计算节点位置
     const dagreLayout = new DagreLayout({
       type: 'dagre',
-      rankdir: 'TB',
-      align: 'DL',
       ranksep: 15,
-      nodesep: 25,
+      nodesep: 35,
     });
 
-    const layoutedData = dagreLayout.layout(graphData);
+    const layoutedData = dagreLayout.layout(FlowGraph.testGrap);
 
     // 3. 使用计算好的数据渲染图
     graph.fromJSON(layoutedData);
