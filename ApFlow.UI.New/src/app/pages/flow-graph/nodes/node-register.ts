@@ -23,7 +23,7 @@ export class NodeRegister {
     static register(injector: Injector) {
         // 注册添加节点按钮
         register({
-            shape: "operation",
+            shape: NodeShape.operation,
             width: 120,
             height: 20,
             content: AddNodeBtnComponent,
@@ -32,7 +32,7 @@ export class NodeRegister {
 
         // 注册审批节点
         register({
-            shape: "approve",
+            shape: NodeShape.approve,
             width: 120,
             height: 40,
             content: ApproveComponent,
@@ -41,7 +41,7 @@ export class NodeRegister {
 
         // 注册并行审批节点
         register({
-            shape: "parallel-approval",
+            shape: NodeShape.parallelApproval,
             width: 120,
             height: 40,
             content: ParallelApprovalComponent,
@@ -50,7 +50,7 @@ export class NodeRegister {
 
         // 注册并行审批合并节点
         register({
-            shape: "parallel-approval-merge",
+            shape: NodeShape.parallelApprovalMerge,
             width: 120,
             height: 40,
             content: ParallelApprovalMergeComponent,

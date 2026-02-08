@@ -9,6 +9,8 @@ export class FlowNode {
     height?: number = 40;
     label?: string;
 
+    data?: any;
+
     constructor(id: string) {
         this.id = id;
         this.label = id;
