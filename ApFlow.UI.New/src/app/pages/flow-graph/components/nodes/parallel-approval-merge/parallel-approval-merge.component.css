@@ -1,0 +1,39 @@
+.merge-node {
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 170px;
+  transition: all 0.2s ease;
+}
+
+.merge-node:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+::ng-deep .merge-node .ant-card-body {
+  padding: 0;
+}
+
+.node-header {
+  padding: 6px 10px;
+  background: #52c41a;
+}
+
+.node-content {
+  padding: 8px 10px;
+  background: #fff;
+}
+
+.merge-info {
+  background: #f6ffed;
+  border-radius: 3px;
+  border: 1px solid #b7eb8f;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.merge-text {
+  font-size: 12px;
+  color: #52c41a;
+  font-weight: 500;
+}

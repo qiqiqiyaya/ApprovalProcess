@@ -1,0 +1,23 @@
+<nz-card class="parallel-approval-node" [nzBordered]="true">
+  <div nz-row nzJustify="space-between" nzAlign="middle" class="node-header">
+    <div nz-col>
+      <span nz-icon nzType="fork" nzTheme="outline" style="color: #fff; margin-right: 4px;"></span>
+      <span style="color: #fff; font-size: 12px; font-weight: 500;">并行审批</span>
+    </div>
+    <div nz-col>
+      <button nz-button nzType="text" class="close-btn" (click)="clear()">
+        <span nz-icon nzType="close" nzTheme="outline"></span>
+      </button>
+    </div>
+  </div>
+  <div class="node-content">
+    <div class="branch-info">
+      <div class="branch-count">分支数量：{{ branchCount }}</div>
+      <div class="branch-tip">点击下方按钮添加分支</div>
+    </div>
+    <button nz-button nzType="primary" class="add-btn" (click)="addBranch()" nzBlock>
+      <span nz-icon nzType="plus" nzTheme="outline"></span>
+      <span>添加分支</span>
+    </button>
+  </div>
+</nz-card>

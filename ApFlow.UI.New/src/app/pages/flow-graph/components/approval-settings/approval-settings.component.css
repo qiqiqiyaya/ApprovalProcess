@@ -1,0 +1,30 @@
+.settings-container {
+  padding: 16px;
+}
+
+.form-item {
+  margin-bottom: 20px;
+}
+
+.form-item:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.footer-actions {
+  margin-top: 24px;
+  padding: 16px;
+  border-top: 1px solid #f0f0f0;
+  text-align: right;
+}
+
+.footer-actions button:first-child {
+  margin-right: 8px;
+}

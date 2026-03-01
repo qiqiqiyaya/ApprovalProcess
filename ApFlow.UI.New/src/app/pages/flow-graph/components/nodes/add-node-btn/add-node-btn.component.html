@@ -1,0 +1,12 @@
+<div nz-row>
+  <button nz-button nzType="primary" [nzSize]="'large'" nzShape="circle" nz-popover [nzPopoverContent]="contentTemplate"
+    [nzPopoverPlacement]="'rightBottom'">
+    <nz-icon nzType="plus" nzTheme="outline" />
+  </button>
+  <ng-template #contentTemplate>
+    <nz-card>
+      <div nz-card-grid (click)="addApprove()">approve</div>
+      <div nz-card-grid (click)="addParallelApproval()">parallel-approval</div>
+    </nz-card>
+  </ng-template>
+</div>
