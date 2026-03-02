@@ -1,0 +1,25 @@
+---
+description: 项目规则
+alwaysApply: false
+enabled: true
+updatedAt: 2026-03-02T16:02:23.394Z
+provider: 
+---
+
+# ApFlow.UI 项目规则
+
+## 一、AI 职责
+- 严格遵循规范
+- 保持代码一致性
+
+## 二、技术栈
+- **框架**：Angular 19 + TypeScript 5.7（严格模式）
+- **图表**：AntV X6（流程图）
+- **UI**：ng-zorro-antd 19
+- **表单**：@delon/form
+
+## 三、项目结构
+src/app/pages/ # 功能模块
+src/app/common/ # 共享组件/工具
+src/app/models/ # 数据模型
+src/app/services/ # 共享服务

@@ -15,6 +15,9 @@ export class FlowNode {
 
     data?: any;
 
+    x?: number;
+    y?: number;
+
     constructor()
     constructor(shape: string)
     constructor(shape: string, data: any)

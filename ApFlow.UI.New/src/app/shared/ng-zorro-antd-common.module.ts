@@ -47,6 +47,8 @@ import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzAnchorModule } from 'ng-zorro-antd/anchor';
 import { NzAffixModule } from 'ng-zorro-antd/affix';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 
 @NgModule({
   imports: [
@@ -101,7 +103,9 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
     NzStatisticModule,
     NzTimelineModule,
     NzAnchorModule,
-    NzAffixModule
+    NzAffixModule,
+    NzSpaceModule,
+    NzInputNumberModule
   ]
 })
 export class NgZorroAntdCommonModule { }

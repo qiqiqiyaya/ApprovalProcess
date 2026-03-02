@@ -31,6 +31,12 @@ export interface BranchGroup {
         maxBranchIndex: number;
         [key: string]: any;
     };
+
+    // T050: Validate uniform spacing within this branch group
+    validateUniformSpacing?(verticalSpacing: number): boolean;
+
+    // T051: Get all node IDs in this branch group
+    getAllNodes?(): string[];
 }
 
 /**

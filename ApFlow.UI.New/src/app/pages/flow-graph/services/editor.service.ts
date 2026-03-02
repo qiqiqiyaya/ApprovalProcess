@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Graph, Node, NodeProperties } from '@antv/x6';
+import { Graph, Node } from '@antv/x6';
 import { FlowGraph } from '../models/flow-graph';
 import { DagreLayout } from '@antv/layout';
 import { BehaviorSubject } from 'rxjs';
 import { FlowNode } from '../models/flow-node';
-import { NodeShape } from '../components/nodes/node-register';
 import { registerInfo } from '@antv/x6-angular-shape';
+import { BranchGroupManager } from '../models/branch-group-manager';
 
 @Injectable()
 export class EditorService {
@@ -28,6 +28,18 @@ export class EditorService {
   }
   public flowGraph(): FlowGraph {
     return this._flowGraph;
+  }
+
+  /**
+   * Gets the branch group manager from the current flow graph
+   * @returns BranchGroupManager instance
+   * @throws Error if flow graph is not initialized
+   */
+  public getBranchGroupManager(): BranchGroupManager {
+    if (!this._flowGraph) {
+      throw new Error('FlowGraph is not initialized. Please call editorService.setflowGraph() first.');
+    }
+    return (this._flowGraph as any).branchManager as BranchGroupManager;
   }
 
   private _currentNode = new BehaviorSubject<Node>(new Node());
@@ -66,7 +78,8 @@ export class EditorService {
       return node;
     });
 
-    registerInfo.forEach((info) => {
+    registerInfo.forEach(() => {
+      // Placeholder for node registration logic
     });
 
     // 2. 使用计算好的数据渲染图

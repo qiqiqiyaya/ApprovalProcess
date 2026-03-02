@@ -129,4 +129,119 @@ export class BranchGroupManager {
 
         this.groups.delete(groupId);
     }
+
+    /**
+     * T050: Validates uniform spacing within a branch group
+     * Checks if all branches have consistent node counts and alignment
+     * @param groupId Branch group ID
+     * @param verticalSpacing Vertical spacing in pixels
+     * @returns true if spacing is uniform, false otherwise
+     */
+    validateUniformSpacing(groupId: string, verticalSpacing: number): boolean {
+        const group = this.groups.get(groupId);
+        if (!group) {
+            throw new Error('Group not found');
+        }
+
+        // Get all branch node counts
+        const branchCounts: number[] = [];
+        group.branches.forEach((nodes, index) => {
+            branchCounts[index] = nodes.length;
+        });
+
+        // Check if all branches have the same number of nodes
+        const firstCount = branchCounts[0];
+        const hasUniformCounts = branchCounts.every(count => count === firstCount);
+
+        if (!hasUniformCounts) {
+            console.warn('Branch group has uneven branch lengths:', branchCounts);
+            return false;
+        }
+
+        // Calculate expected vertical spacing for the entire group
+        const expectedHeight = (firstCount + 1) * verticalSpacing; // +1 for start node
+
+        // Verify node positions (if nodes have position data)
+        let positionsAreUniform = true;
+        group.branches.forEach((nodes, branchIndex) => {
+            nodes.forEach((nodeId, nodeIndex) => {
+                const node = this.graph.findNodeById(nodeId);
+                if (node) {
+                    const expectedY = (nodeIndex + 1) * verticalSpacing;
+                    if (Math.abs(node.y! - expectedY) > 1) { // Allow small floating point error
+                        positionsAreUniform = false;
+                        console.warn(`Node ${nodeId} at y=${node.y}, expected y=${expectedY}`);
+                    }
+                }
+            });
+        });
+
+        return hasUniformCounts && positionsAreUniform;
+    }
+
+    /**
+     * T051: Gets all node IDs in a branch group
+     * Includes start node, merge node, and all branch nodes
+     * @param groupId Branch group ID
+     * @returns Array of all node IDs in the group
+     */
+    getAllNodes(groupId: string): string[] {
+        const group = this.groups.get(groupId);
+        if (!group) {
+            throw new Error('Group not found');
+        }
+
+        const allNodes: string[] = [];
+
+        // Add start node
+        allNodes.push(group.startNodeId);
+
+        // Add merge node if exists
+        if (group.mergeNodeId) {
+            allNodes.push(group.mergeNodeId);
+        }
+
+        // Add all branch nodes
+        group.branches.forEach((nodes) => {
+            allNodes.push(...nodes);
+        });
+
+        return allNodes;
+    }
+
+    /**
+     * Gets all branch groups
+     * @returns Array of all branch groups
+     */
+    getAllGroups(): BranchGroup[] {
+        return Array.from(this.groups.values());
+    }
+
+    /**
+     * Finds branch group containing a specific node
+     * @param nodeId Node ID to search for
+     * @returns Branch group ID or undefined
+     */
+    findGroupByNode(nodeId: string): string | undefined {
+        for (const [groupId, group] of this.groups) {
+            // Check start node
+            if (group.startNodeId === nodeId) {
+                return groupId;
+            }
+
+            // Check merge node
+            if (group.mergeNodeId === nodeId) {
+                return groupId;
+            }
+
+            // Check branch nodes
+            for (const nodes of group.branches.values()) {
+                if (nodes.includes(nodeId)) {
+                    return groupId;
+                }
+            }
+        }
+
+        return undefined;
+    }
 }

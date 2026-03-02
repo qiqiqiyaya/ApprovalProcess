@@ -6,6 +6,7 @@ import { BranchGroup } from "./flow-group";
 import { BranchGroupManager } from "./branch-group-manager";
 import { BranchGroupRenderer } from "./branch-group-renderer";
 import { FlowNodeHelper } from "../helper/flow-node-helper";
+import { LayoutResult, NodePosition } from "./layout-config";
 
 export class FlowGraph {
     nodes: FlowNode[];
@@ -53,6 +54,37 @@ export class FlowGraph {
     }
 
     /**
+     * Applies layout result to the graph
+     * Updates node positions based on calculated layout
+     * @param result Layout result to apply
+     */
+    applyLayout(result: LayoutResult): void {
+        result.nodes.forEach(position => {
+            const node = this.findNodeById(position.id);
+            if (node) {
+                node.x = position.x;
+                node.y = position.y;
+            }
+        });
+    }
+
+    /**
+     * Converts graph nodes to format suitable for layout engine
+     * @returns Array of nodes for layout calculation
+     */
+    toLayoutNodes(): FlowNode[] {
+        return this.nodes;
+    }
+
+    /**
+     * Converts graph edges to format suitable for layout engine
+     * @returns Array of edges for layout calculation
+     */
+    toLayoutEdges(): FlowEdge[] {
+        return this.edges;
+    }
+
+    /**
        * 在指定节点后添加审批节点和操作节点
        * 操作流程：operationNode -> approveNode -> newOperationNode -> nextNode
        * @param operationNode 要添加审批的操作节点
@@ -96,20 +128,15 @@ export class FlowGraph {
      */
     static new() {
         const stratNode = new RectNode('start');
-        debugger;
         const operationNode = new FlowNode(NodeShape.operation);
         const endNode = new RectNode('end');
-
         return new FlowGraph([
             stratNode,
             operationNode,
-            // new FlowNode('approve',NodeShape.approve),
             endNode,
         ], [
             new FlowEdge(stratNode.id, operationNode.id),
-            // new FlowEdge('operation', 'approve'),
             new FlowEdge(operationNode.id, endNode.id),
-            // new FlowEdge('approve', 'end'),
         ]);
     }
 

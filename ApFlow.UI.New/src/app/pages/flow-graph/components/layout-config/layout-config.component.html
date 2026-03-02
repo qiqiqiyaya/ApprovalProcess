@@ -1,0 +1,147 @@
+<nz-card nzTitle="Layout Configuration" [nzBordered]="true" [nzExtra]="extraTemplate">
+  <ng-template #extraTemplate>
+    <button nz-button nzType="default" (click)="onReset()">
+      <span nz-icon nzType="redo"></span>
+      Reset
+    </button>
+  </ng-template>
+
+  <form [formGroup]="layoutForm" (ngSubmit)="onSubmit()">
+    <!-- Preset Selection -->
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">Preset</nz-form-label>
+      <nz-form-control [nzSpan]="18">
+        <!-- T073: nz-select for preset selection -->
+        <nz-select
+          formControlName="preset"
+          nzPlaceHolder="Select a preset"
+          (ngModelChange)="applyPreset($event)">
+          <nz-option
+            *ngFor="let preset of presets"
+            [nzValue]="preset.name"
+            [nzLabel]="preset.name"
+            [nzDisabled]="false">
+          </nz-option>
+        </nz-select>
+        <nz-form-text *ngIf="presetName">
+          {{ getPresetDescription(presetName) }}
+        </nz-form-text>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-divider></nz-divider>
+
+    <!-- Vertical Spacing -->
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>Vertical Spacing</nz-form-label>
+      <nz-form-control [nzSpan]="18" nzHasFeedback>
+        <!-- T070: nz-input-number for vertical spacing (20-200) -->
+        <nz-input-number
+          formControlName="verticalSpacing"
+          [nzMin]="verticalSpacingMin"
+          [nzMax]="verticalSpacingMax"
+          [nzStep]="10"
+          nzPlaceHolder="Vertical spacing"
+          [nzFormatter]="formatterSpacing"
+          [nzParser]="parserSpacing">
+        </nz-input-number>
+        <nz-form-text>
+          Distance between adjacent nodes ({{verticalSpacingMin}}-{{verticalSpacingMax}}px)
+        </nz-form-text>
+        <nz-form-text *ngIf="getErrorMessage('verticalSpacing')">
+          {{ getErrorMessage('verticalSpacing') }}
+        </nz-form-text>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Horizontal Spacing -->
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>Horizontal Spacing</nz-form-label>
+      <nz-form-control [nzSpan]="18" nzHasFeedback>
+        <!-- T071: nz-input-number for horizontal spacing (50-500) -->
+        <nz-input-number
+          formControlName="horizontalSpacing"
+          [nzMin]="horizontalSpacingMin"
+          [nzMax]="horizontalSpacingMax"
+          [nzStep]="10"
+          nzPlaceHolder="Horizontal spacing"
+          [nzFormatter]="formatterSpacing"
+          [nzParser]="parserSpacing">
+        </nz-input-number>
+        <nz-form-text>
+          Distance between nodes at same level ({{horizontalSpacingMin}}-{{horizontalSpacingMax}}px)
+        </nz-form-text>
+        <nz-form-text *ngIf="getErrorMessage('horizontalSpacing')">
+          {{ getErrorMessage('horizontalSpacing') }}
+        </nz-form-text>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-divider></nz-divider>
+
+    <!-- Animation Toggle -->
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">Animation</nz-form-label>
+      <nz-form-control [nzSpan]="18">
+        <!-- T072: nz-switch for animate toggle -->
+        <label nz-checkbox formControlName="animate">
+          Enable layout animation
+        </label>
+        <nz-form-text *ngIf="layoutForm.value.animate">
+          Nodes will animate smoothly to their new positions
+        </nz-form-text>
+        <nz-form-text *ngIf="!layoutForm.value.animate">
+          Nodes will move instantly without animation
+        </nz-form-text>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- Animation Duration -->
+    <nz-form-item *ngIf="layoutForm.value.animate">
+      <nz-form-label [nzSpan]="6">Animation Duration</nz-form-label>
+      <nz-form-control [nzSpan]="18">
+        <nz-input-number
+          formControlName="animationDuration"
+          [nzMin]="0"
+          [nzMax]="2000"
+          [nzStep]="50"
+          nzPlaceHolder="Animation duration"
+          [nzFormatter]="formatterDuration"
+          [nzParser]="parserDuration">
+        </nz-input-number>
+        <nz-form-text>
+          Duration of layout animation in milliseconds (0-2000ms)
+        </nz-form-text>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-divider></nz-divider>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button nz-button nzType="primary" [disabled]="!layoutForm.valid">
+        <span nz-icon nzType="check"></span>
+        Apply Changes
+      </button>
+      <button nz-button nzType="default" (click)="resetToDefaults()">
+        <span nz-icon nzType="rest"></span>
+        Reset to Defaults
+      </button>
+    </div>
+  </form>
+
+  <!-- Quick Preset Buttons -->
+  <div class="preset-buttons">
+    <nz-divider nzText="Quick Presets"></nz-divider>
+    <nz-space [nzSize]="'small'">
+      <button
+        *ngFor="let preset of presets"
+        nz-button
+        [nzType]="isPresetActive(preset.name) ? 'primary' : 'default'"
+        (click)="applyPreset(preset.name)"
+        [title]="preset.description">
+        {{ preset.name }}
+      </button>
+    </nz-space>
+  </div>
+</nz-card>
