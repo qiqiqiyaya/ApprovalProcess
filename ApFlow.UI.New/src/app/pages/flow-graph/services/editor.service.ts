@@ -5,9 +5,8 @@ import { FlowLayoutEngine } from './flow-layout-engine.service';
 import type { ILayoutConfig, ILayoutResult } from '../models/layout.models';
 import { BehaviorSubject } from 'rxjs';
 import { FlowNode } from '../models/flow-node';
-import { registerInfo } from '@antv/x6-angular-shape';
 import { BranchGroupManager } from '../models/branch-group-manager';
-import { LayoutError } from '../models/layout.models';
+import { LayoutError, LayoutErrorCode } from '../models/layout.models';
 
 @Injectable()
 export class EditorService {
@@ -74,18 +73,34 @@ export class EditorService {
         baseYOffset: 0,
         centerGraph: true,
       };
-
+      debugger;
       const layoutResult: ILayoutResult = this.layoutEngine.layout(this._flowGraph, layoutConfig);
 
       // 2. 转换布局结果为 X6 兼容格式
       const layoutedData = {
-        nodes: Array.from(layoutResult.nodePositions.values()).map((pos: any) => ({
-          id: pos.id,
-          x: pos.x,
-          y: pos.y,
-          width: pos.width,
-          height: pos.height,
-        })),
+        nodes: Array.from(layoutResult.nodePositions.values()).map((pos: any) => {
+          // 从 FlowGraph 中获取原始节点信息以获取 shape 属性
+          const originalNode = this._flowGraph.findNodeById(pos.id);
+          if (!originalNode) {
+            throw new LayoutError(
+              `Node ${pos.id} not found in FlowGraph during X6 data conversion`,
+              LayoutErrorCode.INVALID_GRAPH
+            );
+          }
+
+          return {
+            id: pos.id,
+            x: pos.x,
+            y: pos.y,
+            width: pos.width,
+            height: pos.height,
+            // 确保 shape 属性存在，提供默认值以防未定义
+            shape: originalNode.shape ?? 'rect',
+            // 可选：包含节点的其他属性（如 label, data）
+            label: originalNode.label,
+            data: originalNode.data,
+          };
+        }),
         edges: this._flowGraph.edges.map((edge) => ({
           id: `${edge.source}-${edge.target}`,
           source: edge.source,

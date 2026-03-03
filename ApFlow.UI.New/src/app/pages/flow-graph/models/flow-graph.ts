@@ -6,7 +6,6 @@ import { BranchGroup } from "./flow-group";
 import { BranchGroupManager } from "./branch-group-manager";
 import { BranchGroupRenderer } from "./branch-group-renderer";
 import { FlowNodeHelper } from "../helper/flow-node-helper";
-import { LayoutResult, NodePosition } from "./layout-config";
 
 export class FlowGraph {
     nodes: FlowNode[];
@@ -51,21 +50,6 @@ export class FlowGraph {
      */
     findNodeById(id: string): FlowNode | null {
         return this.nodes.find(node => node.id === id) || null;
-    }
-
-    /**
-     * Applies layout result to the graph
-     * Updates node positions based on calculated layout
-     * @param result Layout result to apply
-     */
-    applyLayout(result: LayoutResult): void {
-        result.nodes.forEach(position => {
-            const node = this.findNodeById(position.id);
-            if (node) {
-                node.x = position.x;
-                node.y = position.y;
-            }
-        });
     }
 
     /**

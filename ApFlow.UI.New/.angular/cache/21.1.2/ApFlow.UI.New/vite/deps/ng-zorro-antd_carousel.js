@@ -1,29 +1,29 @@
 import {
-  NzResizeObserver
-} from "./chunk-BT773X5Q.js";
-import {
   NzDragService,
   NzResizeService
-} from "./chunk-KQTSQZPL.js";
-import "./chunk-CJ5RG6CQ.js";
+} from "./chunk-2JNUPWPT.js";
+import {
+  NzResizeObserver
+} from "./chunk-F3KMHNIL.js";
+import "./chunk-TUVRXNSZ.js";
 import {
   LEFT_ARROW,
   RIGHT_ARROW
 } from "./chunk-B7XDWOSB.js";
-import {
-  Platform
-} from "./chunk-W6VE2EMK.js";
 import "./chunk-QYDDKLT3.js";
 import {
   NzConfigService,
   WithConfig
-} from "./chunk-4U5FUHDN.js";
+} from "./chunk-M622CJQC.js";
 import {
   takeUntilDestroyed
 } from "./chunk-PKOG7UK4.js";
 import {
   fromEventOutsideAngular
-} from "./chunk-SJ4NT3YH.js";
+} from "./chunk-HP6B2NEN.js";
+import {
+  Platform
+} from "./chunk-W6VE2EMK.js";
 import {
   Directionality
 } from "./chunk-AMAGFN52.js";

@@ -10,17 +10,6 @@
   position: relative;
 }
 
-.layout-config-panel {
-  width: 320px;
-  min-width: 320px;
-  max-width: 320px;
-  padding: 16px;
-  background-color: #fafafa;
-  border-right: 1px solid #e8e8e8;
-  overflow-y: auto;
-  flex-shrink: 0;
-}
-
 .graph-container {
   flex: 1;
   min-height: 100%;
@@ -30,14 +19,5 @@
 @media (max-width: 1024px) {
   .editor-container {
     flex-direction: column;
-  }
-
-  .layout-config-panel {
-    width: 100%;
-    min-width: unset;
-    max-width: unset;
-    max-height: 200px;
-    border-right: none;
-    border-bottom: 1px solid #e8e8e8;
   }
 }

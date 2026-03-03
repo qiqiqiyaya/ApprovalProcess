@@ -1,26 +1,26 @@
 import {
   NzAffixComponent,
   NzAffixModule
-} from "./chunk-E7HFMIUD.js";
-import "./chunk-BT773X5Q.js";
+} from "./chunk-YO5FQYAA.js";
 import {
   NzScrollService
-} from "./chunk-KQTSQZPL.js";
-import "./chunk-CJ5RG6CQ.js";
-import {
-  Platform,
-  normalizePassiveListenerOptions
-} from "./chunk-W6VE2EMK.js";
+} from "./chunk-2JNUPWPT.js";
+import "./chunk-F3KMHNIL.js";
+import "./chunk-TUVRXNSZ.js";
 import "./chunk-QYDDKLT3.js";
 import {
   NzConfigService,
   WithConfig
-} from "./chunk-4U5FUHDN.js";
+} from "./chunk-M622CJQC.js";
 import "./chunk-PKOG7UK4.js";
 import {
   fromEventOutsideAngular,
   numberAttributeWithZeroFallback
-} from "./chunk-SJ4NT3YH.js";
+} from "./chunk-HP6B2NEN.js";
+import {
+  Platform,
+  normalizePassiveListenerOptions
+} from "./chunk-W6VE2EMK.js";
 import "./chunk-AMAGFN52.js";
 import {
   NgTemplateOutlet

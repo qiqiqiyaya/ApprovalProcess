@@ -48,7 +48,9 @@ class LayoutCache implements ILayoutCache {
     // Simple FIFO eviction when cache is full
     if (this.cache.size >= this.maxSize) {
       const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
+      if(firstKey){
+        this.cache.delete(firstKey);
+      }
     }
     this.cache.set(key, result);
   }
@@ -317,20 +319,20 @@ export class FlowLayoutEngine implements ILayoutEngine {
         const height = node.height ?? DEFAULT_LAYOUT_CONFIG.verticalSpacing;
 
         // Calculate layout position (center point)
-        const layoutX = currentX + width / 2;
+        const layoutX = currentX + width! / 2;
         const layoutY = baseY;
 
         // Create node position with centering offset
-        const position = createNodePosition(nodeId, layoutX, layoutY, width, height, levelIndex);
+        const position = createNodePosition(nodeId, layoutX, layoutY, width!, height, levelIndex);
 
         nodePositions.set(nodeId, position);
 
         // Move to next node position
-        currentX += width + horizontalSpacing;
+        currentX += width! + horizontalSpacing!;
       }
 
       // Calculate level width (subtract last spacing)
-      levelWidth = currentX - horizontalSpacing;
+      levelWidth = currentX - horizontalSpacing!;
       maxWidth = Math.max(maxWidth, levelWidth);
 
       // Create level object
@@ -441,5 +443,3 @@ export class FlowLayoutEngine implements ILayoutEngine {
   }
 }
 
-// Export service
-export { FlowLayoutEngine };

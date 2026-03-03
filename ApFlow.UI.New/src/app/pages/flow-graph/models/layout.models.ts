@@ -361,7 +361,7 @@ export function createLayoutResult(
     const nodeWidths = Array.from(nodePositions.values())
       .filter((pos) => level.nodes.includes(pos.id))
       .map((pos) => pos.width);
-    const spacing = config.horizontalSpacing ?? DEFAULT_LAYOUT_CONFIG.horizontalSpacing;
+    const spacing = config.horizontalSpacing ?? DEFAULT_LAYOUT_CONFIG.horizontalSpacing ?? 75;
     return nodeWidths.reduce((sum, width) => sum + width, 0) + (nodeWidths.length - 1) * spacing;
   });
   const totalWidth = Math.max(...levelWidths, 0);
@@ -391,7 +391,7 @@ export function createLayoutResult(
  */
 export class LayoutError extends Error {
   /** Error type identifier */
-  public readonly name = 'LayoutError';
+  public override readonly name = 'LayoutError';
 
   /**
    * Creates a new LayoutError instance.
@@ -408,8 +408,8 @@ export class LayoutError extends Error {
     super(message);
 
     // Maintain proper stack trace for where our error was thrown
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, LayoutError);
+    if ('captureStackTrace' in Error && typeof (Error as any).captureStackTrace === 'function') {
+      (Error as any).captureStackTrace(this, LayoutError);
     }
 
     // Attach cause if provided
@@ -419,28 +419,4 @@ export class LayoutError extends Error {
   }
 }
 
-// ============================================================================
-// Exports
-// ============================================================================
 
-// Re-export types for convenience
-export type {
-  ILayoutConfig,
-  INodePosition,
-  INodeLevel,
-  ILayoutResult,
-  ILayoutEngine,
-  ILayoutCache,
-};
-
-// Export enums
-export { LayoutErrorCode };
-
-// Export constants
-export { DEFAULT_LAYOUT_CONFIG };
-
-// Export factory functions
-export { createNodePosition, createNodeLevel, createLayoutResult };
-
-// Export error class
-export { LayoutError };

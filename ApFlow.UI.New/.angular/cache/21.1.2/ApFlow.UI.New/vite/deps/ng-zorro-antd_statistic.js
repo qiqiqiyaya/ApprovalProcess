@@ -1,23 +1,24 @@
 import {
   NzSkeletonComponent,
   NzSkeletonModule
-} from "./chunk-S25CZMR2.js";
+} from "./chunk-CKCSPPWQ.js";
 import {
   timeUnits
-} from "./chunk-5WIRSNGS.js";
-import {
-  Platform
-} from "./chunk-W6VE2EMK.js";
+} from "./chunk-VH7TNVEJ.js";
 import {
   NzOutletModule,
   NzStringTemplateOutletDirective
-} from "./chunk-GRAHBMGU.js";
+} from "./chunk-CWBX6YEP.js";
+import "./chunk-BQ76GOFF.js";
 import {
   takeUntilDestroyed
 } from "./chunk-PKOG7UK4.js";
 import {
   padStart
-} from "./chunk-SJ4NT3YH.js";
+} from "./chunk-HP6B2NEN.js";
+import {
+  Platform
+} from "./chunk-W6VE2EMK.js";
 import {
   Directionality
 } from "./chunk-AMAGFN52.js";
@@ -71,8 +72,6 @@ import {
   ɵɵtextInterpolate
 } from "./chunk-4XV3JIPT.js";
 import "./chunk-XZWRYGZ6.js";
-import "./chunk-6OM3666T.js";
-import "./chunk-BQ76GOFF.js";
 import "./chunk-DP5J3HDO.js";
 import "./chunk-KWSTWQNB.js";
 

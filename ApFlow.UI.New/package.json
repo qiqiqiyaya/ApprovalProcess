@@ -43,7 +43,6 @@
     "jsdom": "^27.1.0",
     "less": "^4.2.0",
     "ng-zorro-antd": "^21.0.2",
-    "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+    "typescript": "~5.9.2"
   }
 }
