@@ -1,18 +1,23 @@
 import { Injectable } from '@angular/core';
 import { Graph, Node } from '@antv/x6';
 import { FlowGraph } from '../models/flow-graph';
-import { DagreLayout } from '@antv/layout';
+import { FlowLayoutEngine } from './flow-layout-engine.service';
+import type { ILayoutConfig, ILayoutResult } from '../models/layout.models';
 import { BehaviorSubject } from 'rxjs';
 import { FlowNode } from '../models/flow-node';
 import { registerInfo } from '@antv/x6-angular-shape';
 import { BranchGroupManager } from '../models/branch-group-manager';
+import { LayoutError } from '../models/layout.models';
 
 @Injectable()
 export class EditorService {
   /** 是否已经订阅了事件 */
   private eventSubscribed = false;
 
-  constructor() { }
+  /** Layout engine instance */
+  private readonly layoutEngine = new FlowLayoutEngine();
+
+  constructor() {}
 
   private graph: Graph;
   public setGraph(graph: Graph): void {
@@ -37,7 +42,9 @@ export class EditorService {
    */
   public getBranchGroupManager(): BranchGroupManager {
     if (!this._flowGraph) {
-      throw new Error('FlowGraph is not initialized. Please call editorService.setflowGraph() first.');
+      throw new Error(
+        'FlowGraph is not initialized. Please call editorService.setflowGraph() first.',
+      );
     }
     return (this._flowGraph as any).branchManager as BranchGroupManager;
   }
@@ -59,36 +66,53 @@ export class EditorService {
   }
 
   public renderGraph(): void {
-    // 1. 使用 DagreLayout 计算节点位置
-    const dagreLayout = new DagreLayout({
-      type: 'dagre',
-      rankdir: 'TB',
-      ranksep: 35,
-      nodesep: 75,
-    });
-    const layoutedData = dagreLayout.layout(this._flowGraph);
+    // 1. 使用 FlowLayoutEngine 计算节点位置（固定 50px 垂直间距）
+    try {
+      const layoutConfig: ILayoutConfig = {
+        verticalSpacing: 50,
+        horizontalSpacing: 75,
+        baseYOffset: 0,
+        centerGraph: true,
+      };
 
-    // 4. 关键：修正坐标，让节点中心对齐
-    layoutedData.nodes = layoutedData.nodes!.map((node: any) => {
-      // 计算中心偏移：x = 初始x - 宽度/2，y = 初始y - 高度/2
-      const centerX = node.x - node.width / 2;
-      const centerY = node.y - node.height / 2;
-      node.x = centerX;
-      node.y = centerY;
-      return node;
-    });
+      const layoutResult: ILayoutResult = this.layoutEngine.layout(this._flowGraph, layoutConfig);
 
-    registerInfo.forEach(() => {
-      // Placeholder for node registration logic
-    });
+      // 2. 转换布局结果为 X6 兼容格式
+      const layoutedData = {
+        nodes: Array.from(layoutResult.nodePositions.values()).map((pos: any) => ({
+          id: pos.id,
+          x: pos.x,
+          y: pos.y,
+          width: pos.width,
+          height: pos.height,
+        })),
+        edges: this._flowGraph.edges.map((edge) => ({
+          id: `${edge.source}-${edge.target}`,
+          source: edge.source,
+          target: edge.target,
+        })),
+      };
 
-    // 2. 使用计算好的数据渲染图
-    this.graph.fromJSON(layoutedData);
-    this.graph.centerContent();
-    // 3. 订阅事件
-    this.eventSubscribe();
+      // 3. 使用计算好的数据渲染图
+      this.graph.fromJSON(layoutedData);
+      this.graph.centerContent();
 
-    console.log(this.graph.toJSON());
+      // 4. 订阅事件
+      this.eventSubscribe();
+
+      console.log('Graph rendered with fixed 50px vertical spacing');
+      console.log('Layout dimensions:', layoutResult.totalWidth, 'x', layoutResult.totalHeight);
+      console.log('Max level:', layoutResult.maxLevel);
+    } catch (error) {
+      // Handle layout errors with user-friendly messages
+      if (error instanceof LayoutError) {
+        console.error(`Layout failed (${error.code}): ${error.message}`);
+        // TODO: Show user notification (e.g., using nz-message service)
+      } else {
+        console.error('Unexpected error during layout:', error);
+      }
+      throw error;
+    }
   }
 
   private eventSubscribe() {
