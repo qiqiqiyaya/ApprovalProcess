@@ -72,6 +72,8 @@ layout(graph: FlowGraph, config?: ILayoutConfig): ILayoutResult
 2. All consecutive level pairs maintain exactly 50px vertical spacing
 3. Result is cacheable and reproducible for the same input
 
+**Performance**: O(V + E) time complexity, where V = number of nodes, E = number of edges
+
 **Example Usage**:
 ```typescript
 const layoutEngine = new FlowLayoutEngine();
@@ -347,48 +349,39 @@ console.log(`Total width: ${result.totalWidth}, Total height: ${result.totalHeig
 
 ---
 
-## RxJS Integration Contract
+## Layout Caching Contract
 
-### Observable: Layout Updates
+### Cache Behavior
 
-**Description**: Observable stream of layout updates for reactive integration.
+The layout engine implements automatic caching to improve performance:
 
-**Type**: `Observable<ILayoutResult | null>`
+1. **Cache Key**: Generated from graph structure (sorted node IDs + sorted edge pairs)
+2. **Cache Lookup**: Checked before every layout calculation
+3. **Cache Storage**: After successful layout calculation
+4. **Cache Invalidation**: Automatic when graph structure changes
 
-**Behavior**:
-- Emits `ILayoutResult` when layout calculation completes
-- Emits `null` if graph is null or undefined
-- Uses `debounceTime(16)` to prevent excessive recalculations (~60fps)
-- Uses `switchMap` to cancel previous layout calculations
+### Cache Management
 
-**Example Integration**:
 ```typescript
 @Injectable({ providedIn: 'root' })
-export class EditorService {
-  private graphSubject = new BehaviorSubject<FlowGraph | null>(null);
-  private layoutEngine = inject(FlowLayoutEngine);
+export class FlowLayoutEngine implements ILayoutEngine {
+  private readonly cache = new Map<string, ILayoutResult>();
   
-  constructor() {
-    this.graphSubject.pipe(
-      debounceTime(16), // ~60fps
-      switchMap(graph => {
-        if (!graph) return of(null);
-        return from(this.layoutEngine.layout(graph)).pipe(
-          catchError(error => {
-            console.error('Layout failed:', error);
-            return of(null);
-          })
-        );
-      })
-    ).subscribe(result => {
-      if (result) {
-        this.applyLayout(result);
-      }
-    });
+  /**
+   * Clears the layout cache
+   */
+  public clearCache(): void {
+    this.cache.clear();
   }
   
-  public triggerLayout(graph: FlowGraph): void {
-    this.graphSubject.next(graph);
+  /**
+   * Gets cache statistics
+   */
+  public getCacheStats(): { size: number; keys: string[] } {
+    return {
+      size: this.cache.size,
+      keys: Array.from(this.cache.keys()),
+    };
   }
 }
 ```
@@ -415,18 +408,13 @@ export class EditorService {
 - ✅ Vertical spacing is enforced as literal type `50`
 - ✅ Node centering offsets are clearly documented
 - ✅ Performance constraints are specified (O(V + E) complexity)
+- ✅ Caching strategy is defined
 
 ### Code Consistency (Principle 4)
 
 - ✅ All interfaces use `I` prefix
 - ✅ Methods have TSDoc comments
 - ✅ Error codes are defined in enum
-
-### RxJS Patterns (Principle 6)
-
-- ✅ RxJS integration pattern is documented
-- ✅ Observable types are explicitly defined
-- ✅ Operators (`debounceTime`, `switchMap`) are specified
 
 ---
 
@@ -454,11 +442,12 @@ All public methods MUST have unit tests with the following coverage:
 | `assignLevels()` | 95% including edge cases |
 | `calculatePositions()` | 95% including edge cases |
 | Error handling | 100% (all error codes tested) |
+| Caching | 90% (cache hit, miss, invalidation) |
 
 ### Integration Test Coverage
 
 - End-to-end layout with `EditorService`
-- RxJS pipeline (debounce, switchMap, caching)
+- Caching behavior across multiple calls
 - Integration with `BranchGroupManager`
 
 ---
@@ -494,6 +483,7 @@ const result = layoutEngine.layout(flowGraph, {
 2. Return type changed from generic object to `ILayoutResult`
 3. Explicit error handling with `LayoutError`
 4. Type-safe interfaces for all data structures
+5. Automatic caching (no manual configuration needed)
 
 ---
 

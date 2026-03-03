@@ -18,18 +18,20 @@ This document consolidates research findings and decisions for implementing a cu
 
 **Question**: How to structure the custom layout engine to integrate with AntV X6 while maintaining type safety and modularity?
 
-**Decision**: Create a standalone `FlowLayoutEngine` service that extends or mimics `@antv/layout.BaseLayout` interface.
+**Decision**: Create a standalone `FlowLayoutEngine` service with a simple synchronous layout calculation API.
 
 **Rationale**:
 - AntV X6's `graph.layout()` method accepts any object with a `layout()` method
 - Creating a separate service aligns with Angular's service-based architecture (Principle 2)
 - Enables independent testing and maintenance
 - Allows for future extensibility (e.g., user-configurable presets)
+- Synchronous layout calculation is simple, predictable, and sufficient for current requirements
 
 **Alternatives Considered**:
 - **Extend `@antv/layout.BaseLayout`**: Rejected because the library's TypeScript types may not be stable or compatible with strict mode
 - **Modify `editor.service.ts` directly**: Rejected due to violation of single responsibility principle and testing concerns
 - **Use DagreLayout with custom post-processing**: Rejected because DagreLayout's internal rank assignment logic cannot be easily overridden for strict spacing
+- **Async/RxJS-based layout engine**: Rejected as over-engineering for this use case; synchronous calculation provides simpler code and predictable performance
 
 **Implementation Approach**:
 ```typescript
@@ -37,11 +39,16 @@ This document consolidates research findings and decisions for implementing a cu
 export class FlowLayoutEngine {
   private readonly VERTICAL_SPACING = 50; // 50px per constitution
   private readonly HORIZONTAL_SPACING = 75; // Default nodesep
+  private readonly cache = new Map<string, ILayoutResult>();
   
-  layout(graph: FlowGraph): LayoutResult {
-    // Phase 1: Assign levels using BFS
-    // Phase 2: Calculate positions
-    // Phase 3: Apply centering offsets
+  layout(graph: FlowGraph, config?: ILayoutConfig): ILayoutResult {
+    // 1. Validate input
+    // 2. Check cache
+    // 3. Assign levels using BFS
+    // 4. Calculate positions
+    // 5. Apply centering offsets
+    // 6. Cache result
+    // 7. Return layout result
   }
 }
 ```
@@ -136,52 +143,50 @@ function assignLevels(graph: FlowGraph): Map<string, number> {
 
 ---
 
-### 4. RxJS Performance Optimization Pattern
+### 4. Layout Calculation Strategy (Synchronous)
 
-**Question**: How to implement debounce and cancellation for layout calculations using RxJS?
+**Question**: How should layout calculations be performed without RxJS?
 
-**Decision**: Use `BehaviorSubject` + `debounceTime(16)` + `switchMap` pattern.
+**Decision**: Implement synchronous layout calculation with simple caching.
 
 **Rationale**:
-- `debounceTime(16)` ≈ 60fps, prevents excessive recalculations during rapid user input
-- `switchMap` automatically cancels previous layout calculations, ensuring only the latest result is applied
-- `BehaviorSubject` maintains the current graph state and triggers recalculations
-- Aligns with Principle 6 (RxJS Reactive Patterns)
+- BFS and position calculation are fast (< 10ms for 100-node graphs)
+- Synchronous calculation is simpler to understand and debug
+- No complex async/RxJS patterns needed for this use case
+- Caching provides sufficient performance optimization
+- Direct method calls are easier to test and maintain
 
 **Alternatives Considered**:
+- **RxJS-based async calculation**: Rejected as over-engineering; adds complexity without clear benefit
+- **Web Worker**: Not needed for current performance requirements; can be added later if needed
 - **Manual debouncing with setTimeout**: Rejected because it's not type-safe and harder to test
-- **debounceTime(100) with distinctUntilChanged**: Too slow for responsive UI
-- **No debouncing**: Rejected because rapid node additions/deletions would cause excessive recalculations
 
 **Implementation Pattern**:
 ```typescript
 @Injectable({ providedIn: 'root' })
-export class EditorService {
-  private graphSubject = new BehaviorSubject<FlowGraph | null>(null);
-  private layoutCache = new Map<string, LayoutResult>();
+export class FlowLayoutEngine {
+  private readonly cache = new Map<string, ILayoutResult>();
   
-  constructor(private layoutEngine: FlowLayoutEngine) {
-    this.graphSubject.pipe(
-      debounceTime(16), // ~60fps
-      switchMap(graph => {
-        if (!graph) return of(null);
-        const cacheKey = this.generateCacheKey(graph);
-        if (this.layoutCache.has(cacheKey)) {
-          return of(this.layoutCache.get(cacheKey)!);
-        }
-        return from(layoutEngine.layout(graph)).pipe(
-          tap(result => this.layoutCache.set(cacheKey, result))
-        );
-      })
-    ).subscribe(result => {
-      if (result) {
-        this.applyLayout(result);
-      }
-    });
-  }
-  
-  public triggerLayout(graph: FlowGraph): void {
-    this.graphSubject.next(graph);
+  layout(graph: FlowGraph, config?: ILayoutConfig): ILayoutResult {
+    // Synchronous calculation
+    const cacheKey = this.generateCacheKey(graph);
+    
+    // Check cache
+    if (this.cache.has(cacheKey)) {
+      return this.cache.get(cacheKey)!;
+    }
+    
+    // Validate input
+    this.validateGraph(graph);
+    
+    // Calculate layout
+    const levels = this.assignLevels(graph);
+    const result = this.calculatePositions(graph, levels, config);
+    
+    // Cache result
+    this.cache.set(cacheKey, result);
+    
+    return result;
   }
 }
 ```
@@ -216,6 +221,12 @@ export interface INodePosition {
   x: number;
   /** Final Y coordinate (top-left corner) */
   y: number;
+  /** Node width */
+  width: number;
+  /** Node height */
+  height: number;
+  /** Level index */
+  level: number;
 }
 
 /**
@@ -224,12 +235,16 @@ export interface INodePosition {
 export interface ILayoutResult {
   /** Calculated positions for all nodes */
   nodePositions: Map<string, INodePosition>;
+  /** Levels in the layout */
+  levels: INodeLevel[];
   /** Total width of the layout */
   totalWidth: number;
   /** Total height of the layout */
   totalHeight: number;
   /** Maximum level in the graph */
   maxLevel: number;
+  /** Configuration used for this layout */
+  config: ILayoutConfig;
 }
 
 /**
@@ -242,6 +257,8 @@ export interface ILayoutConfig {
   horizontalSpacing?: number;
   /** Base Y offset for the graph */
   baseYOffset?: number;
+  /** Whether to center the graph horizontally */
+  centerGraph?: boolean;
 }
 
 /**
@@ -255,6 +272,26 @@ export interface ILayoutEngine {
    * @returns Layout result with node positions
    */
   layout(graph: FlowGraph, config?: ILayoutConfig): ILayoutResult;
+  
+  /**
+   * Assigns levels to nodes using BFS
+   * @param graph The flow graph
+   * @returns Map of node ID to level index
+   */
+  assignLevels(graph: FlowGraph): Map<string, number>;
+  
+  /**
+   * Calculates node positions based on levels
+   * @param graph The flow graph
+   * @param levels Map of node ID to level index
+   * @param config Layout configuration
+   * @returns Layout result
+   */
+  calculatePositions(
+    graph: FlowGraph,
+    levels: Map<string, number>,
+    config: ILayoutConfig
+  ): ILayoutResult;
 }
 ```
 
@@ -340,7 +377,7 @@ function assignLevels(graph: FlowGraph, branchManager: BranchGroupManager): Map<
 - Graph layout is deterministic: same input → same output
 - Cache eliminates redundant calculations for unchanged graphs
 - Simple to implement with TypeScript's `Map` type
-- Can be combined with RxJS `distinctUntilChanged` for further optimization
+- No complex cache invalidation logic needed
 
 **Cache Key Generation**:
 ```typescript
@@ -381,14 +418,17 @@ private generateCacheKey(graph: FlowGraph): string {
 2. **Cycle Detection**: Detect cycles and throw descriptive error
    ```typescript
    if (hasCycle(graph)) {
-     throw new Error('Graph contains cycles. Layout requires a Directed Acyclic Graph (DAG).');
+     throw new LayoutError(
+       'Graph contains cycles. Layout requires a Directed Acyclic Graph (DAG).',
+       LayoutErrorCode.CYCLE_DETECTED
+     );
    }
    ```
 
 3. **Error Types**: Define custom error types for different failure modes
    ```typescript
    export class LayoutError extends Error {
-     constructor(message: string, public readonly code: string) {
+     constructor(message: string, public readonly code: LayoutErrorCode) {
        super(message);
        this.name = 'LayoutError';
      }
@@ -419,8 +459,8 @@ private generateCacheKey(graph: FlowGraph): string {
 
 2. **Integration Tests**:
    - End-to-end layout with `BranchGroupManager`
-   - RxJS pipeline (debounce, switchMap, caching)
    - Integration with `EditorService` and X6 Graph
+   - Caching behavior across multiple calls
 
 3. **Visual Regression Tests**:
    - Compare rendered output before/after changes
@@ -458,7 +498,7 @@ private generateCacheKey(graph: FlowGraph): string {
 | 1 | Create standalone `FlowLayoutEngine` service | Modular, testable, follows Angular architecture |
 | 2 | Use BFS for level assignment | Simple, correct, handles parallel branches |
 | 3 | Use greedy horizontal layout | Sufficient for typical flows, maintainable |
-| 4 | RxJS: `debounceTime(16)` + `switchMap` | Performance + responsiveness |
+| 4 | Synchronous layout calculation | Simple, fast, predictable, easy to test |
 | 5 | Strict TypeScript interfaces | Type safety per Principle 1 |
 | 6 | Integrate with `BranchGroupManager` | Minimal changes, parallel support |
 | 7 | Implement result caching | Avoid redundant calculations |

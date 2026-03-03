@@ -12,7 +12,7 @@
 | Field | Value |
 |-------|-------|
 | **Feature ID** | 002-fixed-vertical-spacing |
-| **Plan Version** | 1.0.0 |
+| **Plan Version** | 1.1.0 |
 | **Status** | Phase 2 Complete - Planning |
 | **Branch** | 002-fixed-vertical-spacing |
 | **Created** | 2026-03-04 |
@@ -104,7 +104,6 @@ export class FlowLayoutEngine {
 | Angular | 19+ | Component framework |
 | TypeScript | 5.7+ | Language (strict mode) |
 | AntV X6 | 3.1+ | Graph rendering |
-| RxJS | Latest | Reactive patterns |
 | ng-zorro-antd | 21+ | UI components |
 
 ### Dependencies
@@ -117,7 +116,6 @@ export class FlowLayoutEngine {
 
 **External Dependencies**:
 - `@antv/x6` - Graph rendering library
-- `rxjs` - Reactive programming
 - `@angular/core` - Angular core
 
 ### Integration Points
@@ -132,10 +130,10 @@ export class FlowLayoutEngine {
    - Treat parallel branches as logical units
    - Assign merge nodes to next level
 
-3. **RxJS Integration**:
-   - Implement `debounceTime(16)` for performance
-   - Use `switchMap` for cancellation
-   - Cache layout results
+3. **Layout Caching**:
+   - Implement result caching for performance
+   - Cache key based on graph structure
+   - Automatic cache invalidation on graph changes
 
 ---
 
@@ -147,7 +145,7 @@ export class FlowLayoutEngine {
 |-------------|--------|----------|
 | Strict TypeScript mode | ✅ PASS | All interfaces defined with explicit types |
 | No `any` types in public API | ✅ PASS | `ILayoutConfig`, `ILayoutResult`, `INodePosition` all typed |
-| Generic type parameters | ✅ PASS | `Map<string, INodePosition>`, `BehaviorSubject<FlowGraph>` |
+| Generic type parameters | ✅ PASS | `Map<string, INodePosition>` |
 | Custom type definitions | ✅ PASS | Layout models in separate `.ts` files |
 
 **Compliance**: ✅ FULLY COMPLIANT
@@ -210,15 +208,7 @@ export class FlowLayoutEngine {
 
 ### Principle 6: RxJS Reactive Patterns
 
-| Requirement | Status | Evidence |
-|-------------|--------|----------|
-| Typed `pipe()` operators | ✅ PASS | RxJS integration pattern specified |
-| Generic type inference | ✅ PASS | `Observable<ILayoutResult>` specified |
-| Explicit types at boundaries | ✅ PASS | Public API signatures fully typed |
-| Subscription cleanup | ✅ PASS | `takeUntilDestroyed()` pattern documented |
-| Typed error handling | ✅ PASS | `LayoutError` with error codes |
-
-**Compliance**: ✅ FULLY COMPLIANT
+**Compliance**: N/A (Not Applicable - RxJS not required for this implementation)
 
 ---
 
@@ -231,7 +221,7 @@ export class FlowLayoutEngine {
 | Principle 3: Layout Performance | ✅ PASS |
 | Principle 4: Code Consistency | ✅ PASS |
 | Principle 5: Form Safety | N/A |
-| Principle 6: RxJS Patterns | ✅ PASS |
+| Principle 6: RxJS Patterns | N/A |
 
 **Overall**: ✅ **FULLY COMPLIANT**
 
@@ -261,7 +251,7 @@ export class FlowLayoutEngine {
 - BFS algorithm for level assignment is well-understood and documented
 - Position calculation is straightforward (centering offsets + spacing)
 - Integration with `BranchGroupManager` requires minimal changes
-- RxJS patterns are standard practice in Angular
+- Caching strategy is simple and effective
 - No unknown technical risks identified
 
 ---
@@ -273,8 +263,8 @@ export class FlowLayoutEngine {
 **Rationale**:
 - BFS complexity: O(V + E) where V = nodes, E = edges
 - For 100-node graph: ~200 operations → < 10ms (well under 100ms target)
-- RxJS debouncing reduces redundant calculations
 - Caching eliminates repeated calculations for unchanged graphs
+- Synchronous layout calculation is simple and predictable
 - Web Worker can be added later if needed (not blocking)
 
 ---
@@ -331,11 +321,10 @@ export class FlowLayoutEngine {
 
 ### Deliverables
 
-1. ✅ **Research Document** (`research.md`) - 274 lines
+1. ✅ **Research Document** (`research.md`) - 487 lines
    - Custom layout engine architecture
    - BFS level assignment algorithm
    - Horizontal layout strategy
-   - RxJS performance optimization pattern
    - TypeScript type safety strategy
    - Integration with `BranchGroupManager`
    - Caching strategy
@@ -347,7 +336,7 @@ export class FlowLayoutEngine {
    - Create standalone `FlowLayoutEngine` service
    - Use BFS for level assignment
    - Use greedy horizontal layout
-   - RxJS: `debounceTime(16)` + `switchMap`
+   - Synchronous layout calculation (no RxJS)
    - Strict TypeScript interfaces
    - Integrate with `BranchGroupManager`
    - Implement result caching
@@ -365,7 +354,7 @@ export class FlowLayoutEngine {
 
 ### Deliverables
 
-1. ✅ **Data Model Document** (`data-model.md`) - 458 lines
+1. ✅ **Data Model Document** (`data-model.md`) - 609 lines
    - Entity: `LayoutConfig` - Configuration object
    - Entity: `NodeLevel` - Horizontal layer representation
    - Entity: `NodePosition` - Calculated node position
@@ -378,7 +367,7 @@ export class FlowLayoutEngine {
    - State transitions
    - Constitution compliance mapping
 
-2. ✅ **Interface Contracts** (`contracts/layout-engine-contract.md`) - 487 lines
+2. ✅ **Interface Contracts** (`contracts/layout-engine-contract.md`) - 522 lines
    - Public API: `FlowLayoutEngine.layout()`
    - Public API: `FlowLayoutEngine.assignLevels()`
    - Public API: `FlowLayoutEngine.calculatePositions()`
@@ -390,18 +379,16 @@ export class FlowLayoutEngine {
    - Type: `ILayoutCache`
    - Error: `LayoutError` class
    - Enum: `LayoutErrorCode`
-   - RxJS integration contract
    - Contract compliance checklist
    - Versioning policy
    - Testing contract
    - Migration guide from `DagreLayout`
 
-3. ✅ **Quick Start Guide** (`quickstart.md`) - 567 lines
+3. ✅ **Quick Start Guide** (`quickstart.md`) - 635 lines
    - Prerequisites
    - Installation
    - Basic usage examples
    - Configuration options
-   - RxJS integration
    - Error handling
    - Advanced usage (levels, positions, caching)
    - Integration with `BranchGroupManager`
@@ -488,23 +475,23 @@ export class FlowLayoutEngine {
 
 ---
 
-#### Task 4: Implement RxJS Integration
+#### Task 4: Implement Layout Caching
 
-**File**: `src/app/pages/flow-graph/services/editor.service.ts`
+**File**: `src/app/pages/flow-graph/services/flow-layout-engine.service.ts`
 
-**Description**: Add reactive layout updates with debouncing and cancellation.
+**Description**: Add caching mechanism for layout results to improve performance.
 
 **Subtasks**:
-4.1 Create `BehaviorSubject<FlowGraph | null>` for graph state
-4.2 Implement RxJS pipeline with `debounceTime(16)` and `switchMap`
-4.3 Add `triggerLayout()` method to trigger recalculation
-4.4 Integrate with existing `renderGraph()` method
-4.5 Add error handling in RxJS pipeline
-4.6 Add subscription cleanup with `takeUntilDestroyed()`
+4.1 Create `LayoutCache` class with `Map<string, ILayoutResult>`
+4.2 Implement cache key generation based on graph structure
+4.3 Add cache lookup in `layout()` method
+4.4 Add cache storage after successful calculation
+4.5 Implement automatic cache invalidation
+4.6 Add optional `clearCache()` public method
 
 **Estimated Time**: 2 hours
 
-**Dependencies**: Task 1, Task 3
+**Dependencies**: Task 1, Task 2
 
 ---
 
@@ -540,7 +527,7 @@ export class FlowLayoutEngine {
 
 **Subtasks**:
 6.1 Test `renderGraph()` with new layout engine
-6.2 Test RxJS pipeline (debounce, switchMap)
+6.2 Test caching mechanism
 6.3 Test integration with `BranchGroupManager`
 6.4 Test parallel branch layout
 6.5 Test error handling and user notifications
@@ -613,7 +600,7 @@ export class FlowLayoutEngine {
 | 1 | Create Layout Engine Service | 4h | None |
 | 2 | Create Layout Models | 2h | None |
 | 3 | Update EditorService | 2h | 1, 2 |
-| 4 | Implement RxJS Integration | 2h | 1, 3 |
+| 4 | Implement Layout Caching | 2h | 1, 2 |
 | 5 | Add Unit Tests | 4h | 1, 2 |
 | 6 | Add Integration Tests | 3h | 3, 4 |
 | 7 | Update Documentation | 1h | All |
@@ -686,7 +673,7 @@ src/app/pages/flow-graph/services/editor.service.ts
   - Add: import { FlowLayoutEngine } from './flow-layout-engine.service'
   - Add: import type { ILayoutConfig, ILayoutResult } from '../models/layout.models'
   - Modify: renderGraph() method to use FlowLayoutEngine
-  - Add: RxJS pipeline for reactive updates
+  - Add: Error handling with user-friendly messages
 ```
 
 ---
@@ -753,6 +740,6 @@ git push origin 002-fixed-vertical-spacing
 
 **End of Implementation Plan**
 
-**Document Version**: 1.0.0  
+**Document Version**: 1.1.0  
 **Status**: Phase 2 Complete - Planning  
 **Next Phase**: Phase 3 - Implementation

@@ -20,7 +20,6 @@ Before using the layout engine, ensure you have:
 - ✅ TypeScript 5.7+ with strict mode enabled
 - ✅ AntV X6 3.1+ and @antv/layout 0.3+ installed
 - ✅ Existing `FlowGraph` and `FlowNode` models in your project
-- ✅ RxJS available for reactive patterns
 
 ---
 
@@ -30,7 +29,7 @@ The layout engine is provided as a standalone service. No additional installatio
 
 ```bash
 # Verify required dependencies are installed
-npm list @antv/x6 @antv/layout rxjs
+npm list @antv/x6 @antv/layout
 ```
 
 ---
@@ -118,59 +117,40 @@ const result = this.layoutEngine.layout(flowGraph, customConfig);
 
 ---
 
-## RxJS Integration
+## Layout Triggering
 
-### Reactive Layout Updates
+### Manual Layout Trigger
 
-The layout engine integrates seamlessly with RxJS for reactive updates:
+Trigger layout recalculation when graph structure changes:
 
 ```typescript
-import { BehaviorSubject, debounceTime, switchMap, from, of } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
 @Injectable({ providedIn: 'root' })
 export class EditorService {
-  private graphSubject = new BehaviorSubject<FlowGraph | null>(null);
   private layoutEngine = inject(FlowLayoutEngine);
   
-  constructor() {
-    // Set up reactive layout pipeline
-    this.graphSubject.pipe(
-      debounceTime(16), // ~60fps - prevents excessive recalculations
-      switchMap(graph => {
-        if (!graph) return of(null);
-        
-        // Calculate layout with error handling
-        return from(this.layoutEngine.layout(graph)).pipe(
-          catchError(error => {
-            console.error('Layout failed:', error);
-            // Display user-friendly error message
-            this.notificationService.error(
-              'Layout Error',
-              error instanceof LayoutError ? error.message : 'Unknown error'
-            );
-            return of(null);
-          })
-        );
-      }),
-      takeUntilDestroyed()
-    ).subscribe(result => {
-      if (result) {
-        this.applyLayout(result);
-      }
-    });
-  }
-  
   /**
-   * Triggers layout recalculation
-   * @param graph The flow graph to layout
+   * Triggers layout recalculation and applies to graph
    */
-  public triggerLayout(graph: FlowGraph): void {
-    this.graphSubject.next(graph);
+  public renderGraph(): void {
+    if (!this.flowGraph) {
+      return;
+    }
+    
+    try {
+      // Calculate layout (uses cache automatically)
+      const result = this.layoutEngine.layout(this.flowGraph);
+      
+      // Apply layout to X6 graph
+      this.applyLayout(result);
+    } catch (error) {
+      if (error instanceof LayoutError) {
+        console.error(`Layout failed (${error.code}):`, error.message);
+        this.notificationService.error('Layout Error', error.message);
+      }
+    }
   }
   
   private applyLayout(result: ILayoutResult): void {
-    // Convert and apply to X6 graph
     const graphData = {
       nodes: Array.from(result.nodePositions.values()).map(pos => ({
         id: pos.id,
@@ -185,16 +165,22 @@ export class EditorService {
     this.graph.fromJSON(graphData);
     this.graph.centerContent();
   }
+  
+  /**
+   * Called when nodes are added/removed/modified
+   */
+  public onGraphChanged(): void {
+    this.renderGraph(); // Will use cache if structure unchanged
+  }
 }
 ```
 
 ### Performance Benefits
 
-The RxJS pipeline provides:
-- **Debouncing**: Prevents excessive recalculations during rapid user input
-- **Cancellation**: `switchMap` cancels previous calculations when new ones arrive
-- **Error Handling**: Graceful error recovery without breaking the UI
-- **Reactive Updates**: Automatic layout updates when graph structure changes
+- **Automatic Caching**: Layout results are cached based on graph structure
+- **Fast Calculation**: O(V + E) complexity, typically < 10ms for 100-node graphs
+- **Simple API**: Direct method calls, no complex async patterns
+- **Deterministic**: Same input always produces same output
 
 ---
 
@@ -311,20 +297,19 @@ if (position) {
 }
 ```
 
-### Caching Layout Results
-
-The layout engine automatically caches results. To manually manage the cache:
+### Managing Cache
 
 ```typescript
-// Cache is internal to FlowLayoutEngine
-// But you can manually trigger layout updates
+// Get cache statistics
+const stats = this.layoutEngine.getCacheStats();
+console.log(`Cache size: ${stats.size}`);
+console.log(`Cache keys:`, stats.keys);
 
-// Force recalculation by modifying the graph
-flowGraph.newNode('operation');
-this.layoutEngine.layout(flowGraph); // Will use cache if structure unchanged
+// Clear cache manually (e.g., after bulk operations)
+this.layoutEngine.clearCache();
 
-// Clear cache (if you implement a public method)
-// this.layoutEngine.clearCache();
+// Layout will be recalculated on next call
+const result = this.layoutEngine.layout(flowGraph);
 ```
 
 ---
@@ -349,7 +334,7 @@ export class EditorService {
     
     // Trigger layout recalculation
     // Layout engine will automatically handle parallel branches
-    this.layoutEngine.layout(this.flowGraph);
+    this.renderGraph();
   }
   
   /**
@@ -421,6 +406,15 @@ describe('FlowLayoutEngine', () => {
     // Should return same cached result
     expect(result1).toBe(result2);
   });
+  
+  it('should clear cache on request', () => {
+    const graph = createTestGraph();
+    service.layout(graph);
+    service.clearCache();
+    
+    const stats = service.getCacheStats();
+    expect(stats.size).toBe(0);
+  });
 });
 
 function createTestGraph(): FlowGraph {
@@ -458,23 +452,18 @@ function createCyclicGraph(): FlowGraph {
 
 ## Performance Optimization Tips
 
-### 1. Use RxJS Debouncing
+### 1. Leverage Automatic Caching
 
-Always use `debounceTime(16)` for reactive layout updates:
+The layout engine automatically caches results. No additional setup required:
 ```typescript
-this.graphSubject.pipe(
-  debounceTime(16), // ~60fps
-  switchMap(graph => from(this.layoutEngine.layout(graph)))
-).subscribe(result => {
-  // Apply layout
-});
+// First call: calculates layout (~5-10ms)
+const result1 = this.layoutEngine.layout(flowGraph);
+
+// Second call: returns cached result (<1ms)
+const result2 = this.layoutEngine.layout(flowGraph);
 ```
 
-### 2. Enable Caching
-
-The layout engine automatically caches results. No additional setup required.
-
-### 3. Minimize Unnecessary Recalculations
+### 2. Minimize Unnecessary Recalculations
 
 Only trigger layout when graph structure changes:
 ```typescript
@@ -486,7 +475,23 @@ ngAfterViewChecked() {
 // ✅ Good: Layout only when needed
 onNodeAdded(node: FlowNode) {
   this.flowGraph.newNode(node.shape);
-  this.triggerLayout();
+  this.renderGraph(); // Will use cache if structure unchanged
+}
+```
+
+### 3. Clear Cache After Bulk Operations
+
+After making multiple changes to the graph structure, clear the cache:
+```typescript
+public async applyBulkChanges(changes: NodeChange[]): Promise<void> {
+  this.layoutEngine.clearCache();
+  
+  for (const change of changes) {
+    this.applyChange(change);
+  }
+  
+  // Recalculate layout once for all changes
+  this.renderGraph();
 }
 ```
 
@@ -537,9 +542,9 @@ const result = this.layoutEngine.layout(flowGraph);
 **Symptom**: Layout calculation takes > 100ms for 100-node graphs.
 
 **Solution**:
-1. Enable caching (automatic)
-2. Use RxJS debouncing
-3. Consider Web Worker for very large graphs:
+1. Verify caching is working: `this.layoutEngine.getCacheStats()`
+2. Check for cycles in the graph
+3. Consider Web Worker for very large graphs (future enhancement):
 ```typescript
 // Future enhancement: Offload to Web Worker
 const worker = new Worker('./layout.worker');
@@ -570,7 +575,7 @@ worker.onmessage = ({ data }) => {
 ```typescript
 onNodeChanged(node: FlowNode): void {
   this.flowGraph.updateNode(node);
-  this.triggerLayout(); // Auto-recalculate
+  this.renderGraph(); // Auto-recalculate
 }
 ```
 
