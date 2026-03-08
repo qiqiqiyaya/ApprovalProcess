@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { GraphManagerService } from '../../../services/graph-manager.service';
+import { IBranchGroup } from '../../../models/graph-definition';
 
 @Component({
   selector: 'app-parallel-approval',
@@ -10,6 +12,25 @@ export class ParallelApprovalComponent {
   nodeId: string = '';
   nodeName: string = '并行审批';
   branchCount: number = 0;
+
+  graphManager = inject(GraphManagerService);
+  branchGroup:IBranchGroup;
+
+  constructor() {
+    const sub = this.graphManager.$currentBranchGroup.subscribe(group => {
+      debugger;
+      this.branchGroup = group;
+      sub.unsubscribe();
+    });
+  }
+
+  ngOnInit(): void {
+    const sub = this.graphManager.$currentBranchGroup.subscribe(group => {
+      debugger;
+      this.branchGroup = group;
+      sub.unsubscribe();
+    });
+  }
 
   addBranch(): void {
     this.branchCount++;

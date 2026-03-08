@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { EditorService } from '../../../services/editor.service';
+import { GraphManagerService } from '../../../services/graph-manager.service';
 
 @Component({
   selector: 'app-add-node-btn',
@@ -11,7 +11,7 @@ export class AddNodeBtnComponent implements OnInit {
 
   // 模态框显示状态
   isModalVisible = false;
-  private editor = inject(EditorService);
+  private graphManager = inject(GraphManagerService);
   constructor() {
   }
 
@@ -19,14 +19,14 @@ export class AddNodeBtnComponent implements OnInit {
   }
 
   addApprove() {
-    var node = this.editor.getFolwNode();
-    this.editor.flowGraph().addApproveNode(node);
-    this.editor.renderGraph();
+    var node = this.graphManager.currentNode;
+    this.graphManager.addApproveNode(node);
+    this.graphManager.render();
   }
 
   addParallelApproval() {
-    var node = this.editor.getFolwNode();
-    this.editor.flowGraph().addBranch(node);
-    this.editor.renderGraph();
+    var node = this.graphManager.currentNode;
+    this.graphManager.addBranch(node);
+    this.graphManager.render();
   }
 }
