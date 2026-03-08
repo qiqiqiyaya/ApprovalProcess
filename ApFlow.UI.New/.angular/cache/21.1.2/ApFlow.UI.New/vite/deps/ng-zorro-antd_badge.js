@@ -2,11 +2,11 @@ import {
   NzNoAnimationDirective,
   withAnimationCheck
 } from "./chunk-SPYBVWE7.js";
-import "./chunk-QYDDKLT3.js";
 import {
   NzOutletModule,
   NzStringTemplateOutletDirective
 } from "./chunk-CWBX6YEP.js";
+import "./chunk-QYDDKLT3.js";
 import {
   WithConfig
 } from "./chunk-M622CJQC.js";
