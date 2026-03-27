@@ -57,29 +57,59 @@ export class GraphManagerService {
     const dagreLayout = new DagreLayout({
       type: 'dagre',
       rankdir: 'TB',
-      ranksep: 35,
-      nodesep: 75,
+      nodesep: 50,
+      ranksep: 50,
     });
     const layoutedData = dagreLayout.layout(this._flowGraph);
 
-    // 4. 关键：修正坐标，让节点中心对齐
-    layoutedData.nodes = layoutedData.nodes!.map((node: any) => {
-      // 计算中心偏移：x = 初始x - 宽度/2，y = 初始y - 高度/2
-      const centerX = node.x - node.width / 2;
-      const centerY = node.y - node.height / 2;
-      node.x = centerX;
-      node.y = centerY;
-      return node;
-    });
+    // 3. 中心点对齐
+    layoutedData.nodes = layoutedData.nodes!.map((node: any) => ({
+      ...node,
+      x: node.x - node.width / 2,
+      y: node.y - node.height / 2,
+    }));
+
+    layoutedData.nodes = this.recalculateVerticalSpacing(layoutedData.nodes!, 60); // 调整垂直间距，固定视觉间隔为50
 
     // 2. 使用计算好的数据渲染图
     this.graph.fromJSON(layoutedData);
-    this.graph.centerContent();
+
+    const test = this.graph.getNodes();
+    test.forEach(node => {
+      const pos = node.position();
+      const size = node.size();
+      console.log(`Node ${node.id} position: x=${pos.x}, y=${pos.y}, size: width=${size.width}, height=${size.height}`);
+    });
+
+    // this.graph.centerContent();
     // 3. 订阅事件
     this.eventSubscribe();
 
-    console.log(this.graph.toJSON());
+    // console.log(this.graph.toJSON());
   }
+
+  private recalculateVerticalSpacing(nodes: any[], fixedVisualGap: number): any[] {
+    const sortedNodes = [...nodes].sort((a, b) => a.y - b.y);
+    let currentY = sortedNodes[0].y;
+
+    for (let i = 0; i < sortedNodes.length; i++) {
+      const node = sortedNodes[i];
+
+      if (i > 0) {
+        const prevNode = sortedNodes[i - 1];
+        // 关键：当前 Y = 上节点底部 + 固定视觉间距 + 当前节点高度的一半
+        currentY = prevNode.y + prevNode.height / 2 + fixedVisualGap + node.height / 2;
+
+        // 当前 Y - 上节点底部
+        const sfd = currentY - (prevNode.y + prevNode.height / 2) - node.height / 2;
+        console.log(`Node spacing ${ node.id }: ${sfd}`);
+      }
+      node.y = currentY;
+    }
+
+    return sortedNodes;
+  }
+
 
   private eventSubscribe() {
     if (this.eventSubscribed) return;
@@ -156,15 +186,37 @@ export class GraphManagerService {
   newFlow() {
     const stratNode = FlowNodeHelper.createRect('开始');
     const operationNode = FlowNodeHelper.create(NodeShape.operation);
+    const approveNode =FlowNodeHelper.create(NodeShape.approve);
+    const operationNode11 =FlowNodeHelper.create(NodeShape.operation);
+
     const endNode = FlowNodeHelper.createRect('结束');
 
     const group: IFlowGraph = {
-      nodes: [stratNode, operationNode, endNode],
+      nodes: [stratNode, operationNode, approveNode, operationNode11, endNode],
       edges: [
         FlowEdgeHelper.create(stratNode.id, operationNode.id),
-        FlowEdgeHelper.create(operationNode.id, endNode.id)
+        FlowEdgeHelper.create(operationNode.id, approveNode.id),
+        FlowEdgeHelper.create(approveNode.id, operationNode11.id),
+        FlowEdgeHelper.create(operationNode11.id, endNode.id)
       ]
     }
+
+    // const rawData = {
+    //   nodes: [
+    //     { id: 'start', width: 120, height: 40, shape: 'rect' },
+    //     { id: 'process1', width: 140, height: 100, shape: 'rect' },
+    //     { id: 'decision', width: 120, height: 80, shape: 'rect' },
+    //     { id: 'process2', width: 120, height: 50, shape: 'rect' },
+    //     { id: 'end', width: 120, height: 40 , shape: 'rect'},
+    //   ],
+    //   edges: [
+    //     { source: 'start', target: 'process1' },
+    //     { source: 'process1', target: 'decision' },
+    //     { source: 'decision', target: 'process2' },
+    //     { source: 'process2', target: 'end' },
+    //   ]
+    // };
+    // const group:IFlowGraph = rawData;
     return group;
   }
 }
