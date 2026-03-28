@@ -38,7 +38,7 @@ export interface IBranchGroup {
 export interface IFlowEdge {
     source: string;
     target: string;
-    router?: string;
+    router?: string | any;
     data?: any;
 }
 

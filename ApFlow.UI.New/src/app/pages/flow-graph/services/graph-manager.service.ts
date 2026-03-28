@@ -57,59 +57,30 @@ export class GraphManagerService {
     const dagreLayout = new DagreLayout({
       type: 'dagre',
       rankdir: 'TB',
-      nodesep: 50,
-      ranksep: 50,
+      nodesep: 60,
+      ranksep: 20,
+      ranksepFunc: (d: any) => {
+        if (d.height - 42 > 0) return 30 * 2;
+        return 20;
+      }
     });
     const layoutedData = dagreLayout.layout(this._flowGraph);
 
     // 3. 中心点对齐
     layoutedData.nodes = layoutedData.nodes!.map((node: any) => ({
       ...node,
+      // 中心点 → 左上角：减去宽高的一半
       x: node.x - node.width / 2,
       y: node.y - node.height / 2,
     }));
 
-    layoutedData.nodes = this.recalculateVerticalSpacing(layoutedData.nodes!, 60); // 调整垂直间距，固定视觉间隔为50
-
     // 2. 使用计算好的数据渲染图
     this.graph.fromJSON(layoutedData);
 
-    const test = this.graph.getNodes();
-    test.forEach(node => {
-      const pos = node.position();
-      const size = node.size();
-      console.log(`Node ${node.id} position: x=${pos.x}, y=${pos.y}, size: width=${size.width}, height=${size.height}`);
-    });
-
-    // this.graph.centerContent();
+    this.graph.centerContent();
     // 3. 订阅事件
     this.eventSubscribe();
-
-    // console.log(this.graph.toJSON());
   }
-
-  private recalculateVerticalSpacing(nodes: any[], fixedVisualGap: number): any[] {
-    const sortedNodes = [...nodes].sort((a, b) => a.y - b.y);
-    let currentY = sortedNodes[0].y;
-
-    for (let i = 0; i < sortedNodes.length; i++) {
-      const node = sortedNodes[i];
-
-      if (i > 0) {
-        const prevNode = sortedNodes[i - 1];
-        // 关键：当前 Y = 上节点底部 + 固定视觉间距 + 当前节点高度的一半
-        currentY = prevNode.y + prevNode.height / 2 + fixedVisualGap + node.height / 2;
-
-        // 当前 Y - 上节点底部
-        const sfd = currentY - (prevNode.y + prevNode.height / 2) - node.height / 2;
-        console.log(`Node spacing ${ node.id }: ${sfd}`);
-      }
-      node.y = currentY;
-    }
-
-    return sortedNodes;
-  }
-
 
   private eventSubscribe() {
     if (this.eventSubscribed) return;
@@ -117,7 +88,7 @@ export class GraphManagerService {
     this.graph.on('node:mouseenter', ({ node }) => {
       this._currentNode = node;
     });
-     this.graph.on('node:mousemove', ({ node }) => {
+    this.graph.on('node:mousemove', ({ node }) => {
       (this._currentNode as any) = undefined;
     });
     this.eventSubscribed = true;
@@ -148,7 +119,7 @@ export class GraphManagerService {
 
   getNode(id: string) {
     var node = this.findNodeById(id);
-    if (node == null)throw new Error(`Node with id ${id} not found`);
+    if (node == null) throw new Error(`Node with id ${id} not found`);
     return node;
   }
 
@@ -186,8 +157,8 @@ export class GraphManagerService {
   newFlow() {
     const stratNode = FlowNodeHelper.createRect('开始');
     const operationNode = FlowNodeHelper.create(NodeShape.operation);
-    const approveNode =FlowNodeHelper.create(NodeShape.approve);
-    const operationNode11 =FlowNodeHelper.create(NodeShape.operation);
+    const approveNode = FlowNodeHelper.create(NodeShape.approve);
+    const operationNode11 = FlowNodeHelper.create(NodeShape.operation);
 
     const endNode = FlowNodeHelper.createRect('结束');
 
