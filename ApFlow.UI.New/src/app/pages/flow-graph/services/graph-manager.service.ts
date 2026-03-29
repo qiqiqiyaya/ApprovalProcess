@@ -14,7 +14,6 @@ export class GraphManagerService {
   /** 是否已经订阅了事件 */
   private eventSubscribed = false;
 
-
   private _flowGraph: IFlowGraph;
   public setflowGraph(flowGraph: IFlowGraph): void {
     this._flowGraph = flowGraph;
@@ -43,7 +42,6 @@ export class GraphManagerService {
     return this._currentNode;
   }
 
-
   private _currentBranchGroup = new EventEmitter<IBranchGroup>();
   public get $currentBranchGroup(): Observable<IBranchGroup> {
     return this._currentBranchGroup;
@@ -66,7 +64,7 @@ export class GraphManagerService {
     });
     const layoutedData = dagreLayout.layout(this._flowGraph);
 
-    // 3. 中心点对齐
+    // 中心点对齐
     layoutedData.nodes = layoutedData.nodes!.map((node: any) => ({
       ...node,
       // 中心点 → 左上角：减去宽高的一半
@@ -93,9 +91,6 @@ export class GraphManagerService {
     });
     this.eventSubscribed = true;
   }
-
-
-
 
   /**
    * 创建一个新的节点并添加到图中
