@@ -55,9 +55,23 @@ export class FlowNodeHelper {
             shape: 'rect',
         };
         if (shape) flowNode.shape = shape;
-        if (data) flowNode.data = data;
+        if (data) {
+            flowNode.data = {
+                ...data,
+                ngArguments: {
+                    node: flowNode,
+                }
+            };
+        } else {
+            flowNode.data = {
+                ngArguments: {
+                    node: flowNode,
+                }
+            };
+        }
         if (lable) flowNode.label = lable;
         this.setSize(flowNode);
+
         return flowNode;
     }
 

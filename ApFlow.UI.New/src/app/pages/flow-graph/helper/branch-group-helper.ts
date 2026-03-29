@@ -7,7 +7,7 @@ import { FlowNodeHelper } from "./flow-node-helper";
 import { EventEmitter } from "@angular/core";
 
 export class BranchGroupHelper {
-    public static create(operationNode: IFlowNode, flowGraph: IFlowGraph, branchManager: BranchManager, $branchGroup?:EventEmitter<IBranchGroup>, number: number = 2): IBranchGroup {
+    public static create(operationNode: IFlowNode, flowGraph: IFlowGraph, branchManager: BranchManager, $branchGroup?: EventEmitter<IBranchGroup>, number: number = 2): IBranchGroup {
         FlowNodeHelper.NotOperationNodeThenThrow(operationNode);
         const startId = operationNode.id;
 
@@ -15,6 +15,7 @@ export class BranchGroupHelper {
         const startEdge = flowGraph.edges.find(edge => edge.source == startId);
         flowGraph.edges = flowGraph.edges.filter(edge => edge.source !== startId);
 
+        /** 并行审批节点 */
         const parallelNode = FlowNodeHelper.createTo(NodeShape.parallelApproval, flowGraph);
         FlowEdgeHelper.createTo(startId, parallelNode.id, flowGraph);
         const group = branchManager.create(parallelNode.id, number);
@@ -24,7 +25,7 @@ export class BranchGroupHelper {
         this.fillGroup(group, branchOp1, 0);
         const branchOp2 = FlowNodeHelper.createTo(NodeShape.operation, flowGraph);
         this.fillGroup(group, branchOp2, 1);
-       
+
         branchManager.addNode(branchOp1.branchGroupId!, branchOp1.branchIndex!, branchOp1.id);
         branchManager.addNode(branchOp2.branchGroupId!, branchOp2.branchIndex!, branchOp2.id);
 

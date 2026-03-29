@@ -1,5 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, Input, input, OnInit } from '@angular/core';
 import { GraphManagerService } from '../../../services/graph-manager.service';
+import { ComponentNode } from '../../../models/component-node';
+import { IFlowNode, NgArguments } from '../../../models/graph-definition';
 
 @Component({
   selector: 'app-add-node-btn',
@@ -7,26 +9,28 @@ import { GraphManagerService } from '../../../services/graph-manager.service';
   styleUrls: ['./add-node-btn.component.css'],
   standalone: false,
 })
-export class AddNodeBtnComponent implements OnInit {
+export class AddNodeBtnComponent implements OnInit, ComponentNode {
 
   // 模态框显示状态
   isModalVisible = false;
   private graphManager = inject(GraphManagerService);
+
+  @Input() node: IFlowNode
+
   constructor() {
   }
 
   ngOnInit() {
+
   }
 
   addApprove() {
-    var node = this.graphManager.currentNode;
-    this.graphManager.addApproveNode(node);
+    this.graphManager.addApproveNode(this.node);
     this.graphManager.render();
   }
 
   addParallelApproval() {
-    var node = this.graphManager.currentNode;
-    this.graphManager.addBranch(node);
+    this.graphManager.addBranch(this.node);
     this.graphManager.render();
   }
 }

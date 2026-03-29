@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { IFlowNode } from '../../../models/graph-definition';
 
 @Component({
   selector: 'app-parallel-approval-merge',
@@ -9,4 +10,5 @@ import { Component } from '@angular/core';
 export class ParallelApprovalMergeComponent {
   nodeId: string = '';
   nodeName: string = '合并审批';
+  @Input() node: IFlowNode
 }

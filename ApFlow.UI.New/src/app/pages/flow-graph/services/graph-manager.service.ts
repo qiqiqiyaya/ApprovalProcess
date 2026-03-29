@@ -14,7 +14,6 @@ export class GraphManagerService {
   /** 是否已经订阅了事件 */
   private eventSubscribed = false;
 
-
   private _flowGraph: IFlowGraph;
   public setflowGraph(flowGraph: IFlowGraph): void {
     this._flowGraph = flowGraph;
@@ -38,16 +37,12 @@ export class GraphManagerService {
   /** 分支组管理器 */
   private branchManager: BranchManager;
 
-  private _currentNode: IFlowNode;
-  public get currentNode(): IFlowNode {
-    return this._currentNode;
-  }
-
-
   private _currentBranchGroup = new EventEmitter<IBranchGroup>();
   public get $currentBranchGroup(): Observable<IBranchGroup> {
     return this._currentBranchGroup;
   }
+  /** 是否是第一次渲染 */
+  private _firstRender = true;
 
   constructor() {
   }
@@ -66,7 +61,7 @@ export class GraphManagerService {
     });
     const layoutedData = dagreLayout.layout(this._flowGraph);
 
-    // 3. 中心点对齐
+    // 中心点对齐
     layoutedData.nodes = layoutedData.nodes!.map((node: any) => ({
       ...node,
       // 中心点 → 左上角：减去宽高的一半
@@ -77,25 +72,28 @@ export class GraphManagerService {
     // 2. 使用计算好的数据渲染图
     this.graph.fromJSON(layoutedData);
 
-    this.graph.centerContent();
-    // 3. 订阅事件
-    this.eventSubscribe();
+    debugger;
+    const fsd = this.graph.getNodes()
+
+    if (this._firstRender) {
+      this.graph.centerContent();
+      // 3. 订阅事件
+      this.eventSubscribe();
+      this._firstRender = false;
+    }
   }
 
   private eventSubscribe() {
     if (this.eventSubscribed) return;
     /* 订阅事件 */
-    this.graph.on('node:mouseenter', ({ node }) => {
-      this._currentNode = node;
-    });
-    this.graph.on('node:mousemove', ({ node }) => {
-      (this._currentNode as any) = undefined;
-    });
+    // this.graph.on('node:mouseenter', ({ node }) => {
+    //   this._currentNode = node;
+    // });
+    // this.graph.on('node:mousemove', ({ node }) => {
+    //   (this._currentNode as any) = undefined;
+    // });
     this.eventSubscribed = true;
   }
-
-
-
 
   /**
    * 创建一个新的节点并添加到图中

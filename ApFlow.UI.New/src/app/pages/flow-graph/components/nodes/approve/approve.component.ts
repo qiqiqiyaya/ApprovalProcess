@@ -1,14 +1,18 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { NzDrawerPlacement, NzDrawerService } from 'ng-zorro-antd/drawer';
 import { ApprovalSettingsComponent } from '../../approval-settings/approval-settings.component';
+import { ComponentNode } from '../../../models/component-node';
+import { IFlowNode } from '../../../models/graph-definition';
 
 @Component({
   selector: 'app-approve',
   templateUrl: './approve.component.html',
   styleUrls: ['./approve.component.css'],
-  standalone: false,  
+  standalone: false,
 })
-export class ApproveComponent {
+export class ApproveComponent implements ComponentNode {
+
+  @Input() node: IFlowNode
 
   drawer = inject(NzDrawerService);
 

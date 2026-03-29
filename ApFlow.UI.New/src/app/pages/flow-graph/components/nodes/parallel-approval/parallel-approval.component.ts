@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { GraphManagerService } from '../../../services/graph-manager.service';
-import { IBranchGroup } from '../../../models/graph-definition';
+import { IBranchGroup, IFlowNode } from '../../../models/graph-definition';
 
 @Component({
   selector: 'app-parallel-approval',
@@ -14,7 +14,8 @@ export class ParallelApprovalComponent {
   branchCount: number = 0;
 
   graphManager = inject(GraphManagerService);
-  branchGroup:IBranchGroup;
+  branchGroup: IBranchGroup;
+  @Input() node: IFlowNode
 
   constructor() {
     const sub = this.graphManager.$currentBranchGroup.subscribe(group => {

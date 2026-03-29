@@ -1,15 +1,32 @@
+import { ComponentNode } from "./component-node";
+
 export interface IFlowNode {
     id: string;
     shape: string;
     width?: number;
     height?: number;
     label?: string;
-    data?: any;
+    data?: INodeDate;
     x?: number;
     y?: number;
 
     branchGroupId?: string; // 所属分支组ID
     branchIndex?: number; // 在分支组中的索引
+}
+
+export interface INodeDate {
+    [key: string]: any;
+    /**
+     * Angular组件参数
+     */
+    ngArguments?: NgArguments;
+}
+
+/**
+ * Angular组件参数
+ */
+export interface NgArguments extends ComponentNode {
+    [key: string]: any;
 }
 
 /**
