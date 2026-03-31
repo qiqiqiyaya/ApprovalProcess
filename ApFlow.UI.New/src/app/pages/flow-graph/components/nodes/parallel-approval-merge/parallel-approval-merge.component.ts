@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { ComponentNode } from '../../../models/component-node';
 import { IFlowNode } from '../../../models/graph-definition';
 
 @Component({
@@ -7,8 +8,10 @@ import { IFlowNode } from '../../../models/graph-definition';
   styleUrls: ['./parallel-approval-merge.component.css'],
   standalone: false,
 })
-export class ParallelApprovalMergeComponent {
-  nodeId: string = '';
-  nodeName: string = '合并审批';
+export class ParallelApprovalMergeComponent implements ComponentNode {
+
   @Input() node: IFlowNode
+
+  close() {
+  }
 }

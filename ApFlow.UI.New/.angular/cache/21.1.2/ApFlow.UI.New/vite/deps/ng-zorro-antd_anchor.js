@@ -1,30 +1,30 @@
 import {
   NzAffixComponent,
   NzAffixModule
-} from "./chunk-TQIOCHJG.js";
+} from "./chunk-ZIRDLBR5.js";
 import {
   NzScrollService
-} from "./chunk-NG2GHVLB.js";
-import "./chunk-EZOSTTOR.js";
-import "./chunk-JORL4EF2.js";
+} from "./chunk-P6TWO2ET.js";
+import "./chunk-F3KMHNIL.js";
+import "./chunk-GYMNEEDE.js";
 import {
   Platform,
   normalizePassiveListenerOptions
-} from "./chunk-ZVGB4KKA.js";
+} from "./chunk-W6VE2EMK.js";
 import "./chunk-QYDDKLT3.js";
 import {
   NzConfigService,
   WithConfig
-} from "./chunk-DJZTLXUF.js";
-import "./chunk-ZMV7PNUE.js";
+} from "./chunk-M622CJQC.js";
+import "./chunk-PKOG7UK4.js";
 import {
   fromEventOutsideAngular,
   numberAttributeWithZeroFallback
-} from "./chunk-O4KAL2U6.js";
-import "./chunk-Q5GA2JRX.js";
+} from "./chunk-HP6B2NEN.js";
+import "./chunk-AMAGFN52.js";
 import {
   NgTemplateOutlet
-} from "./chunk-BRRSMBQQ.js";
+} from "./chunk-OXRDR26M.js";
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -38,7 +38,6 @@ import {
   NgModule,
   Output,
   Renderer2,
-  Subject,
   TemplateRef,
   ViewChild,
   ViewEncapsulation,
@@ -46,8 +45,6 @@ import {
   inject,
   numberAttribute,
   setClassMetadata,
-  takeUntil,
-  throttleTime,
   ɵɵNgOnChangesFeature,
   ɵɵadvance,
   ɵɵattribute,
@@ -80,7 +77,12 @@ import {
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵviewQuery
-} from "./chunk-H4EWDFAJ.js";
+} from "./chunk-4XV3JIPT.js";
+import {
+  Subject,
+  takeUntil,
+  throttleTime
+} from "./chunk-XZWRYGZ6.js";
 import {
   __esDecorate,
   __runInitializers

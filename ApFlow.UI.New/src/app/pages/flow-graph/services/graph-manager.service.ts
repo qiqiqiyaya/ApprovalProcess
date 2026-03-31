@@ -71,10 +71,6 @@ export class GraphManagerService {
 
     // 2. 使用计算好的数据渲染图
     this.graph.fromJSON(layoutedData);
-
-    debugger;
-    const fsd = this.graph.getNodes()
-
     if (this._firstRender) {
       this.graph.centerContent();
       // 3. 订阅事件
@@ -169,23 +165,6 @@ export class GraphManagerService {
         FlowEdgeHelper.create(operationNode11.id, endNode.id)
       ]
     }
-
-    // const rawData = {
-    //   nodes: [
-    //     { id: 'start', width: 120, height: 40, shape: 'rect' },
-    //     { id: 'process1', width: 140, height: 100, shape: 'rect' },
-    //     { id: 'decision', width: 120, height: 80, shape: 'rect' },
-    //     { id: 'process2', width: 120, height: 50, shape: 'rect' },
-    //     { id: 'end', width: 120, height: 40 , shape: 'rect'},
-    //   ],
-    //   edges: [
-    //     { source: 'start', target: 'process1' },
-    //     { source: 'process1', target: 'decision' },
-    //     { source: 'decision', target: 'process2' },
-    //     { source: 'process2', target: 'end' },
-    //   ]
-    // };
-    // const group:IFlowGraph = rawData;
     return group;
   }
 }

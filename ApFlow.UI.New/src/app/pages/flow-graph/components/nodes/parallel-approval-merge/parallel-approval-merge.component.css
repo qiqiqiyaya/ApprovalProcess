@@ -1,25 +1,27 @@
-.merge-node {
+.parallel-approval-merge-node {
   border-radius: 4px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   width: 170px;
+  height: 110px;
   transition: all 0.2s ease;
 }
 
-.merge-node:hover {
+.parallel-approval-merge-node:hover {
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
-::ng-deep .merge-node .ant-card-body {
+::ng-deep .parallel-approval-merge-node .ant-card-body {
   padding: 0;
+  height: 110px;
 }
 
-.node-header {
+.parallel-approval-merge-header {
   padding: 6px 10px;
   background: #52c41a;
 }
 
-.node-content {
+.parallel-approval-merge-content {
   padding: 8px 10px;
   background: #fff;
 }

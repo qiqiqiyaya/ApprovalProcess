@@ -9,6 +9,14 @@ export class FlowNodeHelper {
      */
     public static setSize(flowNode: IFlowNode) {
         switch (flowNode.shape) {
+            case NodeShape.start:
+                flowNode.width = 170;
+                flowNode.height = 110;
+                break;
+            case NodeShape.end:
+                flowNode.width = 170;
+                flowNode.height = 110;
+                break;
             case NodeShape.operation:
                 flowNode.width = 40;
                 flowNode.height = 41;
@@ -19,11 +27,11 @@ export class FlowNodeHelper {
                 break;
             case NodeShape.parallelApproval:
                 flowNode.width = 170;
-                flowNode.height = 142;
+                flowNode.height = 110;
                 break;
             case NodeShape.parallelApprovalMerge:
                 flowNode.width = 170;
-                flowNode.height = 100;
+                flowNode.height = 110;
                 break;
             default:
                 flowNode.width = 80;
@@ -82,10 +90,10 @@ export class FlowNodeHelper {
     }
 
     /**
-           * 在指定节点后添加审批节点和操作节点
-           * 操作流程：operationNode -> approveNode -> newOperationNode -> nextNode
-           * @param operationNode 要添加审批的操作节点
-           */
+     * 在指定节点后添加审批节点和操作节点
+     * 操作流程：operationNode -> approveNode -> newOperationNode -> nextNode
+     * @param operationNode 要添加审批的操作节点
+     */
     public static addApproveNode(operationNode: IFlowNode, flowGraph: IFlowGraph) {
         this.NotOperationNodeThenThrow(operationNode);
 

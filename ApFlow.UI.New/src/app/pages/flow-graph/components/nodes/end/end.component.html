@@ -1,0 +1,19 @@
+<nz-card class="end-node" [nzBordered]="true">
+  <div nz-row nzJustify="space-between" nzAlign="middle" class="end-header">
+    <div nz-col>
+      <span nz-icon nzType="stop" nzTheme="fill" style="color: #fff; margin-right: 4px;"></span>
+      <span style="color: #fff; font-size: 12px; font-weight: 500;">结束节点</span>
+    </div>
+    <div nz-col>
+      <button nz-button nzType="text" class="end-close-btn" (click)="close()">
+        <span nz-icon nzType="close" nzTheme="outline"></span>
+      </button>
+    </div>
+  </div>
+  <div class="end-content">
+    <div class="end-info">
+      <div class="end-title">流程结束</div>
+      <div class="end-description">流程的终止点</div>
+    </div>
+  </div>
+</nz-card>

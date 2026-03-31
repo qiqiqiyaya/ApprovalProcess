@@ -1,0 +1,19 @@
+<nz-card class="start-node" [nzBordered]="true">
+  <div nz-row nzJustify="space-between" nzAlign="middle" class="start-header">
+    <div nz-col>
+      <span nz-icon nzType="play-circle" nzTheme="outline" style="color: #fff; margin-right: 4px;"></span>
+      <span style="color: #fff; font-size: 12px; font-weight: 500;">开始节点</span>
+    </div>
+    <div nz-col>
+      <button nz-button nzType="text" class="start-close-btn" (click)="close()">
+        <span nz-icon nzType="close" nzTheme="outline"></span>
+      </button>
+    </div>
+  </div>
+  <div class="start-content">
+    <div class="start-info">
+      <div class="start-title">流程开始</div>
+      <div class="start-description">流程的起始点</div>
+    </div>
+  </div>
+</nz-card>

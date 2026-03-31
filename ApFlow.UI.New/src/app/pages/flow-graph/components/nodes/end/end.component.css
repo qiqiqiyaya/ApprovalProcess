@@ -1,0 +1,63 @@
+.end-node {
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 170px;
+  height: 110px;
+  transition: all 0.2s ease;
+}
+
+.end-node:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+::ng-deep .end-node .ant-card-body {
+  padding: 0;
+  height: 110px;
+}
+
+.end-header {
+  padding: 6px 10px;
+  background: #ff4d4f;
+}
+
+.end-close-btn {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: none !important;
+  color: #fff !important;
+  width: 20px;
+  height: 20px;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.end-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.end-content {
+  padding: 8px 10px;
+  background: #fff;
+}
+
+.end-info {
+  padding: 8px 6px;
+}
+
+.end-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.end-description {
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+}
