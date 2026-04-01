@@ -4,6 +4,7 @@ import { TestCaseRoutes } from './test-case.routing';
 import { FlowGraphModule } from '../flow-graph/flow-graph.module';
 import { NgZorroAntdCommonModule } from '../../shared/ng-zorro-antd-common.module';
 import { CountersignatureComponent } from './countersignature-会签/countersignature.component';
+import { OrApproalsComponent } from './or-approals-或签/or-approals.component';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { CountersignatureComponent } from './countersignature-会签/countersign
     NgZorroAntdCommonModule
   ],
   declarations: [
-    CountersignatureComponent
+    CountersignatureComponent,
+    OrApproalsComponent
   ]
 })
 export class TestCaseModule { }

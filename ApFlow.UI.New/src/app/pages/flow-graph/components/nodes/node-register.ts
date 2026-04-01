@@ -6,6 +6,9 @@ import { EndComponent } from "./end/end.component";
 import { ApproveComponent } from "./approve/approve.component";
 import { ParallelApprovalComponent } from "./parallel-approval/parallel-approval.component";
 import { ParallelApprovalMergeComponent } from "./parallel-approval-merge/parallel-approval-merge.component";
+import { OrComponent } from "./or/or.component";
+import { OrMergeComponent } from "./or-merge/or-merge.component";
+import { JointReviewComponent } from "./joint-review/joint-review.component";
 
 export const NodeShape = {
     start: "start",
@@ -13,7 +16,10 @@ export const NodeShape = {
     operation: "operation",
     approve: "approve",
     parallelApproval: "parallel-approval",
-    parallelApprovalMerge: "parallel-approval-merge"
+    parallelApprovalMerge: "parallel-approval-merge",
+    or: "or",
+    orMerge: "or-merge",
+    jointReview: "joint-review"
 }
 
 /**
@@ -71,6 +77,27 @@ export class NodeRegister {
         register({
             shape: NodeShape.parallelApprovalMerge,
             content: ParallelApprovalMergeComponent,
+            injector: injector,
+        });
+
+        // 注册或签节点
+        register({
+            shape: NodeShape.or,
+            content: OrComponent,
+            injector: injector,
+        });
+
+        // 注册或签合并节点
+        register({
+            shape: NodeShape.orMerge,
+            content: OrMergeComponent,
+            injector: injector,
+        });
+
+        // 注册会审节点
+        register({
+            shape: NodeShape.jointReview,
+            content: JointReviewComponent,
             injector: injector,
         });
     }

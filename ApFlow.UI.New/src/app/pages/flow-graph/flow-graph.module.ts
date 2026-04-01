@@ -11,6 +11,9 @@ import { NgZorroAntdCommonModule } from '../../shared/ng-zorro-antd-common.modul
 import { GraphManagerService } from './services/graph-manager.service';
 import { ParallelApprovalComponent } from './components/nodes/parallel-approval/parallel-approval.component';
 import { ParallelApprovalMergeComponent } from './components/nodes/parallel-approval-merge/parallel-approval-merge.component';
+import { OrComponent } from './components/nodes/or/or.component';
+import { OrMergeComponent } from './components/nodes/or-merge/or-merge.component';
+import { JointReviewComponent } from './components/nodes/joint-review/joint-review.component';
 
 @NgModule({
   imports: [
@@ -27,7 +30,10 @@ import { ParallelApprovalMergeComponent } from './components/nodes/parallel-appr
     ApproveComponent,
     ParallelApprovalComponent,
     ParallelApprovalMergeComponent,
-    ApprovalSettingsComponent
+    ApprovalSettingsComponent,
+    OrComponent,
+    OrMergeComponent,
+    JointReviewComponent
   ],
   providers: [
     GraphManagerService

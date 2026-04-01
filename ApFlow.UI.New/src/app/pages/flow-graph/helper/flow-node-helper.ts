@@ -23,7 +23,7 @@ export class FlowNodeHelper {
                 break;
             case NodeShape.approve:
                 flowNode.width = 170;
-                flowNode.height = 142;
+                flowNode.height = 110;
                 break;
             case NodeShape.parallelApproval:
                 flowNode.width = 170;
@@ -33,9 +33,13 @@ export class FlowNodeHelper {
                 flowNode.width = 170;
                 flowNode.height = 110;
                 break;
-            default:
+            case NodeShape.operation:
                 flowNode.width = 80;
                 flowNode.height = 40;
+                break;
+            default:
+                flowNode.width = 170;
+                flowNode.height = 110;
                 break;
         }
     }
