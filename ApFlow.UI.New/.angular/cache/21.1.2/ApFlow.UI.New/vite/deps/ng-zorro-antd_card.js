@@ -7,6 +7,10 @@ import {
   NzStringTemplateOutletDirective
 } from "./chunk-CWBX6YEP.js";
 import {
+  BidiModule,
+  Directionality
+} from "./chunk-AMAGFN52.js";
+import {
   WithConfig,
   onConfigChangeEventForComponent
 } from "./chunk-M622CJQC.js";
@@ -14,10 +18,6 @@ import {
   takeUntilDestroyed
 } from "./chunk-PKOG7UK4.js";
 import "./chunk-HP6B2NEN.js";
-import {
-  BidiModule,
-  Directionality
-} from "./chunk-AMAGFN52.js";
 import {
   NgTemplateOutlet
 } from "./chunk-OXRDR26M.js";

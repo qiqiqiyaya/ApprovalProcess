@@ -5,6 +5,7 @@ import { FlowGraphModule } from '../flow-graph/flow-graph.module';
 import { NgZorroAntdCommonModule } from '../../shared/ng-zorro-antd-common.module';
 import { CountersignatureComponent } from './countersignature-会签/countersignature.component';
 import { OrApproalsComponent } from './or-approals-或签/or-approals.component';
+import { ParallelApprovalComponent } from './parallel-approval-并行审批/parallel-approval.component';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { OrApproalsComponent } from './or-approals-或签/or-approals.component'
   ],
   declarations: [
     CountersignatureComponent,
-    OrApproalsComponent
+    OrApproalsComponent,
+    ParallelApprovalComponent
   ]
 })
 export class TestCaseModule { }

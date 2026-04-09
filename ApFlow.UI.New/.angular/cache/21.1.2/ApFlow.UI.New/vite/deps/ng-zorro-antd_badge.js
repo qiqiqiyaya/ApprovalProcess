@@ -2,19 +2,19 @@ import {
   NzNoAnimationDirective,
   withAnimationCheck
 } from "./chunk-SPYBVWE7.js";
+import "./chunk-QYDDKLT3.js";
 import {
   NzOutletModule,
   NzStringTemplateOutletDirective
 } from "./chunk-CWBX6YEP.js";
-import "./chunk-QYDDKLT3.js";
+import {
+  Directionality
+} from "./chunk-AMAGFN52.js";
 import {
   WithConfig
 } from "./chunk-M622CJQC.js";
 import "./chunk-PKOG7UK4.js";
 import "./chunk-HP6B2NEN.js";
-import {
-  Directionality
-} from "./chunk-AMAGFN52.js";
 import {
   ChangeDetectionStrategy,
   Component,

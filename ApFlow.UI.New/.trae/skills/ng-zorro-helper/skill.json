@@ -1,0 +1,48 @@
+{
+  "name": "ng-zorro-helper",
+  "version": "1.0.0",
+  "description": "ng-zorro 编程助手 - 帮助开发者使用 ng-zorro (Ant Design for Angular) 组件库进行开发",
+  "author": "AI Assistant",
+  "keywords": [
+    "ng-zorro",
+    "ng-zorro-antd",
+    "angular",
+    "ant-design",
+    "ui-components",
+    "typescript",
+    "frontend"
+  ],
+  "category": "development",
+  "language": ["zh-CN", "en-US"],
+  "framework": "Angular",
+  "frameworkVersion": "^21.0.0",
+  "mainFile": "SKILL.md",
+  "resources": {
+    "navigation": "references/llms.txt",
+    "documentationEN": "references/llms-full.txt",
+    "documentationCN": "references/llms-full-cn.txt"
+  },
+  "triggers": [
+    "ng-zorro",
+    "ng-zorro-antd",
+    "ant design angular",
+    "nz-button",
+    "nz-table",
+    "nz-form",
+    "angular ui component"
+  ],
+  "capabilities": [
+    "组件使用指导",
+    "API 文档查询",
+    "代码示例生成",
+    "主题定制",
+    "国际化配置",
+    "性能优化建议"
+  ],
+  "components": 77,
+  "created": "2025-04-07",
+  "lastUpdated": "2025-04-07",
+  "license": "MIT",
+  "repository": "https://github.com/NG-ZORRO/ng-zorro-antd",
+  "documentation": "https://ng.ant.design"
+}

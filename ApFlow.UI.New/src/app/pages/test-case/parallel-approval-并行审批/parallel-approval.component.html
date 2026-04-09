@@ -1,0 +1,11 @@
+<div class="parallel-approval-container">
+  <h2>并行审批流程测试</h2>
+  <div class="graph-container">
+    <flow-graph-editor [flowGraph]="flowGraph"></flow-graph-editor>
+  </div>
+  <div class="actions">
+    <button nz-button nzType="primary" (click)="triggerNodeCheck()">
+      检查节点
+    </button>
+  </div>
+</div>
